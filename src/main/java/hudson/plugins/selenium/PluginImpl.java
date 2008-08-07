@@ -29,6 +29,8 @@ import com.thoughtworks.selenium.grid.hub.management.console.ConsoleServlet;
 import hudson.Plugin;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Api;
+import hudson.model.Hudson;
+import hudson.model.Action;
 import net.sf.json.JSONObject;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
@@ -60,7 +62,7 @@ import java.util.ArrayList;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-public class PluginImpl extends Plugin {
+public class PluginImpl extends Plugin implements Action {
     private transient Server server;
 
     private int port = 4444;
@@ -82,6 +84,20 @@ public class PluginImpl extends Plugin {
         root.addServlet(new ServletHolder(new UnregistrationServlet()), "/registration-manager/unregister");
 
         server.start();
+
+        Hudson.getInstance().getActions().add(this);
+    }
+
+    public String getIconFileName() {
+        return "/plugin/selenium/24x24/selenium.png";
+    }
+
+    public String getDisplayName() {
+        return "Selenium Grid";
+    }
+
+    public String getUrlName() {
+        return "selenium";
     }
 
     public Api getApi() {
