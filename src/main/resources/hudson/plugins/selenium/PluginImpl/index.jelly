@@ -1,0 +1,31 @@
+<!--
+  Displays the state of Selenium Grid
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <l:layout permission="${app.ADMINISTER}">
+    <l:header title="Selenium Grid" />
+    <l:side-panel>
+      <l:tasks>
+        <l:task icon="images/24x24/up.gif" href="../.." title="${%Back to Dashboard}" />
+      </l:tasks>
+    </l:side-panel>
+
+    <l:main-panel>
+      <h1>Registered Remote Controls</h1>
+      <table class="sortable pane bigtable">
+        <tr>
+          <th>Host</th>
+          <th>Environment</th>
+          <th>Status</th>
+        </tr>
+        <j:forEach var="rc" items="${it.remoteControls}">
+          <tr>
+            <td>${rc.hostAndPort}</td>
+            <td>${rc.environment}</td>
+            <td>${rc.status}</td>
+          </tr>
+        </j:forEach>
+      </table>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>
