@@ -24,25 +24,41 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         if(!c.getNode().getAssignedLabels().contains(new Label("selenium")))
             return;
 
-        try {
-            LOGGER.info("Launching Selenium RC on "+c.getName());
-            c.getChannel().callAsync(new Callable<Void,Exception>() {
-                public Void call() throws Exception {
-                    SelfRegisteringRemoteControl server = new SelfRegisteringRemoteControl(
-                            "http://localhost:4444","*chrome","localhost","5555");
-                    server.register();
-                    server.launch(new String[]{"-port","5555"});
+        new SeleniumThread().start();
 
-                    return null;
-                }
-            });
-        } catch (IOException e) {
-            // TODO
-            e.printStackTrace();
-        }
+//        try {
+//            LOGGER.info("Launching Selenium RC on "+c.getName());
+//            c.getChannel().call(new Callable<Void,IOException>() {
+//                public Void call() {
+//                    new SeleniumThread().start();
+//                    return null;
+//                }
+//            });
+//        } catch (Exception e) {
+//            // TODO
+//            e.printStackTrace();
+//        }
     }
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = Logger.getLogger(ComputerListenerImpl.class.getName());
+
+    private static class SeleniumThread extends Thread {
+        public SeleniumThread() {
+            super("Selenium Thread");
+        }
+
+        public void run() {
+            try {
+                SelfRegisteringRemoteControl server = new SelfRegisteringRemoteControl(
+                        "http://localhost:4444","*chrome","localhost","5555");
+                server.register();
+                server.launch(new String[]{"-port","5555"});
+            } catch (Exception e) {
+                // TODO
+                e.printStackTrace();
+            }
+        }
+    }
 }
