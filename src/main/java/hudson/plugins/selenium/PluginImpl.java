@@ -86,6 +86,8 @@ public class PluginImpl extends Plugin implements Action {
         server.start();
 
         Hudson.getInstance().getActions().add(this);
+        
+        new ComputerListenerImpl().register();
     }
 
     public String getIconFileName() {
