@@ -1,0 +1,67 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+  <l:layout>
+    <st:include it="${it.build}" page="sidepanel.jelly"/>
+    <l:main-panel>
+      <h1>Selenium AES Results</h1>
+
+      <j:forEach var="result" items="${it.resultList}">
+        <table class="pane">
+          <tr>
+            <td class="pane-header">Selenium Auto Exec Server URL</td>
+            <td class="pane">${result.serverUrl}</td>
+          </tr>
+          <tr>
+            <td class="pane-header">result</td>
+            <td class="pane">
+              <j:if test="${result.passed}">
+                passed
+              </j:if>
+              <j:if test="${!result.passed}">
+                <span class="result-failed">failed</span>
+              </j:if>
+            </td>
+          </tr>
+          <tr>
+            <td class="pane-header">number of cases</td>
+            <td class="pane">passed: ${result.passedCount} / failed: ${result.failedCount} / total: ${result.totalCount}</td>
+          </tr>
+          <tr>
+            <td class="pane-header">start time</td>
+            <td class="pane">${result.startTime}</td>
+          </tr>
+          <tr>
+            <td class="pane-header">end time</td>
+            <td class="pane">${result.startTime}</td>
+          </tr>
+        </table>
+
+        <table class="pane">
+          <tr>
+            <td class="pane-header">suite</td>
+            <td class="pane-header">browser</td>
+            <td class="pane-header">status</td>
+          </tr>
+          <j:forEach var="suite" items="${result.suites}">
+            <tr>
+              <td class="pane"><a href="${suite.resultPath}" target="_blank">${suite.suiteName}</a></td>
+              <td class="pane">${suite.browser}</td>
+              <td class="pane">
+                <j:if test="${suite.passed}">
+                  ${suite.status}
+                </j:if>
+                <j:if test="${!suite.passed}">
+                  <span class="result-failed">${suite.status}</span>
+                </j:if>
+              </td>
+            </tr>
+          </j:forEach>
+        </table>
+        <br/>
+      </j:forEach>
+
+    </l:main-panel>
+  </l:layout>
+
+</j:jelly>
