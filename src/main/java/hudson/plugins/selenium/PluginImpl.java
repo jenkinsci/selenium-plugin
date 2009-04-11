@@ -147,11 +147,8 @@ public class PluginImpl extends Plugin implements Action {
      *      The slave/master root.
      */
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
-        // install Hadoop if it's not there
-        rootDir = new File(rootDir,"selenium-gridhub");
-        File distDir = new File(rootDir,"dist");
-
-        new FilePath(distDir).installIfNecessaryFrom(PluginImpl.class.getResource("selenium-gridhub.tar.gz"),listener,"Installing Selenium Grid binaries");
+        FilePath distDir = new FilePath(new File(rootDir,"selenium-grid"));
+        distDir.installIfNecessaryFrom(PluginImpl.class.getResource("selenium-grid.tar.gz"),listener,"Installing Selenium Grid binaries");
 
         // launch Hadoop in a new JVM and have them connect back to us
         ServerSocket serverSocket = new ServerSocket();
@@ -160,18 +157,11 @@ public class PluginImpl extends Plugin implements Action {
 
         ArgumentListBuilder args = new ArgumentListBuilder();
         args.add(new File(System.getProperty("java.home"),"bin/java"));
-        args.add("-Dhadoop.log.dir="+logDir); // without this job tracker dies with NPE
-        args.add("-jar");
-        args.add(Which.jarFile(Channel.class));
+        args.add("-jar").add(Which.jarFile(Channel.class));
 
         // build up a classpath
-        StringBuilder classpath = new StringBuilder();
-        for( String mask : new String[]{"hadoop-*-core.jar","lib/**/*.jar"}) {
-            for(FilePath jar : new FilePath(distDir).list(mask)) {
-                if(classpath.length()>0)    classpath.append(File.pathSeparatorChar);
-                classpath.append(jar.getRemote());
-            }
-        }
+        ClasspathBuilder classpath = new ClasspathBuilder();
+        classpath.add(distDir,"*/lib/selenium-grid-hub-standalone-*.jar");
         args.add("-cp").add(classpath);
 
         args.add("-connectTo","localhost:"+serverSocket.getLocalPort());

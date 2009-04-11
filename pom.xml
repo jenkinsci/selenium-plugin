@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.297</version>
+    <version>1.298</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   
@@ -16,17 +16,17 @@
     <dependency>
       <groupId>org.jvnet.hudson</groupId>
       <artifactId>selenium-grid-hub-standalone</artifactId>
-      <version>1.0.1</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jvnet.hudson</groupId>
       <artifactId>selenium-grid-remote-control-standalone</artifactId>
-      <version>1.0.1</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jvnet.hudson</groupId>
       <artifactId>selenium-grid-remote-control-standalone</artifactId>
-      <version>1.0.1</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openqa.selenium.server</groupId>
@@ -56,14 +56,7 @@
   </dependencies>
 
   <properties>
-    <hadoop.version>0.19.1-hudson-2</hadoop.version>
-    <hudson.version>1.298-SNAPSHOT</hudson.version>
+    <selenium.version>1.0.3</selenium.version>
+    <hudson.version>1.300-SNAPSHOT</hudson.version>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>selenium</id>
-      <url>http://archiva.openqa.org/repository/releases/</url>
-    </repository>
-  </repositories>
 </project>
