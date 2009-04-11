@@ -5,6 +5,7 @@ import hudson.FilePath.FileCallable;
 import hudson.model.Computer;
 import hudson.model.Label;
 import hudson.model.TaskListener;
+import hudson.model.Hudson;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
 import hudson.util.IOException2;
@@ -30,6 +31,18 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         if(!c.getNode().getAssignedLabels().contains(new Label("selenium")))
             return;
 
+        final String masterName = PluginImpl.getMasterHostName();
+        if(masterName==null) {
+            listener.getLogger().println("Unable to determine the host name of the master. Skipping Selenium execution.");
+            return;
+        }
+        final String hostName = c.getHostName();
+        if(hostName==null) {
+            listener.getLogger().println("Unable to determine the host name. Skipping Selenium execution.");
+            return;
+        }
+        final int masterPort = Hudson.getInstance().getPlugin(PluginImpl.class).getPort();
+
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
             @Override
             public Object invoke(File f, VirtualChannel channel) throws IOException {
@@ -40,7 +53,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                     int port = ss.getLocalPort();
                     ss.close();
                     PluginImpl.createSeleniumRCVM(f,listener).call(new RemoteControlLauncher(
-                            "-host","localhost","-port",String.valueOf(port),"-hubURL","http://localhost:4444/"));
+                            "-host",hostName,"-port",String.valueOf(port),"-hubURL","http://"+masterName+":"+masterPort+"/"));
                 } catch (Exception t) {
                     throw new IOException2("Selenium RC launch interrupted",t);
                 }

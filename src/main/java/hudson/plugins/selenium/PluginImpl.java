@@ -17,10 +17,10 @@
  */
 package hudson.plugins.selenium;
 
-import com.thoughtworks.selenium.grid.hub.HubServer;
 import com.thoughtworks.selenium.grid.hub.HubRegistry;
-import com.thoughtworks.selenium.grid.hub.remotecontrol.RemoteControlProxy;
+import com.thoughtworks.selenium.grid.hub.HubServer;
 import com.thoughtworks.selenium.grid.hub.remotecontrol.DynamicRemoteControlPool;
+import com.thoughtworks.selenium.grid.hub.remotecontrol.RemoteControlProxy;
 import hudson.FilePath;
 import hudson.Plugin;
 import hudson.model.Action;
@@ -28,8 +28,8 @@ import hudson.model.Api;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
-import hudson.remoting.Channel;
 import hudson.remoting.Callable;
+import hudson.remoting.Channel;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
 import hudson.util.StreamTaskListener;
@@ -41,9 +41,11 @@ import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Starts Selenium Grid server in the same JVM.
@@ -89,7 +91,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     }
 
     public String getUrlName() {
-        return "selenium";
+        return "/selenium";
     }
 
     public Api getApi() {
@@ -161,6 +163,17 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         FilePath distDir = new FilePath(new File(rootDir,"selenium-grid"));
         distDir.installIfNecessaryFrom(PluginImpl.class.getResource("selenium-grid.tgz"),listener,"Installing Selenium Grid binaries");
         return distDir;
+    }
+
+    /**
+     * Determines the host name of the Hudson master.
+     */
+    static /*package*/ String getMasterHostName() throws MalformedURLException {
+        String rootUrl = Hudson.getInstance().getRootUrl();
+        if(rootUrl==null)
+            return null;
+        URL url = new URL(rootUrl);
+        return url.getHost();
     }
 
     private static final long serialVersionUID = 1L;
