@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jvnet.hudson</groupId>
+  <artifactId>selenium-grid-hub-standalone</artifactId>
+  <packaging>jar</packaging>
+  <version>@VERSION@</version>
+  <name>Selenium Grid Hub</name>
+    
+   <distributionManagement>
+    <repository>
+      <id>java.net-m2-repository</id>
+      <url>java-net:/maven2-repository/trunk/repository/</url>
+    </repository>
+  </distributionManagement>
+
+  <build>
+    <plugins>
+      <!-- fake out maven and install the binary artifact -->
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <attachArtifact file="bin/selenium-grid-@VERSION@/lib/selenium-grid-hub-standalone-@VERSION@.jar" />
+                <attachArtifact file="hub-sources.jar" classifier="sources" type="jar"/>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.8</version>
+      </extension>
+    </extensions>
+  </build>
+</project>
