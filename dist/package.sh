@@ -29,7 +29,7 @@ cp *.pom work
 pushd work
   perl -pi -e "s/\@VERSION\@/${version}/g" *.pom
   for pom in *.pom; do
-    mvn -f $pom install
+    mvn -f $pom $1
   done
 popd
 
