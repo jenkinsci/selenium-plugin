@@ -5,6 +5,7 @@ import hudson.model.Computer;
 import hudson.model.Label;
 import hudson.remoting.Callable;
 import hudson.slaves.ComputerListener;
+import hudson.Extension;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
  *
  * @author Kohsuke Kawaguchi
  */
+@Extension
 public class ComputerListenerImpl extends ComputerListener implements Serializable {
     /**
      * Starts a selenium RC remotely.
