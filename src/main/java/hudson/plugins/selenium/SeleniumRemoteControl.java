@@ -4,6 +4,8 @@ import com.thoughtworks.selenium.grid.hub.remotecontrol.RemoteControlProxy;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.export.Exported;
 
+import java.io.Serializable;
+
 /**
  * Selenium Remote Control instance.
  *
@@ -14,32 +16,36 @@ import org.kohsuke.stapler.export.Exported;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-public class SeleniumRemoteControl implements Comparable<SeleniumRemoteControl> {
-    private final RemoteControlProxy proxy;
+public class SeleniumRemoteControl implements Comparable<SeleniumRemoteControl>, Serializable {
     private final boolean isReserved;
+    private final String host;
+    private final int port;
+    private final String environment;
 
     public SeleniumRemoteControl(RemoteControlProxy proxy, boolean reserved) {
-        this.proxy = proxy;
+        host = proxy.host();
+        port = proxy.port();
+        environment = proxy.environment();
         isReserved = reserved;
     }
 
     public String getHostAndPort() {
-        return proxy.host()+':'+proxy.port();
+        return host+':'+port;
     }
 
     @Exported
     public String getHost() {
-        return proxy.host();
+        return host;
     }
 
     @Exported
     public int getPort() {
-        return proxy.port();
+        return port;
     }
 
     @Exported
     public String getEnvironment() {
-        return proxy.environment();
+        return environment;
     }
 
     @Exported
@@ -57,4 +63,6 @@ public class SeleniumRemoteControl implements Comparable<SeleniumRemoteControl> 
         if(r!=0)    return r;
         return this.getPort()-that.getPort();
     }
+
+    private static final long serialVersionUID = 1L;
 }

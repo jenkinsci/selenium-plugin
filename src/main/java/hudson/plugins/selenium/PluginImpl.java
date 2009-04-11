@@ -17,47 +17,33 @@
  */
 package hudson.plugins.selenium;
 
-import com.thoughtworks.selenium.grid.configuration.HubConfiguration;
-import com.thoughtworks.selenium.grid.hub.ApplicationRegistry;
 import com.thoughtworks.selenium.grid.hub.HubServer;
-import com.thoughtworks.selenium.grid.hub.HubServlet;
-import com.thoughtworks.selenium.grid.hub.management.RegistrationServlet;
-import com.thoughtworks.selenium.grid.hub.management.UnregistrationServlet;
-import com.thoughtworks.selenium.grid.hub.management.console.ConsoleServlet;
-import com.thoughtworks.selenium.grid.hub.remotecontrol.DynamicRemoteControlPool;
+import com.thoughtworks.selenium.grid.hub.HubRegistry;
 import com.thoughtworks.selenium.grid.hub.remotecontrol.RemoteControlProxy;
+import com.thoughtworks.selenium.grid.hub.remotecontrol.DynamicRemoteControlPool;
 import hudson.FilePath;
-import hudson.Launcher.LocalLauncher;
 import hudson.Plugin;
-import hudson.Proc;
 import hudson.model.Action;
 import hudson.model.Api;
-import hudson.model.Computer;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
 import hudson.remoting.Channel;
-import hudson.remoting.Which;
+import hudson.remoting.Callable;
 import hudson.slaves.Channels;
-import hudson.util.ArgumentListBuilder;
+import hudson.util.ClasspathBuilder;
 import hudson.util.StreamTaskListener;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 
 import javax.servlet.ServletException;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Starts Selenium Grid server in the same JVM.
@@ -77,7 +63,7 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-public class PluginImpl extends Plugin implements Action {
+public class PluginImpl extends Plugin implements Action, Serializable {
     private int port = 4444;
 
     /**
@@ -123,21 +109,24 @@ public class PluginImpl extends Plugin implements Action {
         formData.getString("port");
     }
 
-    public ApplicationRegistry getRegistry() {
-        return ApplicationRegistry.registry();
-    }
-
     @Exported(inline=true)
-    public List<SeleniumRemoteControl> getRemoteControls() {
-        DynamicRemoteControlPool pool = getRegistry().remoteControlPool();
+    public List<SeleniumRemoteControl> getRemoteControls() throws IOException, InterruptedException {
+        if(channel==null)   return Collections.emptyList();
 
-        List<SeleniumRemoteControl> r = new ArrayList<SeleniumRemoteControl>();
-        for (RemoteControlProxy rc : pool.availableRemoteControls())
-            r.add(new SeleniumRemoteControl(rc,false));
-        for (RemoteControlProxy rc : pool.reservedRemoteControls())
-            r.add(new SeleniumRemoteControl(rc,true));
-        
-        return r;
+        return channel.call(new Callable<List<SeleniumRemoteControl>,RuntimeException>() {
+            public List<SeleniumRemoteControl> call() throws RuntimeException {
+                HubRegistry registry = HubRegistry.registry();
+                DynamicRemoteControlPool pool = registry.remoteControlPool();
+
+                List<SeleniumRemoteControl> r = new ArrayList<SeleniumRemoteControl>();
+                for (RemoteControlProxy rc : pool.availableRemoteControls())
+                    r.add(new SeleniumRemoteControl(rc,false));
+                for (RemoteControlProxy rc : pool.reservedRemoteControls())
+                    r.add(new SeleniumRemoteControl(rc,true));
+
+                return r;
+            }
+        });
     }
 
     /**
@@ -147,32 +136,32 @@ public class PluginImpl extends Plugin implements Action {
      *      The slave/master root.
      */
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
-        FilePath distDir = new FilePath(new File(rootDir,"selenium-grid"));
-        distDir.installIfNecessaryFrom(PluginImpl.class.getResource("selenium-grid.tar.gz"),listener,"Installing Selenium Grid binaries");
-
-        // launch Hadoop in a new JVM and have them connect back to us
-        ServerSocket serverSocket = new ServerSocket();
-        serverSocket.bind(null);
-        serverSocket.setSoTimeout(10*1000);
-
-        ArgumentListBuilder args = new ArgumentListBuilder();
-        args.add(new File(System.getProperty("java.home"),"bin/java"));
-        args.add("-jar").add(Which.jarFile(Channel.class));
-
-        // build up a classpath
-        ClasspathBuilder classpath = new ClasspathBuilder();
-        classpath.add(distDir,"*/lib/selenium-grid-hub-standalone-*.jar");
-        args.add("-cp").add(classpath);
-
-        args.add("-connectTo","localhost:"+serverSocket.getLocalPort());
-
-        listener.getLogger().println("Starting Hadoop");
-        Proc p = new LocalLauncher(listener).launch(args.toCommandArray(), new String[0], listener.getLogger(), null);
-
-        Socket s = serverSocket.accept();
-        serverSocket.close();
-
-        return Channels.forProcess("Channel to Hadoop", Computer.threadPoolForRemoting,
-                new BufferedInputStream(s.getInputStream()), new BufferedOutputStream(s.getOutputStream()), p);
+        FilePath distDir = install(rootDir, listener);
+        return Channels.newJVM("Selenium Grid",listener,distDir,
+                new ClasspathBuilder().addAll(distDir,"*/lib/selenium-grid-hub-standalone-*.jar, */lib/log4j.jar"),
+                null);
     }
+
+    /**
+     * Launches RC in a separate JVM.
+     *
+     * @param rootDir
+     *      The slave/master root.
+     */
+    static /*package*/ Channel createSeleniumRCVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
+        FilePath distDir = install(rootDir, listener);
+        return Channels.newJVM("Selenium RC",listener,distDir,
+                new ClasspathBuilder()
+                        .addAll(distDir,"*/vendor/selenium-server-*.jar")
+                        .addAll(distDir,"*/lib/selenium-grid-remote-control-standalone-*.jar"),
+                null);
+    }
+
+    private static FilePath install(File rootDir, TaskListener listener) throws IOException, InterruptedException {
+        FilePath distDir = new FilePath(new File(rootDir,"selenium-grid"));
+        distDir.installIfNecessaryFrom(PluginImpl.class.getResource("selenium-grid.tgz"),listener,"Installing Selenium Grid binaries");
+        return distDir;
+    }
+
+    private static final long serialVersionUID = 1L;
 }

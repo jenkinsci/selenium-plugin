@@ -1,15 +1,19 @@
 package hudson.plugins.selenium;
 
-import com.thoughtworks.selenium.grid.remotecontrol.SelfRegisteringRemoteControl;
+import hudson.Extension;
+import hudson.FilePath.FileCallable;
 import hudson.model.Computer;
 import hudson.model.Label;
-import hudson.remoting.Callable;
+import hudson.model.TaskListener;
+import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
-import hudson.Extension;
+import hudson.util.IOException2;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Logger;
+import java.net.ServerSocket;
 
 /**
  * When a new slave is connected, launch a selenium RC.
@@ -21,46 +25,31 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
     /**
      * Starts a selenium RC remotely.
      */
-    public void onOnline(Computer c) {
+    public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
         // we only do this when the slave has the label 'selenium'
         if(!c.getNode().getAssignedLabels().contains(new Label("selenium")))
             return;
 
-        new SeleniumThread().start();
-
-//        try {
-//            LOGGER.info("Launching Selenium RC on "+c.getName());
-//            c.getChannel().call(new Callable<Void,IOException>() {
-//                public Void call() {
-//                    new SeleniumThread().start();
-//                    return null;
-//                }
-//            });
-//        } catch (Exception e) {
-//            // TODO
-//            e.printStackTrace();
-//        }
+        c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
+            @Override
+            public Object invoke(File f, VirtualChannel channel) throws IOException {
+                try {
+                    // this is potentially unsafe way to figure out a free port number, but it's far easier
+                    // than patching Selenium
+                    ServerSocket ss = new ServerSocket(0);
+                    int port = ss.getLocalPort();
+                    ss.close();
+                    PluginImpl.createSeleniumRCVM(f,listener).call(new RemoteControlLauncher(
+                            "-host","localhost","-port",String.valueOf(port),"-hubURL","http://localhost:4444/"));
+                } catch (Exception t) {
+                    throw new IOException2("Selenium RC launch interrupted",t);
+                }
+                return null;
+            }
+        });
     }
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = Logger.getLogger(ComputerListenerImpl.class.getName());
-
-    private static class SeleniumThread extends Thread {
-        public SeleniumThread() {
-            super("Selenium Thread");
-        }
-
-        public void run() {
-            try {
-                SelfRegisteringRemoteControl server = new SelfRegisteringRemoteControl(
-                        "http://localhost:4444","*chrome","localhost","5555");
-                server.register();
-                server.launch(new String[]{"-port","5555"});
-            } catch (Exception e) {
-                // TODO
-                e.printStackTrace();
-            }
-        }
-    }
 }
