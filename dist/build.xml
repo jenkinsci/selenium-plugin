@@ -1,0 +1,46 @@
+<project default="build">
+  <property name="version" value="1.0.3" />
+  <target name="download">
+    <get src="http://release.seleniumhq.org/selenium-grid/selenium-grid-${version}-bin.zip"
+         dest="selenium-grid-${version}-bin.zip" />
+    <get src="http://release.seleniumhq.org/selenium-grid/selenium-grid-${version}-src.zip"
+         dest="selenium-grid-${version}-src.zip" />
+  </target>
+  
+  <target name="build">
+    <delete dir="work" />
+    <mkdir dir="work/bin" />
+    <unzip dest="work/bin" src="selenium-grid-${version}-bin.zip" />
+    <delete dir="work/bin/selenium-grid-${version}/doc" />
+    <delete dir="work/bin/selenium-grid-${version}/examples" />
+    <delete dir="work/bin/selenium-grid-${version}/lib" includes="*.jar" excludes="*-standalone-*.jar" />
+    <delete dir="work/bin/selenium-grid-${version}/lib" includes="*-demo-*.jar" />
+    <delete dir="work/bin/selenium-grid-${version}/vendor" includes="testng*.jar" />
+    <delete dir="work/bin/selenium-grid-${version}/sample-scripts" />
+    <delete file="selenium-grid-${version}-min.tgz" />
+    
+    <copy file="log4j.jar" todir="work/bin/selenium-grid-${version}/lib/" />
+    
+    <tar destfile="selenium-grid-${version}-min.tar">
+      <fileset dir="work/bin/selenium-grid-${version}" />
+    </tar>
+    <gzip src=     "selenium-grid-${version}-min.tar"
+          destfile="selenium-grid-${version}-min.tgz"/>
+          
+    <mkdir dir="work/src" />
+    <unzip dest="work/src" src="selenium-grid-${version}-src.zip" />
+    <zip file="work/hub-sources.jar">
+      <fileset dir="work/src/hub/src/main/java"/>
+    </zip>
+    
+    <!-- prepare POMs -->
+    <copy todir="work">
+      <fileset dir="." includes="*.pom" />
+      <filterset>
+        <filter token="VERSION" value="${version}" />
+      </filterset>
+    </copy>
+    
+
+  </target>
+</project>
