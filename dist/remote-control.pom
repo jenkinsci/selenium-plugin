@@ -30,7 +30,7 @@
             <configuration>
               <tasks>
                 <attachArtifact file="bin/selenium-grid-@VERSION@/lib/selenium-grid-remote-control-standalone-@VERSION@.jar" />
-                <attachArtifact file="remote-control-sources.jar" classifier="sources" type="jar"/>
+                <attachArtifact file="sources.jar" classifier="sources" type="jar"/>
               </tasks>
             </configuration>
           </execution>

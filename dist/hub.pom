@@ -30,7 +30,7 @@
             <configuration>
               <tasks>
                 <attachArtifact file="bin/selenium-grid-@VERSION@/lib/selenium-grid-hub-standalone-@VERSION@.jar" />
-                <attachArtifact file="hub-sources.jar" classifier="sources" type="jar"/>
+                <attachArtifact file="sources.jar" classifier="sources" type="jar"/>
               </tasks>
             </configuration>
           </execution>

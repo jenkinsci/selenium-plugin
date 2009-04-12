@@ -19,9 +19,9 @@ pushd work/bin/*
   tar czf ../selenium-grid-$version-min.tgz .
 popd
 
-for type in hub remote-control; do
-  pushd work/src/$type/src/main/java
-    zip -q $work/$type-sources.jar -r .
+for dir in hub/src/main/java remote-control/src/main/java infrastructure/core/src/main infrastructure/webserver/src/main/java; do
+  pushd work/src/$dir
+    zip -qu $work/sources.jar -r .
   popd
 done
 
