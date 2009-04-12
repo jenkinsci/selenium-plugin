@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Logger;
+import java.util.List;
 import java.net.ServerSocket;
 
 /**
@@ -27,9 +28,9 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
      * Starts a selenium RC remotely.
      */
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
-        // we only do this when the slave has the label 'selenium'
-        if(!c.getNode().getAssignedLabels().contains(new Label("selenium")))
-            return;
+        SeleniumEnvironmentProperty env = c.getNode().getNodeProperties().get(SeleniumEnvironmentProperty.class);
+        // launch RCs only for nodes that are configured accordingly
+        if(env==null)   return;
 
         final String masterName = PluginImpl.getMasterHostName();
         if(masterName==null) {
@@ -42,18 +43,19 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             return;
         }
         final int masterPort = Hudson.getInstance().getPlugin(PluginImpl.class).getPort();
-
+        final List<String> environments = env.getEnvironmentList();
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
-            @Override
             public Object invoke(File f, VirtualChannel channel) throws IOException {
                 try {
-                    // this is potentially unsafe way to figure out a free port number, but it's far easier
-                    // than patching Selenium
-                    ServerSocket ss = new ServerSocket(0);
-                    int port = ss.getLocalPort();
-                    ss.close();
-                    PluginImpl.createSeleniumRCVM(f,listener).call(new RemoteControlLauncher(
-                            "-host",hostName,"-port",String.valueOf(port),"-hubURL","http://"+masterName+":"+masterPort+"/"));
+                    for (String env : environments) {
+                        // this is potentially unsafe way to figure out a free port number, but it's far easier
+                        // than patching Selenium
+                        ServerSocket ss = new ServerSocket(0);
+                        int port = ss.getLocalPort();
+                        ss.close();
+                        PluginImpl.createSeleniumRCVM(f,listener).callAsync(new RemoteControlLauncher(
+                                "-host",hostName,"-port",String.valueOf(port),"-env",env,"-hubURL","http://"+masterName+":"+masterPort+"/"));
+                    }
                 } catch (Exception t) {
                     throw new IOException2("Selenium RC launch interrupted",t);
                 }

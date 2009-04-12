@@ -48,19 +48,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Starts Selenium Grid server in the same JVM.
- *
- * <p>
- * This means we are loading Jetty in another servlet container, which
- * is probably not a very robust thing to do.
- *
- * OTOH, Selenium requires to be deployed in the root context, so
- * we this seemed like the only practical way of doing this.
- *
- * <p>
- * The initialization code is taken from {@link HubServer} and hence licensed under ASL.
- *
- * TODO: wait until 1.245 to introduce persistence.
+ * Starts Selenium Grid server in another JVM.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -140,7 +128,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
         FilePath distDir = install(rootDir, listener);
         return Channels.newJVM("Selenium Grid",listener,distDir,
-                new ClasspathBuilder().addAll(distDir,"*/lib/selenium-grid-hub-standalone-*.jar, */lib/log4j.jar"),
+                new ClasspathBuilder().addAll(distDir,"lib/selenium-grid-hub-standalone-*.jar, lib/log4j.jar"),
                 null);
     }
 
@@ -154,8 +142,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         FilePath distDir = install(rootDir, listener);
         return Channels.newJVM("Selenium RC",listener,distDir,
                 new ClasspathBuilder()
-                        .addAll(distDir,"*/vendor/selenium-server-*.jar")
-                        .addAll(distDir,"*/lib/selenium-grid-remote-control-standalone-*.jar"),
+                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-standalone-*.jar"),
                 null);
     }
 
