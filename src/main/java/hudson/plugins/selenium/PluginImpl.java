@@ -128,7 +128,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
         FilePath distDir = install(rootDir, listener);
         return Channels.newJVM("Selenium Grid",listener,distDir,
-                new ClasspathBuilder().addAll(distDir,"lib/selenium-grid-hub-standalone-*.jar, lib/log4j.jar"),
+                new ClasspathBuilder().addAll(distDir,"lib/selenium-grid-hub-standalone-*.jar, lib/log4j-*.jar"),
                 null);
     }
 
@@ -142,7 +142,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         FilePath distDir = install(rootDir, listener);
         return Channels.newJVM("Selenium RC",listener,distDir,
                 new ClasspathBuilder()
-                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-standalone-*.jar"),
+                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-*.jar, lib/commons-httpclient-*.jar"),
                 null);
     }
 

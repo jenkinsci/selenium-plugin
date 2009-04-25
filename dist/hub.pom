@@ -5,7 +5,7 @@
   <groupId>org.jvnet.hudson</groupId>
   <artifactId>selenium-grid-hub-standalone</artifactId>
   <packaging>jar</packaging>
-  <version>@VERSION@</version>
+  <version>@DIST_VERSION@</version>
   <name>Selenium Grid Hub</name>
     
    <distributionManagement>

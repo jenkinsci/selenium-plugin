@@ -3,9 +3,9 @@ package hudson.plugins.selenium;
 import hudson.Extension;
 import hudson.FilePath.FileCallable;
 import hudson.model.Computer;
+import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.model.TaskListener;
-import hudson.model.Hudson;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
 import hudson.util.IOException2;
@@ -13,9 +13,8 @@ import hudson.util.IOException2;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Logger;
-import java.util.List;
 import java.net.ServerSocket;
+import java.util.logging.Logger;
 
 /**
  * When a new slave is connected, launch a selenium RC.
@@ -28,9 +27,12 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
      * Starts a selenium RC remotely.
      */
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
-        SeleniumEnvironmentProperty env = c.getNode().getNodeProperties().get(SeleniumEnvironmentProperty.class);
-        // launch RCs only for nodes that are configured accordingly
-        if(env==null)   return;
+//        SeleniumEnvironmentProperty env = c.getNode().getNodeProperties().get(SeleniumEnvironmentProperty.class);
+//        // launch RCs only for nodes that are configured accordingly
+//        if(env==null) {
+//            listener.getLogger().println("Selenium RC is disabled in configuration of this node. Skipping Selenium RC launch.");
+//            return;
+//        }
 
         final String masterName = PluginImpl.getMasterHostName();
         if(masterName==null) {
@@ -43,18 +45,25 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             return;
         }
         final int masterPort = Hudson.getInstance().getPlugin(PluginImpl.class).getPort();
-        final List<String> environments = env.getEnvironmentList();
+        final int nrc = c.getNumExecutors();
+        final StringBuilder labelList = new StringBuilder();
+        for(Label l : c.getNode().getAssignedLabels()) {
+            labelList.append('/');
+            labelList.append(l);
+        }
+        labelList.append('/');
+
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
             public Object invoke(File f, VirtualChannel channel) throws IOException {
                 try {
-                    for (String env : environments) {
+                    for (int i=0; i<nrc; i++) {
                         // this is potentially unsafe way to figure out a free port number, but it's far easier
                         // than patching Selenium
                         ServerSocket ss = new ServerSocket(0);
                         int port = ss.getLocalPort();
                         ss.close();
                         PluginImpl.createSeleniumRCVM(f,listener).callAsync(new RemoteControlLauncher(
-                                "-host",hostName,"-port",String.valueOf(port),"-env",env,"-hubURL","http://"+masterName+":"+masterPort+"/"));
+                                "-host",hostName,"-port",String.valueOf(port),"-env",labelList.toString(),"-hubURL","http://"+masterName+":"+masterPort+"/"));
                     }
                 } catch (Exception t) {
                     throw new IOException2("Selenium RC launch interrupted",t);

@@ -17,3 +17,7 @@ So it does this by adding a translation layer.
 Problems:
 
  - one RC can only register one environment, but that's silly.
+
+----
+If we replace GlobalRemoteControlPool with our own implementation, we can use labels for environments,
+but doing so requires patching HubRegistry (or doing reflection access.)

@@ -3,9 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jvnet.hudson</groupId>
-  <artifactId>selenium-grid-remote-control-standalone</artifactId>
+  <artifactId>selenium-grid-remote-control</artifactId>
   <packaging>jar</packaging>
-  <version>@VERSION@</version>
+  <version>@DIST_VERSION@</version>
   <name>Selenium Grid Remote Control</name>
     
    <distributionManagement>
@@ -29,7 +29,7 @@
             </goals>
             <configuration>
               <tasks>
-                <attachArtifact file="bin/selenium-grid-@VERSION@/lib/selenium-grid-remote-control-standalone-@VERSION@.jar" />
+                <attachArtifact file="bin/selenium-grid-@VERSION@/lib/selenium-grid-remote-control-@VERSION@.jar" />
                 <attachArtifact file="sources.jar" classifier="sources" type="jar"/>
               </tasks>
             </configuration>
