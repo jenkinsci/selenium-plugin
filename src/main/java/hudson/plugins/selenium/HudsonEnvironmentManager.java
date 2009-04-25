@@ -20,7 +20,7 @@ public class HudsonEnvironmentManager extends EnvironmentManager {
             return new Environment(tokens[0],tokens[1]);
         // take a chance and let it run on any RC.
         // this is useful for maintaining compatibility with standalone RCs
-        return new Environment("*",name);
+        return new Environment("&",name);
     }
 
     /**

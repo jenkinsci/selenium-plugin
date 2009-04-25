@@ -51,14 +51,23 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
     }
 
     public synchronized RemoteControlProxy reserve(Environment env) {
-        String key = '/'+env.name()+'/';
+        String[] keys = env.name().split("&");
+        for (int i = 0; i < keys.length; i++)
+            keys[i] = '/'+keys[i]+'/';
+
         while(true) {
+            boolean hadMatch=false;
             for (RemoteControlProxy rc : all) {
-                if((rc.environment().contains(key) || key.equals("/*/")) && rc.canHandleNewSession()) {
+                if((hadMatch|=matches(rc,keys)) && rc.canHandleNewSession()) {
                     rc.registerNewSession();
                     return rc;
                 }
             }
+
+            // is there any point in waiting?
+            if(!hadMatch)
+                throw new IllegalArgumentException("No RC satisifies the label criteria: "+env.name());
+
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -66,6 +75,13 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
                 LOGGER.log(Level.WARNING, "Interrupted while reserving remote control for "+env.name(), e);
             }
         }
+    }
+
+    private boolean matches(RemoteControlProxy rc, String[] keys) {
+        for (String key : keys)
+            if(!rc.environment().contains(key))
+                return false;
+        return true;
     }
 
     public synchronized void release(RemoteControlProxy rc) {
