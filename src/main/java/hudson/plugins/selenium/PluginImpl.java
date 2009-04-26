@@ -46,6 +46,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Starts Selenium Grid server in another JVM.
@@ -61,13 +63,19 @@ public class PluginImpl extends Plugin implements Action, Serializable {
      */
     private transient Channel channel;
 
+    private transient Future<?> hubLauncher;
+
     public void start() throws Exception {
         StreamTaskListener listener = new StreamTaskListener(System.out);
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
-        channel.callAsync(new HubLauncher(port));
+        hubLauncher = channel.callAsync(new HubLauncher(port));
 
         Hudson.getInstance().getActions().add(this);
+    }
+
+    public void waitForHubLaunch() throws ExecutionException, InterruptedException {
+        hubLauncher.get();
     }
 
     public String getIconFileName() {
