@@ -102,6 +102,6 @@
 
   <properties>
     <selenium.version>1.0.3-hudson-1</selenium.version>
-    <hudson.version>1.302-SNAPSHOT</hudson.version>
+    <hudson.version>1.301</hudson.version>
   </properties>
 </project>
