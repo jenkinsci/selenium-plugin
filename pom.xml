@@ -41,22 +41,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.jvnet.hudson</groupId>
-      <artifactId>selenium-grid-hub-standalone</artifactId>
-      <version>${selenium.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jvnet.hudson</groupId>
-      <artifactId>selenium-grid-remote-control</artifactId>
-      <version>${selenium.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openqa.selenium.server</groupId>
-      <artifactId>selenium-server</artifactId>
-      <version>1.0-beta-1</version>
-    </dependency>
-
-    <dependency>
         <groupId>org.jvnet.hudson.main</groupId>
         <artifactId>hudson-war</artifactId>
         <type>war</type>
@@ -75,10 +59,49 @@
         <version>${hudson.version}</version>
         <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.jvnet.hudson</groupId>
+      <artifactId>selenium-grid-hub-standalone</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jvnet.hudson</groupId>
+      <artifactId>selenium-grid-remote-control</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openqa.selenium.server</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>1.0-beta-1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium.client-drivers</groupId>
+      <artifactId>selenium-java-client-driver</artifactId>
+      <version>1.0-beta-2</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <properties>
     <selenium.version>1.0.3-hudson-1</selenium.version>
-    <hudson.version>1.301-SNAPSHOT</hudson.version>
+    <hudson.version>1.302-SNAPSHOT</hudson.version>
   </properties>
 </project>
