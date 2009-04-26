@@ -65,8 +65,12 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
             }
 
             // is there any point in waiting?
-            if(!hadMatch)
-                throw new IllegalArgumentException("No RC satisifies the label criteria: "+env.name());
+            if(!hadMatch) {
+                if(all.isEmpty())
+                    throw new IllegalArgumentException("No RCs available");
+                else
+                    throw new IllegalArgumentException("No RC satisifies the label criteria: "+env.name()+" - "+all);
+            }
 
             try {
                 wait();
