@@ -7,20 +7,28 @@
 
     <l:main-panel>
       <h1>Registered Remote Controls</h1>
-      <table class="sortable pane bigtable">
-        <tr>
-          <th>Host</th>
-          <th>Environment</th>
-          <th>Status</th>
-        </tr>
-        <j:forEach var="rc" items="${it.remoteControls}">
-          <tr>
-            <td>${rc.hostAndPort}</td>
-            <td>${rc.environment}</td>
-            <td>${rc.status}</td>
-          </tr>
-        </j:forEach>
-      </table>
+      <j:set var="rcs" value="${it.remoteControls}" />
+      <j:choose>
+        <j:when test="${!empty(rcs)}">
+          <table class="sortable pane bigtable">
+            <tr>
+              <th>Host</th>
+              <th>Environment</th>
+              <th>Status</th>
+            </tr>
+            <j:forEach var="rc" items="${rcs}">
+              <tr>
+                <td>${rc.hostAndPort}</td>
+                <td>${rc.environment}</td>
+                <td>${rc.status}</td>
+              </tr>
+            </j:forEach>
+          </table>
+        </j:when>
+        <j:otherwise>
+          <p>${%No RCs have checked in yet. Have you started some slaves?}</p>
+        </j:otherwise>
+      </j:choose>
     </l:main-panel>
   </l:layout>
 </j:jelly>
