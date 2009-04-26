@@ -18,7 +18,6 @@
 package hudson.plugins.selenium;
 
 import com.thoughtworks.selenium.grid.hub.HubRegistry;
-import com.thoughtworks.selenium.grid.hub.HubServer;
 import com.thoughtworks.selenium.grid.hub.remotecontrol.DynamicRemoteControlPool;
 import com.thoughtworks.selenium.grid.hub.remotecontrol.RemoteControlProxy;
 import hudson.FilePath;
@@ -36,6 +35,9 @@ import hudson.util.StreamTaskListener;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.framework.io.LargeText;
 
 import javax.servlet.ServletException;
 import java.io.File;
@@ -66,13 +68,19 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     private transient Future<?> hubLauncher;
 
     public void start() throws Exception {
-        StreamTaskListener listener = new StreamTaskListener(System.out);
+        StreamTaskListener listener = new StreamTaskListener(getLogFile());
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
         hubLauncher = channel.callAsync(new HubLauncher(port));
 
         Hudson.getInstance().getActions().add(this);
     }
+
+    public File getLogFile() {
+        return new File(Hudson.getInstance().getRootDir(),"selenium.log");
+    }
+
+
 
     public void waitForHubLaunch() throws ExecutionException, InterruptedException {
         hubLauncher.get();
@@ -169,6 +177,13 @@ public class PluginImpl extends Plugin implements Action, Serializable {
             return null;
         URL url = new URL(rootUrl);
         return url.getHost();
+    }
+
+    /**
+     * Handles incremental log.
+     */
+    public void doProgressiveLog( StaplerRequest req, StaplerResponse rsp) throws IOException {
+        new LargeText(getLogFile(),false).doProgressText(req,rsp);
     }
 
     private static final long serialVersionUID = 1L;
