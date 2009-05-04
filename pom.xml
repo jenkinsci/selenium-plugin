@@ -11,6 +11,7 @@
   <version>1.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Hudson Selenium plugin</name>
+  <url>http://wiki.hudson-ci.org/display/HUDSON/Selenium+Plugin</url>
 
   <build>
     <plugins>
@@ -38,26 +39,6 @@
   </build>
 
   <dependencies>
-    <dependency>
-        <groupId>org.jvnet.hudson.main</groupId>
-        <artifactId>hudson-war</artifactId>
-        <type>war</type>
-        <version>${hudson.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.jvnet.hudson.main</groupId>
-        <artifactId>hudson-core</artifactId>
-        <version>${hudson.version}</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.jvnet.hudson.main</groupId>
-        <artifactId>hudson-test-harness</artifactId>
-        <version>${hudson.version}</version>
-        <scope>test</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.jvnet.hudson</groupId>
       <artifactId>selenium-grid-hub-standalone</artifactId>
@@ -100,6 +81,5 @@
 
   <properties>
     <selenium.version>1.0.3-hudson-1</selenium.version>
-    <hudson.version>1.301</hudson.version>
   </properties>
 </project>
