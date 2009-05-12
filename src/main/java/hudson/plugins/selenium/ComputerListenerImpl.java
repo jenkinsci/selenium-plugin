@@ -7,7 +7,6 @@ import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
-import hudson.remoting.Callable;
 import hudson.slaves.ComputerListener;
 import hudson.util.IOException2;
 
@@ -15,14 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.Inet4Address;
 import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Enumeration;
 
 /**
  * When a new slave is connected, launch a selenium RC.
@@ -35,6 +27,8 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
      * Starts a selenium RC remotely.
      */
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
+        LOGGER.fine("Examining if we need to start Selenium RC");
+
         final String masterName = PluginImpl.getMasterHostName();
         if(masterName==null) {
             listener.getLogger().println("Unable to determine the host name of the master. Skipping Selenium execution.");
