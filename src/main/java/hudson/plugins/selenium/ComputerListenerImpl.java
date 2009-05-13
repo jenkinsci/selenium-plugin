@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * When a new slave is connected, launch a selenium RC.
@@ -62,6 +63,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                                 "-host",hostName,"-port",String.valueOf(port),"-env",labelList.toString(),"-hubURL","http://"+masterName+":"+masterPort+"/"));
                     }
                 } catch (Exception t) {
+                    LOGGER.log(Level.WARNING,"Selenium RC launch failed",t);
                     throw new IOException2("Selenium RC launch interrupted",t);
                 }
                 return null;
