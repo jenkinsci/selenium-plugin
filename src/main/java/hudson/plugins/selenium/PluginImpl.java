@@ -24,7 +24,6 @@ import hudson.FilePath;
 import hudson.Plugin;
 import hudson.model.Action;
 import hudson.model.Api;
-import hudson.model.Descriptor.FormException;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
 import hudson.remoting.Callable;
@@ -33,13 +32,12 @@ import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
 import hudson.util.StreamTaskListener;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.framework.io.LargeText;
 
-import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -48,8 +46,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Starts Selenium Grid server in another JVM.
@@ -58,7 +56,13 @@ import java.util.concurrent.ExecutionException;
  */
 @ExportedBean
 public class PluginImpl extends Plugin implements Action, Serializable {
+
     private int port = 4444;
+    private String exclusionPatterns;
+    private boolean rcBrowserSideLog;
+    private boolean rcDebug;
+    private String rcFirefoxProfileTemplate;
+    private String rcLog;
 
     /**
      * Channel to Selenium Grid JVM.
@@ -68,6 +72,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     private transient Future<?> hubLauncher;
 
     public void start() throws Exception {
+        load();
         StreamTaskListener listener = new StreamTaskListener(getLogFile());
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
@@ -80,7 +85,20 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         return new File(Hudson.getInstance().getRootDir(),"selenium.log");
     }
 
-
+    @Override
+    public void configure(StaplerRequest req, JSONObject formData) {
+        port = formData.getInt("port");
+        exclusionPatterns = formData.getString("exclusionPatterns");
+        rcLog = formData.getString("rcLog");
+        rcDebug = formData.getBoolean("rcDebug");
+        rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
+        rcFirefoxProfileTemplate = formData.getString("rcFirefoxProfileTemplate");
+        try {
+            save();
+        } catch (IOException e) {
+            e.printStackTrace(); 
+        }
+    }
 
     public void waitForHubLaunch() throws ExecutionException, InterruptedException {
         hubLauncher.get();
@@ -107,12 +125,34 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         return port;
     }
 
-    public void stop() throws Exception {
-        channel.close();
+    @Exported
+    public String getExclusionPatterns(){
+        return exclusionPatterns;
     }
 
-    public void configure(JSONObject formData) throws IOException, ServletException, FormException {
-        formData.getString("port");
+    @Exported
+    public String getRcLog(){
+        return rcLog;
+    }
+
+    @Exported
+    public boolean getRcBrowserSideLog(){
+        return rcBrowserSideLog;
+    }
+
+    @Exported
+    public boolean getRcDebug(){
+        return rcDebug;
+    }
+
+    @Exported
+    public String getRcFirefoxProfileTemplate(){
+        return rcFirefoxProfileTemplate;
+    }
+
+
+    public void stop() throws Exception {
+        channel.close();
     }
 
     @Exported(inline=true)

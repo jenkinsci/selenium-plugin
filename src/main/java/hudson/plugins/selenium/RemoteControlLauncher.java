@@ -3,10 +3,9 @@ package hudson.plugins.selenium;
 import com.thoughtworks.selenium.grid.remotecontrol.SelfRegisteringRemoteControlLauncher;
 import hudson.remoting.Callable;
 import hudson.remoting.Which;
+import org.openqa.selenium.server.SeleniumServer;
 
 import java.util.Arrays;
-
-import org.openqa.selenium.server.SeleniumServer;
 
 /**
  * Launches Selenium RC.
@@ -19,7 +18,7 @@ import org.openqa.selenium.server.SeleniumServer;
 public class RemoteControlLauncher implements Callable<Void,Exception> {
     private final String[] args;
 
-    public RemoteControlLauncher(String... args) {
+    public RemoteControlLauncher(String[] args) {
         this.args = args;
     }
 

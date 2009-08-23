@@ -1,7 +1,24 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:section title="Selenium">
-    <f:entry title="${%Selenium Grid Port}" field="port">
+    <f:entry title="${%Selenium Grid Port}" field="port" help="/plugin/selenium/help/port.html">
 	    <f:textbox name="port" value="${it.port}" />
-	  </f:entry>
+	</f:entry>
+	<f:advanced>
+        <f:entry title="${%Exclude from grid}" field="exclusionPatterns" help="/plugin/selenium/help/excludefromgrid.html">
+            <f:textbox name="exclusionPatterns" value="${it.exclusionPatterns}" />
+        </f:entry>
+        <f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog" help="/plugin/selenium/help/rcbrowsersidelog.html">
+            <f:checkbox name="rcBrowserSideLog" checked="${it.rcBrowserSideLog}" />
+        </f:entry>
+        <f:entry title="${%Enable -debug}" field="rcDebug" help="/plugin/selenium/help/rcdebug.html">
+            <f:checkbox name="rcDebug" checked="${it.rcDebug}" />
+        </f:entry>
+        <f:entry title="${%Set -log}" field="rcLog" help="/plugin/selenium/help/rclog.html">
+            <f:textbox name="rcLog" value="${it.rcLog}" />
+        </f:entry>
+        <f:entry title="${%Set -firefoxProfileTemplate}" field="rcFirefoxProfileTemplate" help="/plugin/selenium/help/rcfirefoxtemplate.html">
+            <f:textbox name="rcFirefoxProfileTemplate" value="${it.rcFirefoxProfileTemplate}" />
+        </f:entry>
+	</f:advanced>
   </f:section>
 </j:jelly>
