@@ -89,6 +89,6 @@
   </dependencies>
 
   <properties>
-    <selenium.version>1.0.3-hudson-1</selenium.version>
+    <selenium.version>1.0.4-hudson-1</selenium.version>
   </properties>
 </project>
