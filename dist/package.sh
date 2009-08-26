@@ -1,9 +1,9 @@
 #!/bin/bash -ex
 
 # incoming version of Selenium Grid
-version=1.0.3
+version=1.0.4
 # outgoing version of the packages in Maven
-distVersion=1.0.3-hudson-1
+distVersion=1.0.4-hudson-1
 
 rm -rf work || true
 work=$PWD/work
