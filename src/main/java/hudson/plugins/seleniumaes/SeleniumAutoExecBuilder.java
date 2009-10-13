@@ -1,5 +1,6 @@
 package hudson.plugins.seleniumaes;
 
+import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -102,18 +103,6 @@ public class SeleniumAutoExecBuilder extends Builder {
     }
 
     /**
-     * @see hudson.model.Describable#getDescriptor()
-     */
-    public Descriptor<Builder> getDescriptor() {
-        return DESCRIPTOR;
-    }
-
-    /**
-     * Descriptor should be singleton.
-     */
-    public static DescriptorImpl DESCRIPTOR = new DescriptorImpl();
-
-    /**
      * @param resultString
      * @return result
      */
@@ -157,12 +146,13 @@ public class SeleniumAutoExecBuilder extends Builder {
     /**
      * @author onozaty
      */
+    @Extension
     public static final class DescriptorImpl extends Descriptor<Builder> {
 
         /**
          * constructor.
          */
-        DescriptorImpl() {
+        public DescriptorImpl() {
             super(SeleniumAutoExecBuilder.class);
         }
 
