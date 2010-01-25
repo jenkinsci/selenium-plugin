@@ -19,6 +19,7 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,6 +95,13 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             userArgs.add(p.getRcFirefoxProfileTemplate());
         }
 
+
+        // make sure that Selenium Hub is started before we start RCs.
+        try {
+            p.waitForHubLaunch();
+        } catch (ExecutionException e) {
+            throw new IOException2("Failed to wait for the Hub launch to complete",e);
+        }
 
         LOGGER.fine("Going to start "+nrc+" RCs on "+c.getName());
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
