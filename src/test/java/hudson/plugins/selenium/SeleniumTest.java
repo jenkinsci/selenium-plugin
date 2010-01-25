@@ -21,7 +21,7 @@ public class SeleniumTest extends HudsonTestCase {
         Selenium browser;
 
         browser = new DefaultSelenium("localhost",
-            4444, "foo:*firefox /usr/lib/firefox-3.0.10/firefox", "http://www.google.com");
+            4444, "foo:*firefox /usr/lib/firefox-3.5.7/firefox", "http://www.google.com");
         browser.start();
 
         try {
