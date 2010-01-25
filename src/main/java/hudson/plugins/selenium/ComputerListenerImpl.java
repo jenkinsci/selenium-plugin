@@ -35,7 +35,9 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
         LOGGER.fine("Examining if we need to start Selenium RC");
 
-        final String exclusions = Hudson.getInstance().getPlugin(PluginImpl.class).getExclusionPatterns();
+        PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
+        
+        final String exclusions = p.getExclusionPatterns();
         List<String> exclusionPatterns = new ArrayList<String>();
         if (StringUtils.hasText(exclusions)) {
             exclusionPatterns = Arrays.asList(exclusions.split(SEPARATOR));
@@ -63,7 +65,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             listener.getLogger().println("Unable to determine the host name. Skipping Selenium execution.");
             return;
         }
-        final int masterPort = Hudson.getInstance().getPlugin(PluginImpl.class).getPort();
+        final int masterPort = p.getPort();
         final int nrc = c.getNumExecutors();
         final StringBuilder labelList = new StringBuilder();
         for(Label l : c.getNode().getAssignedLabels()) {
@@ -74,19 +76,22 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
 
         // user defined parameters for starting the RC
         final List<String> userArgs = new ArrayList<String>();
-        if (hasText(Hudson.getInstance().getPlugin(PluginImpl.class).getRcLog())){
+        if (hasText(p.getRcLog())){
             userArgs.add("-log");
-            userArgs.add(Hudson.getInstance().getPlugin(PluginImpl.class).getRcLog());
+            userArgs.add(p.getRcLog());
         }
-        if (Hudson.getInstance().getPlugin(PluginImpl.class).getRcBrowserSideLog()){
+        if (p.getRcBrowserSideLog()){
             userArgs.add("-browserSideLog");
         }
-        if (Hudson.getInstance().getPlugin(PluginImpl.class).getRcDebug()){
+        if (p.getRcDebug()){
             userArgs.add("-debug");
         }
-        if (hasText(Hudson.getInstance().getPlugin(PluginImpl.class).getRcFirefoxProfileTemplate())){
+        if (p.getRcTrustAllSSLCerts()){
+            userArgs.add("-trustAllSSLCertificates");
+        }
+        if (hasText(p.getRcFirefoxProfileTemplate())){
             userArgs.add("-firefoxProfileTemplate");
-            userArgs.add(Hudson.getInstance().getPlugin(PluginImpl.class).getRcFirefoxProfileTemplate());
+            userArgs.add(p.getRcFirefoxProfileTemplate());
         }
 
 

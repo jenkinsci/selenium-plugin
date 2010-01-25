@@ -13,6 +13,9 @@
         <f:entry title="${%Enable -debug}" field="rcDebug" help="/plugin/selenium/help/rcdebug.html">
             <f:checkbox name="rcDebug" checked="${it.rcDebug}" />
         </f:entry>
+        <f:entry title="${%Enable -trustAllSSLCertificates}" field="rcTrustAllSSLCerts" help="/plugin/selenium/help/rctrustallssl.html">
+            <f:checkbox name="rcTrustAllSSLCerts" checked="${it.rcTrustAllSSLCerts}" />
+        </f:entry>
         <f:entry title="${%Set -log}" field="rcLog" help="/plugin/selenium/help/rclog.html">
             <f:textbox name="rcLog" value="${it.rcLog}" />
         </f:entry>

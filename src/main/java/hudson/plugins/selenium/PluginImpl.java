@@ -61,6 +61,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     private String exclusionPatterns;
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
+    private boolean rcTrustAllSSLCerts;
     private String rcFirefoxProfileTemplate;
     private String rcLog;
 
@@ -92,6 +93,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         rcLog = formData.getString("rcLog");
         rcDebug = formData.getBoolean("rcDebug");
         rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
+        rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
         rcFirefoxProfileTemplate = formData.getString("rcFirefoxProfileTemplate");
         try {
             save();
@@ -143,6 +145,11 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     @Exported
     public boolean getRcDebug(){
         return rcDebug;
+    }
+
+    @Exported
+    public boolean getRcTrustAllSSLCerts() {
+        return rcTrustAllSSLCerts;
     }
 
     @Exported
