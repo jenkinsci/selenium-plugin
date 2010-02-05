@@ -16,6 +16,12 @@
   </description>
   <url>http://wiki.hudson-ci.org/display/HUDSON/Selenium+AES+Plugin</url>
 
+  <developers>
+    <developer>
+      <id>onozaty</id>
+    </developer>
+  </developers>
+
   <dependencies>
     <dependency>
       <groupId>com.enjoyxstudy</groupId>

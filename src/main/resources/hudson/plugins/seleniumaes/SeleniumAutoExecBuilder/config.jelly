@@ -1,5 +1,5 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <f:entry title="url" help="${rootURL}/plugin/selenium-aes/help-projectConfig.html">
+  <f:entry title="url" help="/plugin/selenium-aes/help-projectConfig.html">
     <f:textbox name="selenium_autoexec.serverUrl" value="${instance.serverUrl}" />
   </f:entry>
 </j:jelly>
