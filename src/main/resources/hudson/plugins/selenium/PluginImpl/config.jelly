@@ -22,6 +22,13 @@
         <f:entry title="${%Set -firefoxProfileTemplate}" field="rcFirefoxProfileTemplate" help="/plugin/selenium/help/rcfirefoxtemplate.html">
             <f:textbox name="rcFirefoxProfileTemplate" value="${it.rcFirefoxProfileTemplate}" />
         </f:entry>
+        <f:entry title="${%Set Hub Log Level}" field="hubLogLevel" help="/plugin/selenium/help/hubloglevel.html">
+             <select name="hubLogLevel" value="${it.hubLogLevel}">
+                 <j:forEach var="l" items="OFF,SEVERE,WARNING,CONFIG,INFO,FINE,FINER,FINEST,ALL">
+                    <f:option selected="${l==it.hubLogLevel}">${l}</f:option>
+                </j:forEach>
+            </select>
+        </f:entry>
 	</f:advanced>
   </f:section>
 </j:jelly>

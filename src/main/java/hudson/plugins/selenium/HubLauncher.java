@@ -14,6 +14,8 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Starts the selenium grid server.
@@ -23,10 +25,12 @@ import java.lang.reflect.Field;
  * @author Kohsuke Kawaguchi
  */
 public class HubLauncher implements Callable<Void,Exception> {
-    private int port;
+    private final int port;
+    private final Level logLevel;
 
-    public HubLauncher(int port) {
+    public HubLauncher(int port, Level logLevel) {
         this.port = port;
+        this.logLevel = logLevel;
     }
 
     public Void call() throws Exception {
@@ -52,6 +56,7 @@ public class HubLauncher implements Callable<Void,Exception> {
         final Server server;
         final Context root;
 
+
         configuration = HubRegistry.registry().gridConfiguration().getHub();
         server = new Server(configuration.getPort());
 
@@ -68,5 +73,8 @@ public class HubLauncher implements Callable<Void,Exception> {
         root.addServlet(new ServletHolder(new LifecycleManagerServlet()), "/lifecycle-manager");
 
         server.start();
+
+        Logger.getLogger("com.thoughtworks.selenium").setLevel(logLevel);
+        Logger.getLogger("org.apache.commons.httpclient").setLevel(logLevel);
     }
 }

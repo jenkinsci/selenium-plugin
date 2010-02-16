@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 
 /**
  * Starts Selenium Grid server in another JVM.
@@ -64,6 +65,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     private boolean rcTrustAllSSLCerts;
     private String rcFirefoxProfileTemplate;
     private String rcLog;
+    private String hubLogLevel = "INFO";
 
     /**
      * Channel to Selenium Grid JVM.
@@ -77,7 +79,8 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         StreamTaskListener listener = new StreamTaskListener(getLogFile());
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
-        hubLauncher = channel.callAsync(new HubLauncher(port));
+        Level logLevel = hubLogLevel != null ? Level.parse(hubLogLevel) : Level.INFO;
+        hubLauncher = channel.callAsync(new HubLauncher(port, logLevel));
 
         Hudson.getInstance().getActions().add(this);
     }
@@ -95,6 +98,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
         rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
         rcFirefoxProfileTemplate = formData.getString("rcFirefoxProfileTemplate");
+        hubLogLevel = formData.getString("hubLogLevel");
         try {
             save();
         } catch (IOException e) {
@@ -157,6 +161,10 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         return rcFirefoxProfileTemplate;
     }
 
+    @Exported
+    public String getHubLogLevel(){
+        return hubLogLevel != null ? hubLogLevel : "INFO";
+    }
 
     public void stop() throws Exception {
         channel.close();
