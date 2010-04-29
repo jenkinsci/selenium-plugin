@@ -58,7 +58,9 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
         while(true) {
             boolean hadMatch=false;
             for (RemoteControlProxy rc : all) {
-                if((hadMatch|=matches(rc,keys)) && rc.canHandleNewSession()) {
+                boolean doesMatch = matches(rc,keys);
+                hadMatch |= doesMatch;
+                if(doesMatch && rc.canHandleNewSession()) {
                     rc.registerNewSession();
                     return rc;
                 }
