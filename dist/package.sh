@@ -1,19 +1,27 @@
 #!/bin/bash -ex
 
 # incoming version of Selenium Grid
-version=1.0.4
+version=1.0.5
 # outgoing version of the packages in Maven
-distVersion=1.0.4-hudson-1
+distVersion=1.0.5-hudson-1
 
 rm -rf work || true
 work=$PWD/work
 
 # download and extract
-for type in bin src; do
+for type in bin; do
   [ -e selenium-grid-$version-$type.zip ] || wget -O selenium-grid-$version-$type.zip http://release.seleniumhq.org/selenium-grid/selenium-grid-$version-$type.zip
   mkdir -p work/$type
   unzip -q selenium-grid-$version-$type.zip -d work/$type
 done
+
+# extract the source tree
+(cd src; git archive $version) | (mkdir -p work/src; cd work/src; tar xf -)
+
+mkdir -p work/src
+ln -s ../../../../selenium-grid/hub work/src/hub
+ln -s ../../../../selenium-grid/remote-control work/src/remote-control
+ln -s ../../../../selenium-grid/infrastructure work/src/infrastructure
 
 # remove unused files
 pushd work/bin/*

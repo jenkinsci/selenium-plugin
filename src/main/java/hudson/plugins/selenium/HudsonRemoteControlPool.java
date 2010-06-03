@@ -34,6 +34,19 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
         return all.remove(rc);
     }
 
+    public boolean isRegistered(RemoteControlProxy proxy) {
+        for (RemoteControlProxy rc : all) {
+            if (rc.equals(proxy)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<RemoteControlProxy> allRegisteredRemoteControls() {
+        return new ArrayList<RemoteControlProxy>(all);
+    }
+
     public synchronized List<RemoteControlProxy> availableRemoteControls() {
         List<RemoteControlProxy> r = new ArrayList<RemoteControlProxy>(all.size());
         for (RemoteControlProxy rc : all)
@@ -45,9 +58,26 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
     public synchronized List<RemoteControlProxy> reservedRemoteControls() {
         List<RemoteControlProxy> r = new ArrayList<RemoteControlProxy>(all.size());
         for (RemoteControlProxy rc : all)
-            if(rc.concurrentSesssionCount() > 0)
+            if(rc.canHandleNewSession())
                 r.add(rc);
         return r;
+    }
+
+    public void unregisterAllUnresponsiveRemoteControls() {
+        for (RemoteControlProxy rc : all) {
+            if (rc.unreliable()) {
+                LOGGER.log(Level.WARNING, "Unregistering unreliable RC " + rc);
+                unregister(rc);
+            }
+        }
+    }
+
+    public void recycleAllSessionsIdleForTooLong(double maxIdleTimeInSeconds) {
+        final int maxIdleTimeInMilliseconds = (int) (maxIdleTimeInSeconds * 1000);
+        /*if (session.innactiveForMoreThan(maxIdleTimeInMilliseconds)) {
+            LOGGER.warn("Releasing session IDLE for more than " + maxIdleTimeInSeconds + " seconds: " + session);
+            releaseForSession(session.sessionId());
+        }*/
     }
 
     public synchronized RemoteControlProxy reserve(Environment env) {
@@ -71,7 +101,7 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
                 if(all.isEmpty())
                     throw new IllegalArgumentException("No RCs available");
                 else
-                    throw new IllegalArgumentException("No RC satisifies the label criteria: "+env.name()+" - "+all);
+                    throw new IllegalArgumentException("No RC satisfies the label criteria: "+env.name()+" - "+all);
             }
 
             try {
@@ -107,6 +137,10 @@ public class HudsonRemoteControlPool implements DynamicRemoteControlPool {
 
     public synchronized void releaseForSession(String sessionId) {
         sessions.remove(sessionId).unregisterSession();
+    }
+
+    public void updateSessionLastActiveAt(String sessionId) {
+        sessions.get(sessionId).registerNewSession();
     }
 
     private static final Logger LOGGER = Logger.getLogger(HudsonRemoteControlPool.class.getName());
