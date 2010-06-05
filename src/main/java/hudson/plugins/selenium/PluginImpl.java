@@ -30,6 +30,7 @@ import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
+import hudson.util.JVMBuilder;
 import hudson.util.StreamTaskListener;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
@@ -198,9 +199,10 @@ public class PluginImpl extends Plugin implements Action, Serializable {
      */
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
         FilePath distDir = install(rootDir, listener);
-        return Channels.newJVM("Selenium Grid",listener,distDir,
-                new ClasspathBuilder().addAll(distDir,"lib/selenium-grid-hub-standalone-*.jar, lib/log4j-*.jar"),
-                null);
+        JVMBuilder vmb = new JVMBuilder();
+        if (DEBUG)  vmb.debug(8001);
+        return Channels.newJVM("Selenium Grid",listener,vmb, distDir,
+                new ClasspathBuilder().addAll(distDir,"lib/selenium-grid-hub-standalone-*.jar, lib/log4j-*.jar"));
     }
 
     /**
@@ -211,10 +213,11 @@ public class PluginImpl extends Plugin implements Action, Serializable {
      */
     static /*package*/ Channel createSeleniumRCVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
         FilePath distDir = install(rootDir, listener);
-        return Channels.newJVM("Selenium RC",listener,distDir,
+        JVMBuilder vmb = new JVMBuilder();
+        if (DEBUG)  vmb.debug(DEBUG_PORT++);
+        return Channels.newJVM("Selenium RC",listener,vmb,distDir,
                 new ClasspathBuilder()
-                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-*.jar, lib/commons-httpclient-*.jar"),
-                null);
+                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-*.jar, lib/commons-httpclient-*.jar"));
     }
 
     private static FilePath install(File rootDir, TaskListener listener) throws IOException, InterruptedException {
@@ -242,4 +245,6 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     }
 
     private static final long serialVersionUID = 1L;
+    public static boolean DEBUG = Boolean.getBoolean("selenium.debug");
+    public static int DEBUG_PORT = 8010;
 }
