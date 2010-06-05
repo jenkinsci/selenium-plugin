@@ -17,11 +17,10 @@ public class SeleniumTest extends HudsonTestCase {
 
         createSlave(new Label("foo"));
         waitForRC();
+        Thread.sleep(3000);
 
-        Selenium browser;
-
-        browser = new DefaultSelenium("localhost",
-            4444, "foo:*firefox /Applications/Firefox.app/Contents/MacOS/firefox-bin", "http://www.google.com");
+        Selenium browser = new DefaultSelenium("localhost",
+            4444, "foo:*firefox /usr/lib/firefox-3.6.3/firefox-bin", "http://www.google.com");
         browser.start();
 
         try {
@@ -48,18 +47,16 @@ public class SeleniumTest extends HudsonTestCase {
         return hudson.getPlugin(PluginImpl.class);
     }
 
-//    public void testLabelMatch() throws Exception {
-//        createSlave(new Label("foo"));
-//
-//        Selenium browser;
-//
-//        browser = new DefaultSelenium("localhost",
-//            4444, "bar:*firefox /usr/lib/firefox-3.0.9/firefox", "http://www.google.com");
-//        try {
-//            browser.start();
-//            fail(); // should have failed
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public void testLabelMatch() throws Exception {
+        createSlave(new Label("foo"));
+
+        Selenium browser = new DefaultSelenium("localhost",
+            4444, "bar:*firefox /usr/lib/firefox-3.6.3/firefox-bin", "http://www.google.com");
+        try {
+            browser.start();
+            fail(); // should have failed
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
