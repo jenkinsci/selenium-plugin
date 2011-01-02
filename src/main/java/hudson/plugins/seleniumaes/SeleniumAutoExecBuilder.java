@@ -19,6 +19,7 @@ import java.util.Iterator;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import com.enjoyxstudy.selenium.autoexec.client.RemoteControlClient;
@@ -36,9 +37,10 @@ public class SeleniumAutoExecBuilder extends Builder {
 
     /**
      * @param serverUrl
-     * @throws MalformedURLException 
+     * @throws MalformedURLException
      */
-    SeleniumAutoExecBuilder(String serverUrl) throws MalformedURLException {
+    @DataBoundConstructor
+    public SeleniumAutoExecBuilder(String serverUrl) throws MalformedURLException {
         this.serverUrl = serverUrl;
 
         URL url = new URL(serverUrl);
@@ -47,22 +49,24 @@ public class SeleniumAutoExecBuilder extends Builder {
                 + url.getHost()
                 + ((url.getPort() != -1) ? ":" + String.valueOf(url.getPort())
                         : "");
+
     }
 
     /**
      * @return serverUrl
      */
     public String getServerUrl() {
+
         return serverUrl;
     }
 
     /**
-     * @see hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener)
+     * @see hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.AbstractBuild,
+     *      hudson.Launcher, hudson.model.BuildListener)
      */
     @Override
-    public boolean perform(AbstractBuild<?, ?> build,
-            @SuppressWarnings("unused")
-            Launcher launcher, BuildListener listener) throws IOException {
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
+            BuildListener listener) throws IOException {
 
         PrintStream logger = listener.getLogger();
 
@@ -71,8 +75,7 @@ public class SeleniumAutoExecBuilder extends Builder {
         String resultString;
         try {
             resultString = new RemoteControlClient(serverUrl.replaceAll("/$",
-                    "")
-                    + "/command/").runString(RemoteControlClient.TYPE_JSON);
+                    "") + "/command/").runString(RemoteControlClient.TYPE_JSON);
         } catch (IOException e) {
             logger.println("Error return from Selenium Auto Exec Server("
                     + serverUrl + ").");
@@ -143,10 +146,17 @@ public class SeleniumAutoExecBuilder extends Builder {
         return result;
     }
 
+    @Override
+    public Descriptor<Builder> getDescriptor() {
+        return DESCRIPTOR;
+    }
+
+    @Extension
+    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+
     /**
      * @author onozaty
      */
-    @Extension
     public static final class DescriptorImpl extends Descriptor<Builder> {
 
         /**
@@ -158,6 +168,7 @@ public class SeleniumAutoExecBuilder extends Builder {
 
         /**
          * This human readable name is used in the configuration screen.
+         *
          * @return display name
          */
         @Override
@@ -166,19 +177,14 @@ public class SeleniumAutoExecBuilder extends Builder {
         }
 
         /**
-         * @throws FormException 
-         * @see hudson.model.Descriptor#newInstance(org.kohsuke.stapler.StaplerRequest, net.sf.json.JSONObject)
+         * @throws FormException
+         * @see hudson.model.Descriptor#newInstance(org.kohsuke.stapler.StaplerRequest,
+         *      net.sf.json.JSONObject)
          */
         @Override
-        public Builder newInstance(StaplerRequest req,
-                @SuppressWarnings("unused")
-                JSONObject formData) throws FormException {
-            try {
-                return new SeleniumAutoExecBuilder(req
-                        .getParameter("selenium_autoexec.serverUrl"));
-            } catch (MalformedURLException e) {
-                throw new FormException(e, "illegal url");
-            }
+        public Builder newInstance(StaplerRequest req, final JSONObject formData)
+                throws FormException {
+            return req.bindJSON(SeleniumAutoExecBuilder.class, formData);
         }
     }
 }
