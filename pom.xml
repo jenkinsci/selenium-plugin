@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>selenium-aes</artifactId>
-  <version>0.4</version>
+  <version>0.5-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Selenium Auto Exec Server(AES) plugin</name>
   <description>
@@ -31,10 +31,4 @@
       <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/selenium-autoexec-client-0.3.jar</systemPath>
     </dependency>
   </dependencies>
-
-  <scm>
-    <connection>scm:svn:https://guest@svn.java.net/svn/hudson~svn/tags/selenium-aes-0.4</connection>
-    <developerConnection>scm:svn:https://svn.java.net/svn/hudson~svn/tags/selenium-aes-0.4</developerConnection>
-    <url>https://svn.java.net/svn/hudson~svn/tags/selenium-aes-0.4</url>
-  </scm>
 </project>
