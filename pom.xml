@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.388</version>
+    <version>1.391</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -26,9 +26,9 @@
     <dependency>
       <groupId>com.enjoyxstudy</groupId>
       <artifactId>selenium-autoexec-client</artifactId>
-      <version>0.3</version>
+      <version>1.1</version>
       <scope>system</scope>
-      <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/selenium-autoexec-client-0.3.jar</systemPath>
+      <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/selenium-autoexec-client-1.1.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
