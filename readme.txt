@@ -1,4 +1,4 @@
-TODO: reverse-proxy selenium from Hudson for easier configuration
+TODO: reverse-proxy selenium from Jenkins for easier configuration
 
 TODO: launch multiple RCs per node
 TODO: environment configurations
