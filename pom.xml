@@ -1,29 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.jvnet.hudson.plugins</groupId>
+    <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.358</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>1.397</version>
   </parent>
   
   <artifactId>selenium</artifactId>
   <version>1.4-SNAPSHOT</version>
   <packaging>hpi</packaging>
-  <name>Hudson Selenium plugin</name>
-  <url>http://wiki.hudson-ci.org/display/HUDSON/Selenium+Plugin</url>
+  <name>Jenkins Selenium plugin</name>
+  <url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.jvnet.hudson.tools</groupId>
-        <artifactId>maven-hpi-plugin</artifactId>
-        <version>1.53-SNAPSHOT</version>
-        <extensions>true</extensions>
-        <configuration>
-          <showDeprecation>true</showDeprecation>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
         <artifactId>maven-antrun-extended-plugin</artifactId>
@@ -51,8 +41,8 @@
     <dependency>
       <!-- selenium contains its own Jetty, and unless we declare this dependency first,
       its Jetty will show up in front of the jetty in the test harness -->
-      <groupId>org.jvnet.hudson.main</groupId>
-      <artifactId>hudson-test-harness</artifactId>
+      <groupId>org.jenkins-ci.main</groupId>
+      <artifactId>jenkins-test-harness</artifactId>
       <version>${parent.version}</version>
       <scope>test</scope>
     </dependency>

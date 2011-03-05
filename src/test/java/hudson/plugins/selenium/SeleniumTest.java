@@ -15,19 +15,19 @@ public class SeleniumTest extends HudsonTestCase {
         // system config to set the root URL
         submit(new WebClient().goTo("configure").getFormByName("config"));
 
-        createSlave(new Label("foo"));
+        createSlave(Label.get("foo"));
         waitForRC();
         Thread.sleep(3000);
 
         Selenium browser = new DefaultSelenium("localhost",
-            4444, "foo:*firefox /usr/lib/firefox-3.6.3/firefox-bin", "http://www.google.com");
+            4444, "foo:*firefox"/* /usr/lib/firefox-3.6.3/firefox-bin"*/, "http://www.google.com");
         browser.start();
 
         try {
             browser.open("http://www.google.com/webhp?hl=en");
             browser.type("q", "hello world");
             browser.click("btnG");
-            browser.waitForPageToLoad("5000");
+            browser.waitForPageToLoad("10000");
             assertEquals("hello world - Google Search", browser.getTitle());
         } finally {
             browser.stop();
@@ -48,10 +48,10 @@ public class SeleniumTest extends HudsonTestCase {
     }
 
     public void testLabelMatch() throws Exception {
-        createSlave(new Label("foo"));
+        createSlave(Label.get("foo"));
 
         Selenium browser = new DefaultSelenium("localhost",
-            4444, "bar:*firefox /usr/lib/firefox-3.6.3/firefox-bin", "http://www.google.com");
+            4444, "bar:*firefox"/* /usr/lib/firefox-3.6.3/firefox-bin"*/, "http://www.google.com");
         try {
             browser.start();
             fail(); // should have failed
