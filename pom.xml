@@ -9,7 +9,7 @@
   <artifactId>selenium</artifactId>
   <version>1.4-SNAPSHOT</version>
   <packaging>hpi</packaging>
-  <name>Jenkins Selenium plugin</name>
+  <name>Jenkins Selenium Plugin</name>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
 
   <build>
@@ -91,4 +91,10 @@
   <properties>
     <selenium.version>1.0.7-hudson-1</selenium.version>
   </properties>
+
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/selenium-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/selenium-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/selenium-plugin</url>
+  </scm>
 </project>
