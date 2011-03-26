@@ -6,15 +6,15 @@
     <st:include page="sidepanel.jelly" />
 
     <l:main-panel>
-      <h1>Registered Remote Controls</h1>
+      <h1>${%Registered Remote Controls}</h1>
       <j:set var="rcs" value="${it.remoteControls}" />
       <j:choose>
         <j:when test="${!empty(rcs)}">
           <table class="sortable pane bigtable">
             <tr>
-              <th>Host</th>
-              <th>Environment</th>
-              <th>Status</th>
+              <th>${%Host}</th>
+              <th>${%Environment}</th>
+              <th>${%Status}</th>
             </tr>
             <j:forEach var="rc" items="${rcs}">
               <tr>
