@@ -1,6 +1,7 @@
 package hudson.plugins.selenium;
 
 import com.thoughtworks.selenium.grid.configuration.HubConfiguration;
+import com.thoughtworks.selenium.grid.hub.HeartbeatServlet;
 import com.thoughtworks.selenium.grid.hub.HubRegistry;
 import com.thoughtworks.selenium.grid.hub.HubServlet;
 import com.thoughtworks.selenium.grid.hub.management.LifecycleManagerServlet;
@@ -71,6 +72,7 @@ public class HubLauncher implements Callable<Void,Exception> {
         root.addServlet(new ServletHolder(new RegistrationServlet()), "/registration-manager/register");
         root.addServlet(new ServletHolder(new UnregistrationServlet()), "/registration-manager/unregister");
         root.addServlet(new ServletHolder(new LifecycleManagerServlet()), "/lifecycle-manager");
+        root.addServlet(new ServletHolder(new HeartbeatServlet()), "/heartbeat");
 
         server.start();
 
