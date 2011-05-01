@@ -213,7 +213,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         FilePath distDir = install(rootDir, listener);
         return Channels.newJVM("Selenium RC",listener,distDir,
                 new ClasspathBuilder()
-                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-*.jar, lib/commons-httpclient-*.jar"),
+                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-*.jar, lib/selenium-grid-hub-standalone-*.jar, lib/commons-httpclient-*.jar"),
                 null);
     }
 
