@@ -63,6 +63,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
     private boolean rcTrustAllSSLCerts;
+    private boolean rcBrowserSessionReuse;
     private String rcFirefoxProfileTemplate;
     private String rcLog;
     private String hubLogLevel = "INFO";
@@ -97,6 +98,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         rcDebug = formData.getBoolean("rcDebug");
         rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
         rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
+        rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
         rcFirefoxProfileTemplate = formData.getString("rcFirefoxProfileTemplate");
         hubLogLevel = formData.getString("hubLogLevel");
         try {
@@ -154,6 +156,11 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     @Exported
     public boolean getRcTrustAllSSLCerts() {
         return rcTrustAllSSLCerts;
+    }
+    
+    @Exported
+    public boolean getRcBrowserSessionReuse() {
+    	return rcBrowserSessionReuse;
     }
 
     @Exported

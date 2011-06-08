@@ -16,6 +16,9 @@
         <f:entry title="${%Enable -trustAllSSLCertificates}" field="rcTrustAllSSLCerts" help="/plugin/selenium/help/rctrustallssl.html">
             <f:checkbox name="rcTrustAllSSLCerts" checked="${it.rcTrustAllSSLCerts}" />
         </f:entry>
+        <f:entry title="${%Set -browserSessionReuse}" field="rcBrowserSessionReuse" help="/plugin/selenium/help/rcbrowsersessionreuse.html">
+            <f:checkbox name="rcBrowserSessionReuse" checked="${it.rcBrowserSessionReuse}" />
+        </f:entry>
         <f:entry title="${%Set -log}" field="rcLog" help="/plugin/selenium/help/rclog.html">
             <f:textbox name="rcLog" value="${it.rcLog}" />
         </f:entry>
