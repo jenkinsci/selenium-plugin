@@ -12,6 +12,17 @@
   <name>Jenkins Selenium Plugin</name>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
 
+
+  <properties>
+    <selenium.version>1.0.7-hudson-1</selenium.version>
+  </properties>
+
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/selenium-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/selenium-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/selenium-plugin</url>
+  </scm>
+
   <build>
     <plugins>
       <plugin>
@@ -87,16 +98,6 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <properties>
-    <selenium.version>1.0.7-hudson-1</selenium.version>
-  </properties>
-
-  <scm>
-    <connection>scm:git:git://github.com/jenkinsci/selenium-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/selenium-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/selenium-plugin</url>
-  </scm>
 
   <repositories>
     <repository>
