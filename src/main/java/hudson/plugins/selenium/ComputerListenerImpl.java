@@ -90,6 +90,9 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         if (p.getRcTrustAllSSLCerts()){
             userArgs.add("-trustAllSSLCertificates");
         }
+        if (p.getRcBrowserSessionReuse()) {
+        	userArgs.add("-browserSessionReuse");
+        }
         if (hasText(p.getRcFirefoxProfileTemplate())){
             userArgs.add("-firefoxProfileTemplate");
             userArgs.add(p.getRcFirefoxProfileTemplate());
