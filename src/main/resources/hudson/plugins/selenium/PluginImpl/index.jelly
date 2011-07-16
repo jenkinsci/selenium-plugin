@@ -7,6 +7,13 @@
 
     <l:main-panel>
       <h1>${%Registered Remote Controls}</h1>
+
+      <j:if test="${it.masterHostName==null}">
+        <div class="warning">
+          ${%MissingMasterUrlConfiguration(rootURL)}
+        </div>
+      </j:if>
+
       <j:set var="rcs" value="${it.remoteControls}" />
       <j:choose>
         <j:when test="${!empty(rcs)}">
