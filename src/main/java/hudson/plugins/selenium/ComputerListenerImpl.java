@@ -2,12 +2,14 @@ package hudson.plugins.selenium;
 
 import hudson.Extension;
 import hudson.FilePath.FileCallable;
+import hudson.console.HyperlinkNote;
 import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
+import hudson.tasks._ant.AntOutcomeNote;
 import hudson.util.IOException2;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.util.StringUtils;
@@ -58,7 +60,8 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
 
         final String masterName = PluginImpl.getMasterHostName();
         if(masterName==null) {
-            listener.getLogger().println("Unable to determine the host name of the master. Skipping Selenium execution.");
+            listener.getLogger().println("Unable to determine the host name of the master. Skipping Selenium execution. "
+                +"Please "+ HyperlinkNote.encodeTo("/configure", "configure the Jenkins URL")+" from the system configuration screen.");
             return;
         }
         final String hostName = c.getHostName();
