@@ -233,7 +233,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     /**
      * Determines the host name of the Jenkins master.
      */
-    static /*package*/ String getMasterHostName() throws MalformedURLException {
+    public static String getMasterHostName() throws MalformedURLException {
         String rootUrl = Hudson.getInstance().getRootUrl();
         if(rootUrl==null)
             return null;
