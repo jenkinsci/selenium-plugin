@@ -2,13 +2,22 @@ package hudson.plugins.selenium;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+import hudson.model.Hudson;
 import hudson.model.Label;
+import hudson.tasks.Mailer;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public class SeleniumTest extends HudsonTestCase {
+    @Override
+    protected Hudson newHudson() throws Exception {
+        Hudson h = super.newHudson();
+        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
+        return h;
+    }
+
     public void testRun() throws Exception {
         getPlugin().waitForHubLaunch();
         
@@ -24,11 +33,11 @@ public class SeleniumTest extends HudsonTestCase {
         browser.start();
 
         try {
-            browser.open("http://www.google.com/webhp?hl=en");
+            browser.open("http://www.yahoo.com/");
             browser.type("q", "hello world");
-            browser.click("btnG");
+            browser.click("search-submit");
             browser.waitForPageToLoad("10000");
-            assertEquals("hello world - Google Search", browser.getTitle());
+            assertEquals("hello world - Yahoo", browser.getTitle());
         } finally {
             browser.stop();
         }
