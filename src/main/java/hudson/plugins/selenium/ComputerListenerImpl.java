@@ -109,6 +109,12 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         LOGGER.fine("Going to start "+nrc+" RCs on "+c.getName());
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
             public Object invoke(File f, VirtualChannel channel) throws IOException {
+                String alreadyStartedPropertyName = getClass().getName() + ".seleniumRcAlreadyStarted";
+                if (Boolean.valueOf(System.getProperty(alreadyStartedPropertyName))) {
+                    LOGGER.info("Skipping Selenium RC execution because this slave has already started its RCs");
+                    return null;
+                }
+
                 try {
                     for (int i=0; i<nrc; i++) {
                         // this is potentially unsafe way to figure out a free port number, but it's far easier
@@ -125,6 +131,8 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                     LOGGER.log(Level.WARNING,"Selenium RC launch failed",t);
                     throw new IOException2("Selenium RC launch interrupted",t);
                 }
+
+                System.setProperty(alreadyStartedPropertyName, Boolean.TRUE.toString());
                 return null;
             }
         });
