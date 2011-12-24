@@ -57,6 +57,13 @@
       <version>${parent.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- Ditto with commons-codec -->
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.4</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.jvnet.hudson</groupId>
@@ -77,6 +84,14 @@
         <exclusion>
           <groupId>jetty</groupId>
           <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>bouncycastle</groupId>
+          <artifactId>bcprov-jdk15</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

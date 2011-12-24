@@ -26,7 +26,7 @@ public class SeleniumTest extends HudsonTestCase {
 
         createSlave(Label.get("foo"));
         waitForRC();
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         Selenium browser = new DefaultSelenium("localhost",
             4444, "foo:*firefox"/* /usr/lib/firefox-3.6.3/firefox-bin"*/, "http://www.google.com");
@@ -34,10 +34,11 @@ public class SeleniumTest extends HudsonTestCase {
 
         try {
             browser.open("http://www.yahoo.com/");
-            browser.type("q", "hello world");
+            browser.type("p", "hello world");
             browser.click("search-submit");
             browser.waitForPageToLoad("10000");
-            assertEquals("hello world - Yahoo", browser.getTitle());
+            assertTrue(browser.getTitle().contains("hello world"));
+            assertTrue(browser.getTitle().contains("Yahoo"));
         } finally {
             browser.stop();
         }
