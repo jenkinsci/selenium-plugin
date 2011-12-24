@@ -7,16 +7,17 @@ public class GoogleTest extends TestCase {
     private Selenium browser;
     public void setUp() {
         browser = new DefaultSelenium("localhost",
-            4444, "bar:*firefox /usr/lib/firefox-3.0.9/firefox", "http://www.google.com");
+            4444, "foo:*firefox", "http://www.google.com");
         browser.start();
     }
 
     public void testGoogle() {
-        browser.open("http://www.google.com/webhp?hl=en");
-        browser.type("q", "hello world");
-        browser.click("btnG");
-        browser.waitForPageToLoad("5000");
-        assertEquals("hello world - Google Search", browser.getTitle());
+        browser.open("http://www.yahoo.com/");
+        browser.type("p", "hello world");
+        browser.click("search-submit");
+        browser.waitForPageToLoad("10000");
+        assertTrue(browser.getTitle().contains("hello world"));
+        assertTrue(browser.getTitle().contains("Yahoo"));
     }
 
     public void tearDown() {
