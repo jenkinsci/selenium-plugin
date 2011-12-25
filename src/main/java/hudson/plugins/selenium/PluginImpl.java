@@ -209,28 +209,27 @@ public class PluginImpl extends Plugin implements Action, Serializable {
      */
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
         return Channels.newJVM("Selenium Grid",listener,new FilePath(rootDir),
-                new ClasspathBuilder().add(Which.jarFile(GridLauncher.class)),
+                new ClasspathBuilder().add(findStandAloneServerJar()),
                 null);
+    }
+
+    /**
+     * Locate the stand-alone server jar from the classpath. Only works on the master.
+     */
+    /*package*/ static File findStandAloneServerJar() throws IOException {
+        return Which.jarFile(GridLauncher.class);
     }
 
     /**
      * Launches RC in a separate JVM.
      *
-     * @param rootDir
-     *      The slave/master root.
+     * @param standaloneServerJar
+     *      The jar file of the grid to launch.
      */
-    static /*package*/ Channel createSeleniumRCVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
-        FilePath distDir = install(rootDir, listener);
-        return Channels.newJVM("Selenium RC",listener,distDir,
-                new ClasspathBuilder()
-                        .addAll(distDir,"vendor/selenium-server-*.jar, lib/selenium-grid-remote-control-*.jar, lib/selenium-grid-hub-standalone-*.jar, lib/commons-httpclient-*.jar"),
+    static /*package*/ Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener) throws IOException, InterruptedException {
+        return Channels.newJVM("Selenium RC",listener,null,
+                new ClasspathBuilder().add(standaloneServerJar),
                 null);
-    }
-
-    private static FilePath install(File rootDir, TaskListener listener) throws IOException, InterruptedException {
-        FilePath distDir = new FilePath(new File(rootDir,"selenium-grid"));
-        distDir.installIfNecessaryFrom(PluginImpl.class.getResource("selenium-grid.tgz"),listener,"Installing Selenium Grid binaries");
-        return distDir;
     }
 
     /**

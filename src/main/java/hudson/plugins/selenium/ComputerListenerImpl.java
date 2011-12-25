@@ -1,6 +1,7 @@
 package hudson.plugins.selenium;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.FilePath.FileCallable;
 import hudson.console.HyperlinkNote;
 import hudson.model.Computer;
@@ -109,12 +110,25 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         }
 
         LOGGER.fine("Going to start "+nrc+" RCs on "+c.getName());
+        final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
+        final long jarTimestamp = seleniumJar.lastModified();
+
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
             public Object invoke(File f, VirtualChannel channel) throws IOException {
                 String alreadyStartedPropertyName = getClass().getName() + ".seleniumRcAlreadyStarted";
                 if (Boolean.valueOf(System.getProperty(alreadyStartedPropertyName))) {
                     LOGGER.info("Skipping Selenium RC execution because this slave has already started its RCs");
                     return null;
+                }
+                
+                File localJar = new File(f,seleniumJar.getName());
+                if (localJar.lastModified()!=jarTimestamp) {
+                    try {
+                        seleniumJar.copyTo(new FilePath(localJar));
+                        localJar.setLastModified(jarTimestamp);
+                    } catch (InterruptedException e) {
+                        throw new IOException2("Failed to copy grid jar",e);
+                    }
                 }
 
                 try {
@@ -131,7 +145,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                                 "-port",String.valueOf(port),
 //                                "-env",labelList.toString(),
                                 "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
-                        PluginImpl.createSeleniumRCVM(f,listener).callAsync(
+                        PluginImpl.createSeleniumRCVM(localJar,listener).callAsync(
                                 new RemoteControlLauncher((String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
                     }
                 } catch (Exception t) {
