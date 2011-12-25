@@ -17,9 +17,6 @@
  */
 package hudson.plugins.selenium;
 
-import com.thoughtworks.selenium.grid.hub.HubRegistry;
-import com.thoughtworks.selenium.grid.hub.remotecontrol.DynamicRemoteControlPool;
-import com.thoughtworks.selenium.grid.hub.remotecontrol.RemoteControlProxy;
 import hudson.FilePath;
 import hudson.Plugin;
 import hudson.model.Action;
@@ -37,6 +34,9 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.framework.io.LargeText;
+import org.openqa.grid.internal.Registry;
+import org.openqa.grid.internal.RemoteProxy;
+import org.openqa.grid.internal.TestSlot;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,7 +81,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
         Level logLevel = hubLogLevel != null ? Level.parse(hubLogLevel) : Level.INFO;
-        hubLauncher = channel.callAsync(new HubLauncher(port, logLevel));
+        hubLauncher = channel.callAsync(new HubLauncher(port, new String[0]/*TODO: define args*/, logLevel));
 
         Hudson.getInstance().getActions().add(this);
     }
@@ -178,19 +178,18 @@ public class PluginImpl extends Plugin implements Action, Serializable {
     }
 
     @Exported(inline=true)
-    public List<SeleniumRemoteControl> getRemoteControls() throws IOException, InterruptedException {
+    public List<SeleniumTestSlot> getRemoteControls() throws IOException, InterruptedException {
         if(channel==null)   return Collections.emptyList();
 
-        return channel.call(new Callable<List<SeleniumRemoteControl>,RuntimeException>() {
-            public List<SeleniumRemoteControl> call() throws RuntimeException {
-                HubRegistry registry = HubRegistry.registry();
-                DynamicRemoteControlPool pool = registry.remoteControlPool();
-
-                List<SeleniumRemoteControl> r = new ArrayList<SeleniumRemoteControl>();
-                for (RemoteControlProxy rc : pool.availableRemoteControls())
-                    r.add(new SeleniumRemoteControl(rc,false));
-                for (RemoteControlProxy rc : pool.reservedRemoteControls())
-                    r.add(new SeleniumRemoteControl(rc,true));
+        return channel.call(new Callable<List<SeleniumTestSlot>,RuntimeException>() {
+            public List<SeleniumTestSlot> call() throws RuntimeException {
+                Registry registry = RegistryHolder.registry;
+                List<SeleniumTestSlot> r = new ArrayList<SeleniumTestSlot>();
+                
+                for (RemoteProxy proxy : registry.getAllProxies()) {
+                    for (TestSlot slot : proxy.getTestSlots())
+                        r.add(new SeleniumTestSlot(slot));
+                }
 
                 return r;
             }

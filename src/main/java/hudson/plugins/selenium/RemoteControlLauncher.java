@@ -1,8 +1,9 @@
 package hudson.plugins.selenium;
 
-import com.thoughtworks.selenium.grid.remotecontrol.SelfRegisteringRemoteControlLauncher;
 import hudson.remoting.Callable;
 import hudson.remoting.Which;
+import org.openqa.grid.common.RegistrationRequest;
+import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.selenium.server.SeleniumServer;
 
 import java.util.Arrays;
@@ -28,8 +29,11 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
         try {
             System.out.println("Starting Selenium RC with "+ Arrays.asList(args));
             System.out.println(Which.jarFile(SeleniumServer.class));
-            System.out.println(Which.jarFile(SelfRegisteringRemoteControlLauncher.class));
-            SelfRegisteringRemoteControlLauncher.main(args);
+
+            RegistrationRequest c = RegistrationRequest.build(args);
+            SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
+            remote.startRemoteServer();
+            remote.startRegistrationProcess();
 
             System.out.println("Blocking");
             // block forever

@@ -9,7 +9,6 @@ import hudson.model.Label;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
-import hudson.tasks._ant.AntOutcomeNote;
 import hudson.util.IOException2;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.util.StringUtils;
@@ -33,10 +32,10 @@ import java.util.logging.Logger;
 @Extension
 public class ComputerListenerImpl extends ComputerListener implements Serializable {
     /**
-     * Starts a selenium RC remotely.
+     * Starts a selenium Grid node remotely.
      */
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
-        LOGGER.fine("Examining if we need to start Selenium RC");
+        LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
         PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
         
