@@ -125,7 +125,12 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                         int port = ss.getLocalPort();
                         ss.close();
 
-                        String[] defaultArgs = new String[] {"-host",hostName,"-port",String.valueOf(port),"-env",labelList.toString(),"-hubURL","http://"+masterName+":"+masterPort+"/" };
+                        String[] defaultArgs = new String[] {
+                                "-role","node",
+                                "-host",hostName,
+                                "-port",String.valueOf(port),
+//                                "-env",labelList.toString(),
+                                "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
                         PluginImpl.createSeleniumRCVM(f,listener).callAsync(
                                 new RemoteControlLauncher((String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
                     }

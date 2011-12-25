@@ -25,6 +25,7 @@ import hudson.model.Hudson;
 import hudson.model.TaskListener;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
+import hudson.remoting.Which;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
 import hudson.util.StreamTaskListener;
@@ -37,6 +38,7 @@ import org.kohsuke.stapler.framework.io.LargeText;
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
+import org.openqa.grid.selenium.GridLauncher;
 
 import java.io.File;
 import java.io.IOException;
@@ -183,12 +185,14 @@ public class PluginImpl extends Plugin implements Action, Serializable {
 
         return channel.call(new Callable<List<SeleniumTestSlot>,RuntimeException>() {
             public List<SeleniumTestSlot> call() throws RuntimeException {
-                Registry registry = RegistryHolder.registry;
                 List<SeleniumTestSlot> r = new ArrayList<SeleniumTestSlot>();
                 
-                for (RemoteProxy proxy : registry.getAllProxies()) {
-                    for (TestSlot slot : proxy.getTestSlots())
-                        r.add(new SeleniumTestSlot(slot));
+                Registry registry = RegistryHolder.registry;
+                if (registry!=null) {
+                    for (RemoteProxy proxy : registry.getAllProxies()) {
+                        for (TestSlot slot : proxy.getTestSlots())
+                            r.add(new SeleniumTestSlot(slot));
+                    }
                 }
 
                 return r;
@@ -203,9 +207,8 @@ public class PluginImpl extends Plugin implements Action, Serializable {
      *      The slave/master root.
      */
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
-        FilePath distDir = install(rootDir, listener);
-        return Channels.newJVM("Selenium Grid",listener,distDir,
-                new ClasspathBuilder().addAll(distDir,"lib/selenium-grid-hub-standalone-*.jar, lib/log4j-*.jar"),
+        return Channels.newJVM("Selenium Grid",listener,new FilePath(rootDir),
+                new ClasspathBuilder().add(Which.jarFile(GridLauncher.class)),
                 null);
     }
 
