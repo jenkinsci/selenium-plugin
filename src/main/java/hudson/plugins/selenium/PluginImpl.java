@@ -83,6 +83,7 @@ public class PluginImpl extends Plugin implements Action, Serializable {
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
         Level logLevel = hubLogLevel != null ? Level.parse(hubLogLevel) : Level.INFO;
+        System.out.println("Starting Selenium Grid");
         hubLauncher = channel.callAsync(new HubLauncher(port, new String[0]/*TODO: define args*/, logLevel));
 
         Hudson.getInstance().getActions().add(this);

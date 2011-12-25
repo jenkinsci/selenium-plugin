@@ -33,7 +33,8 @@ public class HubLauncher implements Callable<Void,Exception> {
         Hub hub = new Hub(c);
         hub.start();
         RegistryHolder.registry = hub.getRegistry();
-
+        System.out.println("Grid Hub started on port "+port);
+        
 //        HubRegistry r = HubRegistry.registry();
 //        // hack up the pool
 //        Field pool = r.getClass().getDeclaredField("pool");
@@ -49,6 +50,7 @@ public class HubLauncher implements Callable<Void,Exception> {
 
     private void configureLoggers() {
         Logger.getLogger("org.openqa").setLevel(logLevel);
+        Logger.getLogger("org.seleniumhq").setLevel(logLevel);
         Logger.getLogger("com.thoughtworks.selenium").setLevel(logLevel);
         Logger.getLogger("org.apache.commons.httpclient").setLevel(logLevel);
     }
