@@ -1,0 +1,6 @@
+Can we suport label matching like we used to do?
+================================================
+RequestHandler subtype Selenium1RequestHandler converts the request into capabilities in extractDesiredCapability()
+  - called by RequestHandler.getDesiredCapabilities, on demand
+
+RequestHandler.createHandler looks at the inbound request to decide where to route it
