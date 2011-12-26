@@ -17,10 +17,13 @@
  */
 package hudson.plugins.selenium;
 
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Plugin;
 import hudson.model.Action;
 import hudson.model.Api;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
 import hudson.remoting.Callable;
@@ -58,7 +61,7 @@ import java.util.logging.Level;
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-public class PluginImpl extends Plugin implements Action, Serializable {
+public class PluginImpl extends Plugin implements Action, Serializable, Describable<PluginImpl> {
 
     private int port = 4444;
     private String exclusionPatterns;
@@ -248,6 +251,18 @@ public class PluginImpl extends Plugin implements Action, Serializable {
      */
     public void doProgressiveLog( StaplerRequest req, StaplerResponse rsp) throws IOException {
         new LargeText(getLogFile(),false).doProgressText(req,rsp);
+    }
+
+    public Descriptor<PluginImpl> getDescriptor() {
+        return Hudson.getInstance().getDescriptorOrDie(getClass());
+    }
+
+    @Extension
+    public static class DescriptorImpl extends Descriptor<PluginImpl> {
+        @Override
+        public String getDisplayName() {
+            return "";
+        }
     }
 
     private static final long serialVersionUID = 1L;
