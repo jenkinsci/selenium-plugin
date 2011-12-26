@@ -4,3 +4,6 @@ work
 .project
 .settings
 *.iml
+*.ipr
+*.iws
+.idea
