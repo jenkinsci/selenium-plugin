@@ -17,7 +17,13 @@
         <j:otherwise>
           <div>
             ${%RunningAt(it.masterHostName,it.port)}
+            ${%ConnectFrom1}
           </div>
+          <pre style="margin:1em">Selenium selenium = new DefaultSelenium("${it.masterHostName}", ${it.port}, "*firefox", "http://jenkins-ci.org/");</pre>
+          <div>
+            ${%ConnectFrom2}
+          </div>
+          <pre style="margin:1em">WebDriver driver = new RemoteWebDriver(new URL("http://${it.masterHostName}:${it.port}/wd/hub"), capability);</pre>
         </j:otherwise>
       </j:choose>
 
