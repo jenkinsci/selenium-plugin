@@ -108,10 +108,10 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             throw new IOException2("Failed to wait for the Hub launch to complete",e);
         }
 
-        LOGGER.fine("Starting Selenium Grid nodes on "+c.getName());
+        listener.getLogger().println("Starting Selenium Grid nodes on "+c.getName());
+
         final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
         final long jarTimestamp = seleniumJar.lastModified();
-        
         final String nodeName = c.getName();
 
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {

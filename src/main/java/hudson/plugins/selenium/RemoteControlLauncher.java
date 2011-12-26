@@ -4,10 +4,10 @@ import hudson.remoting.Callable;
 import hudson.remoting.Which;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.SeleniumServer;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Launches Selenium RC.
@@ -27,14 +27,15 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
     }
 
     // because this method is called asynchronously and no one waits for the completion,
-    // exception needs to be reproted explicitly.
+    // exception needs to be reported explicitly.
     public Void call() throws Exception {
         try {
             System.out.println("Starting Selenium RC with "+ Arrays.asList(args));
             System.out.println(Which.jarFile(SeleniumServer.class));
 
             RegistrationRequest c = RegistrationRequest.build(args);
-            c.addDesiredCapability(Collections.singletonMap(JenkinsCapabilityMatcher.NODE_NAME,(Object)nodeName));
+            for (DesiredCapabilities dc : c.getCapabilities())
+                dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME,nodeName);
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
             remote.startRemoteServer();
             remote.startRegistrationProcess();
