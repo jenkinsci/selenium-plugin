@@ -70,7 +70,6 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             return;
         }
         final int masterPort = p.getPort();
-        final int nrc = c.getNumExecutors();
         final StringBuilder labelList = new StringBuilder();
         for(Label l : c.getNode().getAssignedLabels()) {
             labelList.append('/');
@@ -109,7 +108,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             throw new IOException2("Failed to wait for the Hub launch to complete",e);
         }
 
-        LOGGER.fine("Going to start "+nrc+" RCs on "+c.getName());
+        LOGGER.fine("Starting Selenium Grid nodes on "+c.getName());
         final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
         final long jarTimestamp = seleniumJar.lastModified();
         
@@ -134,23 +133,21 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                 }
 
                 try {
-                    for (int i=0; i<nrc; i++) {
-                        // this is potentially unsafe way to figure out a free port number, but it's far easier
-                        // than patching Selenium
-                        ServerSocket ss = new ServerSocket(0);
-                        int port = ss.getLocalPort();
-                        ss.close();
+                    // this is potentially unsafe way to figure out a free port number, but it's far easier
+                    // than patching Selenium
+                    ServerSocket ss = new ServerSocket(0);
+                    int port = ss.getLocalPort();
+                    ss.close();
 
-                        String[] defaultArgs = new String[] {
-                                "-role","node",
-                                "-host",hostName,
-                                "-port",String.valueOf(port),
-//                                "-env",labelList.toString(),
-                                "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
-                        PluginImpl.createSeleniumRCVM(localJar,listener).callAsync(
-                                new RemoteControlLauncher( nodeName,
-                                        (String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
-                    }
+                    String[] defaultArgs = new String[] {
+                            "-role","node",
+                            "-host",hostName,
+                            "-port",String.valueOf(port),
+//                          "-env",labelList.toString(),
+                            "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
+                    PluginImpl.createSeleniumRCVM(localJar,listener).callAsync(
+                            new RemoteControlLauncher( nodeName,
+                                    (String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
                 } catch (Exception t) {
                     LOGGER.log(Level.WARNING,"Selenium RC launch failed",t);
                     throw new IOException2("Selenium RC launch interrupted",t);
