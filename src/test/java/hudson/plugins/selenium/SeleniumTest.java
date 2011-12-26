@@ -6,6 +6,12 @@ import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.tasks.Mailer;
 import org.jvnet.hudson.test.HudsonTestCase;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+import java.net.URL;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -18,7 +24,7 @@ public class SeleniumTest extends HudsonTestCase {
         return h;
     }
 
-    public void testRun() throws Exception {
+    public void testSelenium1() throws Exception {
         getPlugin().waitForHubLaunch();
         
         // system config to set the root URL
@@ -29,7 +35,7 @@ public class SeleniumTest extends HudsonTestCase {
         Thread.sleep(5000);
 
         Selenium browser = new DefaultSelenium("localhost",
-            4444, "foo:*firefox"/* /usr/lib/firefox-3.6.3/firefox-bin"*/, "http://www.google.com");
+            4444, "*firefox"/* /usr/lib/firefox-3.6.3/firefox-bin"*/, "http://www.google.com");
         browser.start();
 
         try {
@@ -42,8 +48,23 @@ public class SeleniumTest extends HudsonTestCase {
         } finally {
             browser.stop();
         }
-    }
 
+
+        DesiredCapabilities dc = DesiredCapabilities.firefox();
+        dc.setCapability("jenkins.label","foo");
+        WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+
+        try {
+            wd.get("http://www.yahoo.com/");
+            wd.findElement(By.name("p")).sendKeys("hello world");
+            wd.findElement(By.id("search-submit")).click();
+            assertTrue(wd.getTitle().contains("hello world"));
+            assertTrue(wd.getTitle().contains("Yahoo"));
+        } finally {
+            wd.close();
+        }
+    }
+    
     private void waitForRC() throws Exception {
         for(int i=0; i<100; i++) {
             if(!getPlugin().getRemoteControls().isEmpty())
@@ -60,10 +81,10 @@ public class SeleniumTest extends HudsonTestCase {
     public void testLabelMatch() throws Exception {
         createSlave(Label.get("foo"));
 
-        Selenium browser = new DefaultSelenium("localhost",
-            4444, "bar:*firefox"/* /usr/lib/firefox-3.6.3/firefox-bin"*/, "http://www.google.com");
+        DesiredCapabilities dc = DesiredCapabilities.firefox();
+        dc.setCapability("jenkins.label","bar");
         try {
-            browser.start();
+            new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
             fail(); // should have failed
         } catch (Exception e) {
             e.printStackTrace();
