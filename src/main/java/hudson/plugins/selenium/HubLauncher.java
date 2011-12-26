@@ -1,6 +1,7 @@
 package hudson.plugins.selenium;
 
 import hudson.remoting.Callable;
+import hudson.remoting.Channel;
 import org.openqa.grid.internal.utils.GridHubConfiguration;
 import org.openqa.grid.web.Hub;
 
@@ -30,6 +31,7 @@ public class HubLauncher implements Callable<Void,Exception> {
 
         GridHubConfiguration c = GridHubConfiguration.build(args);
         c.setPort(port);  
+        c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
         Hub hub = new Hub(c);
         hub.start();
         RegistryHolder.registry = hub.getRegistry();

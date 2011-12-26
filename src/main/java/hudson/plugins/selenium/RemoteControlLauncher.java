@@ -7,6 +7,7 @@ import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.selenium.server.SeleniumServer;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Launches Selenium RC.
@@ -18,8 +19,10 @@ import java.util.Arrays;
  */
 public class RemoteControlLauncher implements Callable<Void,Exception> {
     private final String[] args;
+    private final String nodeName;
 
-    public RemoteControlLauncher(String[] args) {
+    public RemoteControlLauncher(String nodeName, String[] args) {
+        this.nodeName = nodeName;
         this.args = args;
     }
 
@@ -31,6 +34,7 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
             System.out.println(Which.jarFile(SeleniumServer.class));
 
             RegistrationRequest c = RegistrationRequest.build(args);
+            c.addDesiredCapability(Collections.singletonMap(JenkinsCapabilityMatcher.NODE_NAME,(Object)nodeName));
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
             remote.startRemoteServer();
             remote.startRegistrationProcess();

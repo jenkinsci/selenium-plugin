@@ -112,6 +112,8 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         LOGGER.fine("Going to start "+nrc+" RCs on "+c.getName());
         final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
         final long jarTimestamp = seleniumJar.lastModified();
+        
+        final String nodeName = c.getName();
 
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
             public Object invoke(File f, VirtualChannel channel) throws IOException {
@@ -146,7 +148,8 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
 //                                "-env",labelList.toString(),
                                 "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
                         PluginImpl.createSeleniumRCVM(localJar,listener).callAsync(
-                                new RemoteControlLauncher((String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
+                                new RemoteControlLauncher( nodeName,
+                                        (String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
                     }
                 } catch (Exception t) {
                     LOGGER.log(Level.WARNING,"Selenium RC launch failed",t);
