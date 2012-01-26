@@ -11,8 +11,6 @@ import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
 import hudson.util.IOException2;
-import org.apache.commons.lang.ArrayUtils;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +23,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.springframework.util.StringUtils;
+
 /**
  * When a new slave is connected, launch a selenium RC.
  *
@@ -32,13 +33,36 @@ import java.util.logging.Logger;
  */
 @Extension
 public class ComputerListenerImpl extends ComputerListener implements Serializable {
+	
+	Computer computer;
+	
+	/**
+	 * Handle when the configuration has changed ...
+	 */
+	@Override
+	public void onConfigurationChange() {
+		// how do I retrieve the node here ... ???
+		if (computer != null) computer.getClass();
+	}
+	
+	
     /**
      * Starts a selenium Grid node remotely.
      */
+	@Override
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
         LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
-        PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
+        computer = c;
+        
+        final NodePropertyImpl np = c.getNode().getNodeProperties().get(NodePropertyImpl.class);
+        if (np == null) {
+        	//the node is configured to not start a grid node
+        	LOGGER.fine("Node " + c.getNode().getDisplayName() + " is excluded from Selenium Grid because it is disabled");
+        	return;
+        }        
+        
+        final PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
         
         final String exclusions = p.getExclusionPatterns();
         List<String> exclusionPatterns = new ArrayList<String>();
@@ -77,30 +101,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         }
         labelList.append('/');
 
-        // user defined parameters for starting the RC
-        final List<String> userArgs = new ArrayList<String>();
-        if (hasText(p.getRcLog())){
-            userArgs.add("-log");
-            userArgs.add(p.getRcLog());
-        }
-        if (p.getRcBrowserSideLog()){
-            userArgs.add("-browserSideLog");
-        }
-        if (p.getRcDebug()){
-            userArgs.add("-debug");
-        }
-        if (p.getRcTrustAllSSLCerts()){
-            userArgs.add("-trustAllSSLCertificates");
-        }
-        if (p.getRcBrowserSessionReuse()) {
-        	userArgs.add("-browserSessionReuse");
-        }
-        if (hasText(p.getRcFirefoxProfileTemplate())){
-            userArgs.add("-firefoxProfileTemplate");
-            userArgs.add(p.getRcFirefoxProfileTemplate());
-        }
-
-
+        
         // make sure that Selenium Hub is started before we start RCs.
         try {
             p.waitForHubLaunch();
@@ -108,6 +109,15 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             throw new IOException2("Failed to wait for the Hub launch to complete",e);
         }
 
+        
+        // user defined parameters for starting the RC
+        final List<String> userArgs = np.getUserArgs();
+
+        if (userArgs == null) {
+        	// case where inherit from master, but master is not set to run ... 
+        	return;
+        }
+        
         listener.getLogger().println("Starting Selenium Grid nodes on "+c.getName());
 
         final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
@@ -115,7 +125,12 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         final String nodeName = c.getName();
 
         c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
-            public Object invoke(File f, VirtualChannel channel) throws IOException {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 4084996026699175443L;
+
+			public Object invoke(File f, VirtualChannel channel) throws IOException {
                 String alreadyStartedPropertyName = getClass().getName() + ".seleniumRcAlreadyStarted";
                 if (Boolean.valueOf(System.getProperty(alreadyStartedPropertyName))) {
                     LOGGER.info("Skipping Selenium RC execution because this slave has already started its RCs");
@@ -123,7 +138,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                 }
                 
                 File localJar = new File(f,seleniumJar.getName());
-                if (localJar.lastModified()!=jarTimestamp) {
+                if (localJar.lastModified() != jarTimestamp) {
                     try {
                         seleniumJar.copyTo(new FilePath(localJar));
                         localJar.setLastModified(jarTimestamp);
@@ -145,12 +160,14 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                             "-port",String.valueOf(port),
 //                          "-env",labelList.toString(),
                             "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
+                    
+                    // TODO change this
                     PluginImpl.createSeleniumRCVM(localJar,listener).callAsync(
                             new RemoteControlLauncher( nodeName,
                                     (String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
                 } catch (Exception t) {
-                    LOGGER.log(Level.WARNING,"Selenium RC launch failed",t);
-                    throw new IOException2("Selenium RC launch interrupted",t);
+                    LOGGER.log(Level.WARNING,"Selenium launch failed",t);
+                    throw new IOException2("Selenium launch interrupted",t);
                 }
 
                 System.setProperty(alreadyStartedPropertyName, Boolean.TRUE.toString());
@@ -159,9 +176,6 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         });
     }
 
-    private boolean hasText(String s){
-        return s != null && s.trim().length() > 0;
-    }
 
     private static final long serialVersionUID = 1L;
 

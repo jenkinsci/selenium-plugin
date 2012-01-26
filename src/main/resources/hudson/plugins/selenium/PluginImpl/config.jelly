@@ -2,30 +2,13 @@
   <j:scope>
     <j:set var="instance" value="${it}"/>
     <j:set var="descriptor" value="${it.descriptor}"/>
+    <j:set var="configurationType" value="${ct}"/>
     <f:section title="Selenium">
       <f:entry title="${%Selenium Grid Port}" field="port">
   	    <f:textbox />
   	</f:entry>
   	<f:advanced>
           <f:entry title="${%Exclude from grid}" field="exclusionPatterns">
-              <f:textbox />
-          </f:entry>
-          <f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
-              <f:checkbox />
-          </f:entry>
-          <f:entry title="${%Enable -debug}" field="rcDebug">
-              <f:checkbox />
-          </f:entry>
-          <f:entry title="${%Enable -trustAllSSLCertificates}" field="rcTrustAllSSLCerts">
-              <f:checkbox />
-          </f:entry>
-          <f:entry title="${%Enable -browserSessionReuse}" field="rcBrowserSessionReuse">
-              <f:checkbox />
-          </f:entry>
-          <f:entry title="${%Set -log}" field="rcLog">
-              <f:textbox />
-          </f:entry>
-          <f:entry title="${%Set -firefoxProfileTemplate}" field="rcFirefoxProfileTemplate">
               <f:textbox />
           </f:entry>
           <f:entry title="${%Set Hub Log Level}" field="hubLogLevel">
@@ -35,6 +18,21 @@
                   </j:forEach>
               </select>
           </f:entry>
+          <f:entry title="${%Set -newSessionWaitTimeout}" field="newSessionWaitTimeout">
+              <f:textbox />
+          </f:entry>
+          <f:entry title="${%Enable -throwOnCapabilityNotPresent}" field="throwOnCapabilityNotPresent">
+              <f:checkbox />
+          </f:entry>
+          
+          <f:entry title="${%Enable -debug}" field="rcDebug">
+              <f:checkbox />
+          </f:entry>
+          <f:entry title="${%Set -log}" field="rcLog">
+              <f:textbox />
+          </f:entry>
+          
+          
   	</f:advanced>
     </f:section>
   </j:scope>

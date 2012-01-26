@@ -18,7 +18,13 @@ import java.util.Arrays;
  * @author Kohsuke Kawaguchi
  */
 public class RemoteControlLauncher implements Callable<Void,Exception> {
-    private final String[] args;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6502768962889139192L;
+	
+	
+	private final String[] args;
     private final String nodeName;
 
     public RemoteControlLauncher(String nodeName, String[] args) {
@@ -35,7 +41,7 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
 
             RegistrationRequest c = RegistrationRequest.build(args);
             for (DesiredCapabilities dc : c.getCapabilities())
-                dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME,nodeName);
+                dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
             remote.startRemoteServer();
             remote.startRegistrationProcess();

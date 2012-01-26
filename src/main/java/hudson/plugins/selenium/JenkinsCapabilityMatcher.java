@@ -32,13 +32,13 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
             return false;
 
         Object label = requestedCapability.get(LABEL);
-        if (label==null)    return true;    // no additional matching required
+        if (label == null)    return true;    // no additional matching required
 
         String labelExpr = label.toString();
-        if (labelExpr.trim().length()==0)   return true;    // treat "" as null
+        if (labelExpr.trim().length() == 0)   return true;    // treat "" as null
 
         String nodeName = (String)currentCapability.get(NODE_NAME);
-        if (nodeName==null)
+        if (nodeName == null)
             return false;   // must have been added from elsewhere
 
         try {
