@@ -16,7 +16,12 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 public class HubLauncher implements Callable<Void,Exception> {
-    private final int port;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5658971914841423874L;
+	
+	private final int port;
     private final String[] args;
     private final Level logLevel;
 

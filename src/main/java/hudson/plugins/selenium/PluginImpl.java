@@ -26,22 +26,13 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
+import hudson.plugins.selenium.configuration.ConfigurationType;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.remoting.Which;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
 import hudson.util.StreamTaskListener;
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
-import org.kohsuke.stapler.framework.io.LargeText;
-import org.openqa.grid.internal.Registry;
-import org.openqa.grid.internal.RemoteProxy;
-import org.openqa.grid.internal.TestSlot;
-import org.openqa.grid.selenium.GridLauncher;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +46,19 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import net.sf.json.JSONObject;
+
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
+import org.kohsuke.stapler.framework.io.LargeText;
+import org.openqa.grid.internal.Registry;
+import org.openqa.grid.internal.RemoteProxy;
+import org.openqa.grid.internal.TestSlot;
+import org.openqa.grid.selenium.GridLauncher;
+import org.springframework.util.StringUtils;
+
 /**
  * Starts Selenium Grid server in another JVM.
  *
@@ -65,13 +69,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     private int port = 4444;
     private String exclusionPatterns;
-    private boolean rcBrowserSideLog;
-    private boolean rcDebug;
-    private boolean rcTrustAllSSLCerts;
-    private boolean rcBrowserSessionReuse;
-    private String rcFirefoxProfileTemplate;
-    private String rcLog;
+    private String newSessionWaitTimeout;
+    private boolean throwOnCapabilityNotPresent = false;
     private String hubLogLevel = "INFO";
+    private String debug; 
+    private String rcLog;
 
     /**
      * Channel to Selenium Grid JVM.
@@ -80,6 +82,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     private transient Future<?> hubLauncher;
 
+    @Override
     public void start() throws Exception {
         load();
         StreamTaskListener listener = new StreamTaskListener(getLogFile());
@@ -87,12 +90,25 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         channel = createSeleniumGridVM(root, listener);
         Level logLevel = hubLogLevel != null ? Level.parse(hubLogLevel) : Level.INFO;
         System.out.println("Starting Selenium Grid");
-        hubLauncher = channel.callAsync(new HubLauncher(port, new String[0]/*TODO: define args*/, logLevel));
+        
+        List<String> args = new ArrayList<String>();
+        if (StringUtils.hasText(getNewSessionWaitTimeout())) {
+        	args.add("-newSessionWaitTimeout");
+        	args.add(getNewSessionWaitTimeout());
+        }
+        if (getThrowOnCapabilityNotPresent()) {
+        	args.add("-throwOnCapabilityNotPresent");
+        	args.add(Boolean.toString(getThrowOnCapabilityNotPresent()));
+        }
+        
+        
+        hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[0])/*new String[0]TODO: define args*/, logLevel));
 
         Hudson.getInstance().getActions().add(this);
     }
 
-    public File getLogFile() {
+
+	public File getLogFile() {
         return new File(Hudson.getInstance().getRootDir(),"selenium.log");
     }
 
@@ -100,12 +116,12 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public void configure(StaplerRequest req, JSONObject formData) {
         port = formData.getInt("port");
         exclusionPatterns = formData.getString("exclusionPatterns");
-        rcLog = formData.getString("rcLog");
-        rcDebug = formData.getBoolean("rcDebug");
-        rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
-        rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
-        rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
-        rcFirefoxProfileTemplate = formData.getString("rcFirefoxProfileTemplate");
+//        rcLog = formData.getString("rcLog");
+//        rcDebug = formData.getBoolean("rcDebug");
+//        rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
+//        rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
+//        rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
+//        rcFirefoxProfileTemplate = formData.getString("rcFirefoxProfileTemplate");
         hubLogLevel = formData.getString("hubLogLevel");
         try {
             save();
@@ -145,40 +161,22 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     @Exported
-    public String getRcLog(){
-        return rcLog;
-    }
-
-    @Exported
-    public boolean getRcBrowserSideLog(){
-        return rcBrowserSideLog;
-    }
-
-    @Exported
-    public boolean getRcDebug(){
-        return rcDebug;
-    }
-
-    @Exported
-    public boolean getRcTrustAllSSLCerts() {
-        return rcTrustAllSSLCerts;
+    public String getNewSessionWaitTimeout() {
+    	return newSessionWaitTimeout;
     }
     
-    @Exported
-    public boolean getRcBrowserSessionReuse() {
-    	return rcBrowserSessionReuse;
-    }
-
-    @Exported
-    public String getRcFirefoxProfileTemplate(){
-        return rcFirefoxProfileTemplate;
-    }
-
     @Exported
     public String getHubLogLevel(){
         return hubLogLevel != null ? hubLogLevel : "INFO";
     }
 
+    @Exported
+    public boolean getThrowOnCapabilityNotPresent() {
+		return throwOnCapabilityNotPresent;
+	}
+
+    
+    @Override
     public void stop() throws Exception {
         channel.close();
     }
@@ -188,7 +186,12 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         if(channel==null)   return Collections.emptyList();
 
         return channel.call(new Callable<List<SeleniumTestSlot>,RuntimeException>() {
-            public List<SeleniumTestSlot> call() throws RuntimeException {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1791985298575049757L;
+
+			public List<SeleniumTestSlot> call() throws RuntimeException {
                 List<SeleniumTestSlot> r = new ArrayList<SeleniumTestSlot>();
                 
                 Registry registry = RegistryHolder.registry;
@@ -253,7 +256,8 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         new LargeText(getLogFile(),false).doProgressText(req,rsp);
     }
 
-    public Descriptor<PluginImpl> getDescriptor() {
+    @SuppressWarnings("unchecked")
+	public Descriptor<PluginImpl> getDescriptor() {
         return Hudson.getInstance().getDescriptorOrDie(getClass());
     }
 
