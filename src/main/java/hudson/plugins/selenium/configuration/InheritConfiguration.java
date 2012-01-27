@@ -5,12 +5,18 @@ import hudson.plugins.selenium.NodePropertyImpl;
 
 import java.util.List;
 
-public class InheritConfiguration extends ConfigurationType {
+public class InheritConfiguration extends ConfigurationDescriptor {
 
 	@Override
 	public List<String> getLaunchingArguments() {
         NodePropertyImpl np = Hudson.getInstance().getNodeProperties().get(NodePropertyImpl.class);
-        return (np == null || np.getConfigurationType() == null ? null : np.getConfigurationType().getLaunchingArguments());
+        return null;
+        //return (np == null || np.getConfigurationType() == null ? null : np.getConfigurationType().getLaunchingArguments());
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Inherit configuration";
 	}
 	
 }

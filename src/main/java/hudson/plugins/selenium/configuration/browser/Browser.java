@@ -7,6 +7,9 @@ import hudson.model.Hudson;
 
 import java.util.List;
 
+import org.kohsuke.stapler.export.ExportedBean;
+
+@ExportedBean
 public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 	
 	public BrowserDescriptor getDescriptor() {

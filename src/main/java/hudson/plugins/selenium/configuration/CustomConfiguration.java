@@ -8,7 +8,7 @@ import java.util.List;
 import org.kohsuke.stapler.export.Exported;
 import org.springframework.util.StringUtils;
 
-public class CustomConfiguration extends ConfigurationType {
+public class CustomConfiguration extends ConfigurationDescriptor {
 
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
@@ -76,6 +76,11 @@ public class CustomConfiguration extends ConfigurationType {
 			list.add(option);
 			list.add(value);
 		}
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "Custom configuration";
 	}
 	
 }
