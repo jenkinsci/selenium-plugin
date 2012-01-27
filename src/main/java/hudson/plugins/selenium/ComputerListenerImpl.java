@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * When a new slave is connected, launch a selenium RC.
  *
  * @author Kohsuke Kawaguchi
+ * @author Richard Lavoie
  */
 @Extension
 public class ComputerListenerImpl extends ComputerListener implements Serializable {

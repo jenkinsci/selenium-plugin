@@ -6,7 +6,7 @@ import java.util.List;
 import org.kohsuke.stapler.export.Exported;
 import org.springframework.util.StringUtils;
 
-public class FileConfiguration extends ConfigurationType {
+public class FileConfiguration extends ConfigurationDescriptor {
 
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
@@ -69,6 +69,11 @@ public class FileConfiguration extends ConfigurationType {
         	args.add(getRcFirefoxProfileTemplate());
         }
         return args;
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "File configuration";
 	}
 	
 }

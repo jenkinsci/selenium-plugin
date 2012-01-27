@@ -5,7 +5,7 @@ import java.util.List;
 
 import hudson.Extension;
 import hudson.model.Node;
-import hudson.plugins.selenium.configuration.ConfigurationType;
+import hudson.plugins.selenium.configuration.Configuration;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
 
@@ -21,19 +21,26 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public class NodePropertyImpl extends NodeProperty<Node> {
 	
-	ConfigurationType configType;
+	private int port = 4444;
+	Configuration configType;
 	
     @DataBoundConstructor
     public NodePropertyImpl() {}
     
     @Exported
-    public ConfigurationType getConfigurationType() {
+    public Configuration getConfigurationType() {
     	return configType;
+    }
+    
+    @Exported
+    public int getPort() {
+    	return port;
     }
     
 	public List<String> getUserArgs() {
 		if (configType == null) return new ArrayList<String>();
-		return configType.getLaunchingArguments();
+		return null;
+		//return configType.getLaunchingArguments();
 	}
 
     @Extension

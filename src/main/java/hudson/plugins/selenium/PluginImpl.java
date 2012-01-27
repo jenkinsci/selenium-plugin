@@ -26,7 +26,7 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
-import hudson.plugins.selenium.configuration.ConfigurationType;
+import hudson.plugins.selenium.configuration.Configuration;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.remoting.Which;
@@ -72,7 +72,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private String newSessionWaitTimeout;
     private boolean throwOnCapabilityNotPresent = false;
     private String hubLogLevel = "INFO";
-    private String debug; 
+    private String rcDebug; 
     private String rcLog;
 
     /**
@@ -88,7 +88,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         StreamTaskListener listener = new StreamTaskListener(getLogFile());
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
-        Level logLevel = hubLogLevel != null ? Level.parse(hubLogLevel) : Level.INFO;
+        Level logLevel = Level.parse(getHubLogLevel());
         System.out.println("Starting Selenium Grid");
         
         List<String> args = new ArrayList<String>();
@@ -100,7 +100,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         	args.add("-throwOnCapabilityNotPresent");
         	args.add(Boolean.toString(getThrowOnCapabilityNotPresent()));
         }
-        
         
         hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[0])/*new String[0]TODO: define args*/, logLevel));
 
@@ -168,6 +167,16 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     @Exported
     public String getHubLogLevel(){
         return hubLogLevel != null ? hubLogLevel : "INFO";
+    }
+    
+    @Exported
+    public String getRcDebug(){
+        return rcDebug;
+    }
+    
+    @Exported
+    public String getRcLog(){
+        return rcLog;
     }
 
     @Exported
