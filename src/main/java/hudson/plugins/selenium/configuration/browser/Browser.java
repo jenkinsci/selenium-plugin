@@ -19,6 +19,4 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
     public static DescriptorExtensionList<Browser,BrowserDescriptor> all() {
         return Hudson.getInstance().<Browser,BrowserDescriptor>getDescriptorList(Browser.class);
     }
-
-	public abstract List<String> getArgs();
 }

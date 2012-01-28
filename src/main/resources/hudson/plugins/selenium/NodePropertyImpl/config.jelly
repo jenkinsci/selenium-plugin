@@ -6,29 +6,9 @@
     <f:entry title="${%Selenium Grid Port}" field="port">
   	  <f:textbox />
   	</f:entry>
-  	<f:entry title="__">
-  		<f:descriptorRadioList title="Configuration Type" varName="config" instance="configType" descriptors="hudson.plugins.selenium.configuration.Configuration.all()"/>
-		  <f:radioBlock name="configType" value="Inherit" title="Inherit configuration" checked="false" />
-		  <f:radioBlock name="configType" value="Custom" title="Custom configuration" checked="false">
-			  <f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -debug}" field="rcDebug">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -trustAllSSLCertificates}" field="rcTrustAllSSLCerts">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -browserSessionReuse}" field="rcBrowserSessionReuse">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Set -log}" field="rcLog">
-			      <f:textbox />
-			  </f:entry>
-			  <f:entry title="${%Set -firefoxProfileTemplate}" field="rcFirefoxProfileTemplate">
-			      <f:textbox />
-			  </f:entry>
-		  </f:radioBlock>
+  	
+  	<f:entry>
+  		<f:descriptorRadioList title="Types" varName="config" instance="${it}" descriptors="it.configTypes()" />
   	</f:entry>
   </j:scope>
 </j:jelly>

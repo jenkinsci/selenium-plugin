@@ -1,12 +1,14 @@
 package hudson.plugins.selenium.configuration;
 
+import hudson.Extension;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.stapler.export.Exported;
 import org.springframework.util.StringUtils;
 
-public class FileConfiguration extends ConfigurationDescriptor {
+public class FileConfiguration extends Configuration {
 
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
@@ -71,9 +73,13 @@ public class FileConfiguration extends ConfigurationDescriptor {
         return args;
 	}
 
-	@Override
-	public String getDisplayName() {
-		return "File configuration";
+	@Extension
+	public static class DescriptorImpl extends ConfigurationDescriptor {
+
+		@Override
+		public String getDisplayName() {
+			return "File configuration";
+		}
 	}
 	
 }

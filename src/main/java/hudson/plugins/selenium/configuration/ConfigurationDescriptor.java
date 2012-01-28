@@ -16,6 +16,4 @@ public abstract class ConfigurationDescriptor extends
 	protected ConfigurationDescriptor() {
 	}
 	
-	public abstract List<String> getLaunchingArguments();
-
 }

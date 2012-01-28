@@ -1,6 +1,7 @@
 package hudson.plugins.selenium.configuration;
 
-import hudson.plugins.selenium.configuration.browser.Browser;
+import hudson.Extension;
+import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 import org.kohsuke.stapler.export.Exported;
 import org.springframework.util.StringUtils;
 
-public class CustomConfiguration extends ConfigurationDescriptor {
+public class CustomConfiguration extends Configuration {
 
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
@@ -16,7 +17,7 @@ public class CustomConfiguration extends ConfigurationDescriptor {
     private boolean rcBrowserSessionReuse;
     private String rcFirefoxProfileTemplate;
     private String rcLog;
-    private List<Browser> browsers = new ArrayList<Browser>();
+    private List<BrowserDescriptor> browsers = new ArrayList<BrowserDescriptor>();
 
     @Exported
     public String getRcLog(){
@@ -65,7 +66,7 @@ public class CustomConfiguration extends ConfigurationDescriptor {
         	args.add("-browserSessionReuse");
         }
         addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
-        for (Browser b : browsers) {
+        for (BrowserDescriptor b : browsers) {
         	args.addAll(b.getArgs());
         }
         return args;
@@ -77,10 +78,15 @@ public class CustomConfiguration extends ConfigurationDescriptor {
 			list.add(value);
 		}
 	}
+	
+	@Extension
+	public static class DescriptorImpl extends ConfigurationDescriptor {
 
-	@Override
-	public String getDisplayName() {
-		return "Custom configuration";
+		@Override
+		public String getDisplayName() {
+			return "Custom configuration";
+		}
+
 	}
 	
 }
