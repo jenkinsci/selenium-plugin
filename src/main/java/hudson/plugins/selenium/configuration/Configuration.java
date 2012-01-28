@@ -1,7 +1,8 @@
 package hudson.plugins.selenium.configuration;
 
+import java.util.List;
+
 import hudson.DescriptorExtensionList;
-import hudson.model.AbstractModelObject;
 import hudson.model.Describable;
 import hudson.model.Hudson;
 import hudson.model.Node;
@@ -9,7 +10,7 @@ import hudson.model.Node;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
-public abstract class Configuration extends AbstractModelObject implements Describable<Configuration> {
+public abstract class Configuration implements Describable<Configuration> {
 
 
 	public ConfigurationDescriptor getDescriptor() {
@@ -24,5 +25,6 @@ public abstract class Configuration extends AbstractModelObject implements Descr
         return Hudson.getInstance().<Configuration,ConfigurationDescriptor>getDescriptorList(Configuration.class);
     }
     
-	
+	public abstract List<String> getLaunchingArguments();
+
 }
