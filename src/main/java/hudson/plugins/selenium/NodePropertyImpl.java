@@ -66,7 +66,7 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 		public NodeProperty<?> newInstance(StaplerRequest req, JSONObject json) {
 			Configuration conf = null;
 			try {
-				conf = Configuration.all().newInstanceFromRadioList(json, "configuration");
+				conf = Configuration.all().get(json.getJSONObject("configuration").getInt("value")).newInstance(req, json);
 			} catch (FormException e) {
 				e.printStackTrace();
 			}
