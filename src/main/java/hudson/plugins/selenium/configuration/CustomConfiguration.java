@@ -1,11 +1,14 @@
 package hudson.plugins.selenium.configuration;
 
+import hudson.DescriptorExtensionList;
 import hudson.Extension;
+import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 import org.springframework.util.StringUtils;
 
@@ -19,6 +22,11 @@ public class CustomConfiguration extends Configuration {
     private String rcLog;
     private List<BrowserDescriptor> browsers = new ArrayList<BrowserDescriptor>();
 
+    @DataBoundConstructor
+    public CustomConfiguration() {
+    	
+    }
+    
     @Exported
     public String getRcLog(){
         return rcLog;
@@ -78,6 +86,10 @@ public class CustomConfiguration extends Configuration {
 			list.add(value);
 		}
 	}
+
+	public DescriptorExtensionList<Browser, BrowserDescriptor> getBrowserTypes() {
+		return Browser.all();
+	}
 	
 	@Extension
 	public static class DescriptorImpl extends ConfigurationDescriptor {
@@ -85,6 +97,10 @@ public class CustomConfiguration extends Configuration {
 		@Override
 		public String getDisplayName() {
 			return "Custom configuration";
+		}
+		
+		public DescriptorExtensionList<Browser, BrowserDescriptor> getBrowserTypes() {
+			return Browser.all();
 		}
 
 	}

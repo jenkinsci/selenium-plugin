@@ -26,7 +26,6 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
-import hudson.plugins.selenium.configuration.Configuration;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.remoting.Which;
@@ -101,7 +100,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         	args.add(Boolean.toString(getThrowOnCapabilityNotPresent()));
         }
         
-        hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[0])/*new String[0]TODO: define args*/, logLevel));
+        hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[0]), logLevel));
 
         Hudson.getInstance().getActions().add(this);
     }

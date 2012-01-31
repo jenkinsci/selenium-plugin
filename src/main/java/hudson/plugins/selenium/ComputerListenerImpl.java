@@ -11,6 +11,7 @@ import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
 import hudson.util.IOException2;
+import hudson.plugins.selenium.RemoteControlLauncher;
 
 import java.io.File;
 import java.io.IOException;

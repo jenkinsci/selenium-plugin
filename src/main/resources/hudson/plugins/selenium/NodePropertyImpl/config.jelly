@@ -1,14 +1,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <j:scope>
-    <j:set var="instance" value="${it}"/>
-    <j:set var="descriptor" value="${it.descriptor}"/>
-    <j:set var="configurationType" value="${ct}"/>
-    <f:entry title="${%Selenium Grid Port}" field="port">
-  	  <f:textbox />
-  	</f:entry>
-  	
-  	<f:entry>
-  		<f:descriptorRadioList title="Types" varName="config" instance="${it}" descriptors="it.configTypes()" />
-  	</f:entry>
-  </j:scope>
+  	<j:scope>
+   		<f:entry>
+   			
+   			<f:descriptorRadioList title="Types" varName="configuration" instance="${instance.configurationType}" descriptors="${descriptor.types}" targetType="${hudson.plugins.selenium.configuration.Configuration.class}" />
+		</f:entry>
+  	</j:scope>
 </j:jelly>
