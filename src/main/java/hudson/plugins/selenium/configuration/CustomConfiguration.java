@@ -2,13 +2,17 @@ package hudson.plugins.selenium.configuration;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
+import hudson.model.Descriptor;
 import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.springframework.util.StringUtils;
 
@@ -99,10 +103,19 @@ public class CustomConfiguration extends Configuration {
 			return "Custom configuration";
 		}
 		
-		public DescriptorExtensionList<Browser, BrowserDescriptor> getBrowserTypes() {
-			return Browser.all();
+		@Override
+		public Configuration newInstance(StaplerRequest req, JSONObject json) {
+			return null;
 		}
-
+		
+		public static List<Descriptor<Browser>> getBrowserTypes() {
+			List<Descriptor<Browser>> lst = new ArrayList<Descriptor<Browser>>();
+			for (BrowserDescriptor b : Browser.all()) {
+				lst.add(b);
+			}
+			return lst;
+		}
+		
 	}
 	
 }

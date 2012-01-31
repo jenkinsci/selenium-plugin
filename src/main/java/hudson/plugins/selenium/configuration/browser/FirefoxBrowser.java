@@ -1,11 +1,10 @@
 package hudson.plugins.selenium.configuration.browser;
 
 import hudson.Extension;
-import hudson.model.Descriptor;
 
 import java.util.List;
 
-@Extension
+
 public class FirefoxBrowser extends Browser {
 	
 	

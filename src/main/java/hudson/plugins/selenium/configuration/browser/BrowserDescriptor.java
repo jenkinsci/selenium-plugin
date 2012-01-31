@@ -7,7 +7,13 @@ import hudson.model.Descriptor;
 public abstract class BrowserDescriptor extends
 		Descriptor<Browser> {
 
-	public int maxInstances = 0;
+	private int maxInstances = 0;
+	private String browserName;
+	
+	protected BrowserDescriptor(int instances, String name) {
+		maxInstances = instances;
+		browserName = name;
+	}
 	
 	// define additional constructor parameters if you want
 	protected BrowserDescriptor(
