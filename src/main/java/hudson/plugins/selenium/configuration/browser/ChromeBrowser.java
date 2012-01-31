@@ -1,8 +1,6 @@
 package hudson.plugins.selenium.configuration.browser;
 
 import hudson.Extension;
-import hudson.model.Descriptor;
-import hudson.plugins.selenium.PluginImpl;
 
 import java.util.List;
 

@@ -5,7 +5,6 @@ import hudson.model.Descriptor;
 
 import java.util.List;
 
-@Extension
 public class IEBrowser extends Browser {
 	
     @Extension

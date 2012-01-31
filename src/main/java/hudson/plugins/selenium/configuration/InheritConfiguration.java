@@ -6,8 +6,15 @@ import hudson.plugins.selenium.NodePropertyImpl;
 
 import java.util.List;
 
+import org.kohsuke.stapler.DataBoundConstructor;
+
 public class InheritConfiguration extends Configuration {
 
+	@DataBoundConstructor
+	public InheritConfiguration() {
+		
+	}
+	
 	@Override
 	public List<String> getLaunchingArguments() {
         NodePropertyImpl np = Hudson.getInstance().getNodeProperties().get(NodePropertyImpl.class);

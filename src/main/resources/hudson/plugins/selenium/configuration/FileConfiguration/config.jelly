@@ -1,37 +1,5 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-<f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
-			      <f:textbox />
-			  </f:entry>
-			  <f:entry title="${%Set -log}" field="rcLog">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -debug}" field="rcDebug">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -trustAllSSLCertificates}" field="rcTrustAllSSLCerts">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -browserSessionReuse}" field="rcBrowserSessionReuse">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Set -log}" field="rcLog">
-			      <f:textbox />
-			  </f:entry>
-			  <!-- This config should now be in the particular firefox browser configuration ...
-			  	   Problem is that it is valid with RC1, but not RC2 ... I guess I'll have to add 
-			  	   another special configuration type to handle RC1 configs, as well as WebDriver 
-			  	   (selenium 2) configs to offer the old and the new stuff ...
-			  	    
-			  <f:entry title="${%Set -firefoxProfileTemplate}" field="rcFirefoxProfileTemplate">
-			      <f:textbox />
-			  </f:entry>
-			  -->
-	
-	<!-- something like this for the browsers ... 
-	<f:hetero-list name="browser" hasHeader="true"
-                     descriptors="${h.getBuilderDescriptors(it)}"
-                     items="${it.builders}"
-                     addCaption="${%Add browser}"/>
-                     
-    -->
+	<f:entry title="${%File URL}" field="fileURL">
+		<f:textbox />
+	</f:entry>
 </j:jelly>

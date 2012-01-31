@@ -1,10 +1,10 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-<f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
-			      <f:textbox />
-			  </f:entry>
-			  <f:entry title="${%Set -log}" field="rcLog">
-			      <f:checkbox />
-			  </f:entry>
+	<f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
+      	<f:textbox />
+	</f:entry>
+	<f:entry title="${%Set -log}" field="rcLog">
+		<f:checkbox />
+	</f:entry>
 			  <f:entry title="${%Enable -debug}" field="rcDebug">
 			      <f:checkbox />
 			  </f:entry>
@@ -26,12 +26,10 @@
 			      <f:textbox />
 			  </f:entry>
 			  -->
-	
-	<!-- something like this for the browsers ... 
-	<f:hetero-list name="browser" hasHeader="true"
-                     descriptors="${h.getBuilderDescriptors(it)}"
-                     items="${it.builders}"
+	<f:entry>
+	<f:hetero-list name="browsers" hasHeader="true"
+                     descriptors="${configuration.getBrowserTypes()}"
+                     items="${configuration.getBrowserTypes()}"
                      addCaption="${%Add browser}"/>
-                     
-    -->
+                     </f:entry>
 </j:jelly>
