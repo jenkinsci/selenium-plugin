@@ -12,7 +12,6 @@ import hudson.slaves.NodePropertyDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.json.JSONObject;
 
