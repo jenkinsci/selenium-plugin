@@ -18,11 +18,11 @@ import org.springframework.util.StringUtils;
 
 public class CustomConfiguration extends Configuration {
 
+	private int port = 4444;
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
     private boolean rcTrustAllSSLCerts;
     private boolean rcBrowserSessionReuse;
-    private String rcFirefoxProfileTemplate;
     private String rcLog;
     private List<BrowserDescriptor> browsers = new ArrayList<BrowserDescriptor>();
 
@@ -55,12 +55,18 @@ public class CustomConfiguration extends Configuration {
     public boolean getRcBrowserSessionReuse() {
     	return rcBrowserSessionReuse;
     }
-
+    
     @Exported
-    public String getRcFirefoxProfileTemplate(){
-        return rcFirefoxProfileTemplate;
+    public int getPort() {
+    	return port;
     }
 
+    @Exported
+    public List<BrowserDescriptor> getBrowsers() {
+    	return browsers;
+    }
+    
+    
 	@Override
 	public List<String> getLaunchingArguments() {
         List<String> args = new ArrayList<String>();
@@ -77,7 +83,7 @@ public class CustomConfiguration extends Configuration {
         if (getRcBrowserSessionReuse()) {
         	args.add("-browserSessionReuse");
         }
-        addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
+        //addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
         for (BrowserDescriptor b : browsers) {
         	args.addAll(b.getArgs());
         }
@@ -105,9 +111,10 @@ public class CustomConfiguration extends Configuration {
 		
 		@Override
 		public CustomConfiguration newInstance(StaplerRequest req, JSONObject json) {
-			String rcLog = json.getString("rcLog");
 			
-			return null;
+			//String rcLog = json.getString("rcLog");
+			
+			return req.bindJSON(CustomConfiguration.class, json);
 		}
 		
 		public static List<Descriptor<Browser>> getBrowserTypes() {

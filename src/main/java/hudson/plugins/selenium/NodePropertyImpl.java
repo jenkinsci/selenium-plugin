@@ -49,7 +49,6 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 	@Extension
 	public static class DescriptorImpl extends NodePropertyDescriptor {
 
-		private int port = 4444;
 		Configuration configType;
 		
 		@Override
@@ -71,7 +70,6 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 			} catch (FormException e) {
 				e.printStackTrace();
 			}
-
 			return new NodePropertyImpl(conf);
 		}
 		
