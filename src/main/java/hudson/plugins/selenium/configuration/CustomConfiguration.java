@@ -128,9 +128,9 @@ public class CustomConfiguration extends Configuration {
         	opt.addOption("-browserSessionReuse");
         }
         //addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
-        //for (BrowserDescriptor b : browsers) {
-//        	args.addAll(b.getArgs());
-        //}
+        for (Browser b : browsers) {
+        	b.initOptions(c, opt);
+        }
 
 		return null;
 	}

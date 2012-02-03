@@ -12,24 +12,20 @@ public class IEBrowser extends Browser {
 	
 	@DataBoundConstructor
 	public IEBrowser(int maxInstances, String version, String binary) {
-		super(maxInstances, version, BrowserType.IEXPLORE);
+		super(maxInstances, version);
+	}
+	
+	public String getBrowserName() {
+		return BrowserType.IEXPLORE;
 	}
 	
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {
 
-    	public DescriptorImpl() {
-    		super(1, BrowserType.IEXPLORE);
-    	}
-	
 		@Override
 		public String getDisplayName() {
 			return "Internet Explorer";
 		}
-		
-		@Override
-		public List<String> getArgs() {
-			return null;
-		}
+
     }
 }
