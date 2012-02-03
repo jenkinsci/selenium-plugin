@@ -2,6 +2,7 @@ package hudson.plugins.selenium.configuration.browser;
 
 import hudson.Extension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -13,7 +14,7 @@ public class ChromeBrowser extends Browser {
 	
 	@DataBoundConstructor
 	public ChromeBrowser(int maxInstances, String version, String binary) {
-		super(maxInstances, version, BrowserType.CHROME);
+		super(maxInstances, version);
 		this.binary = binary;
 	}
 	
@@ -21,28 +22,25 @@ public class ChromeBrowser extends Browser {
 		return binary;
 	}
 	
+	
+	@Override
+	public String getBrowserName() {
+		return BrowserType.CHROME;
+	}
+
+	public List<String> getAdditionnalArgs() {
+		List<String> args = new ArrayList<String>();
+		combine(args, "chrome.binary", binary);
+		return args;
+	}
+	
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {
-    	
-    	String binary_path;
-    	
-    	public DescriptorImpl() {
-    		super(5, BrowserType.CHROME);
-    	}
     	
         @Override
         public String getDisplayName() {
             return "Chrome";
         }
-        
-    	@Override
-    	public List<String> getArgs() {
-    		List<String> options = super.getArgs();
-    		combine(options, "chrome.binary", binary_path);
-    		return options;
-    	}
 
     }
-	
-	
 }
