@@ -2,6 +2,7 @@ package hudson.plugins.selenium;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
+import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.plugins.selenium.configuration.Configuration;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
@@ -11,6 +12,7 @@ import hudson.slaves.NodePropertyDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONObject;
 
@@ -82,5 +84,9 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 
 		public static final Configuration DEFAULT_CONFIGURATION = new InheritConfiguration();
 
+	}
+
+	public SeleniumRunOptions initOptions(Computer c) {
+		return configType.initOptions(c);
 	}
 }

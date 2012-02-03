@@ -27,9 +27,9 @@
 			  </f:entry>
 			  -->
 	<f:entry>
-	<f:hetero-list name="${%Browsers}" hasHeader="true"
+	<f:hetero-list name="browsers" hasHeader="true"
                      descriptors="${descriptor.browserTypes}"
-                     items="${browsersList}"
+                     items="${instance.browsers}"
                      addCaption="${%Add browser}"
                      deleteCaption="${%Remove browser}"
                      />

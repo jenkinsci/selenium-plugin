@@ -2,7 +2,9 @@ package hudson.plugins.selenium.configuration;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
+import hudson.model.Computer;
 import hudson.model.Descriptor;
+import hudson.plugins.selenium.SeleniumRunOptions;
 import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 
@@ -24,10 +26,23 @@ public class CustomConfiguration extends Configuration {
     private boolean rcTrustAllSSLCerts;
     private boolean rcBrowserSessionReuse;
     private String rcLog;
-    private List<BrowserDescriptor> browsers = new ArrayList<BrowserDescriptor>();
+    private List<? extends Browser> browsers = new ArrayList<Browser>();
 
     @DataBoundConstructor
-    public CustomConfiguration() {
+    public CustomConfiguration(int port, 
+    							boolean rcBrowserSideLog, 
+    							boolean rcDebug, 
+    							boolean rcTrustAllSSLCerts, 
+    							boolean rcBrowserSessionReuse,
+    							String rcLog, 
+    							List<? extends Browser> browsers) {
+    	this.port = port;
+    	this.rcBrowserSideLog = rcBrowserSideLog;
+    	this.rcDebug = rcDebug;
+    	this.rcTrustAllSSLCerts = rcTrustAllSSLCerts;
+    	this.rcBrowserSessionReuse = rcBrowserSessionReuse;
+    	this.rcLog = rcLog;
+    	this.browsers = browsers;
     	
     }
     
@@ -62,41 +77,10 @@ public class CustomConfiguration extends Configuration {
     }
 
     @Exported
-    public List<BrowserDescriptor> getBrowsers() {
+    public List<? extends Browser> getBrowsers() {
     	return browsers;
     }
     
-    
-	@Override
-	public List<String> getLaunchingArguments() {
-        List<String> args = new ArrayList<String>();
-        addIfHasText(args, "-log", getRcLog());
-        if (getRcBrowserSideLog()){
-        	args.add("-browserSideLog");
-        }
-        if (getRcDebug()){
-        	args.add("-debug");
-        }
-        if (getRcTrustAllSSLCerts()){
-        	args.add("-trustAllSSLCertificates");
-        }
-        if (getRcBrowserSessionReuse()) {
-        	args.add("-browserSessionReuse");
-        }
-        //addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
-        for (BrowserDescriptor b : browsers) {
-        	args.addAll(b.getArgs());
-        }
-        return args;
-	}
-	
-	private void addIfHasText(List<String> list, String option, String value) {
-		if (StringUtils.hasText(value)) {
-			list.add(option);
-			list.add(value);
-		}
-	}
-
 	public DescriptorExtensionList<Browser, BrowserDescriptor> getBrowserTypes() {
 		return Browser.all();
 	}
@@ -125,6 +109,30 @@ public class CustomConfiguration extends Configuration {
 			return lst;
 		}
 		
+	}
+
+	@Override
+	public SeleniumRunOptions initOptions(Computer c) {
+		SeleniumRunOptions opt = new SeleniumRunOptions();
+        opt.addOptionIfSet("-log", getRcLog());
+        if (getRcBrowserSideLog()){
+        	opt.addOption("-browserSideLog");
+        }
+        if (getRcDebug()){
+        	opt.addOption("-debug");
+        }
+        if (getRcTrustAllSSLCerts()){
+        	opt.addOption("-trustAllSSLCertificates");
+        }
+        if (getRcBrowserSessionReuse()) {
+        	opt.addOption("-browserSessionReuse");
+        }
+        //addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
+        //for (BrowserDescriptor b : browsers) {
+//        	args.addAll(b.getArgs());
+        //}
+
+		return null;
 	}
 	
 }

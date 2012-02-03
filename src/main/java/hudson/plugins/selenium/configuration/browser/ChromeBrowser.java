@@ -4,9 +4,22 @@ import hudson.Extension;
 
 import java.util.List;
 
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.openqa.selenium.remote.BrowserType;
 
 public class ChromeBrowser extends Browser {
+	
+	String binary;
+	
+	@DataBoundConstructor
+	public ChromeBrowser(int maxInstances, String version, String binary) {
+		super(maxInstances, version, BrowserType.CHROME);
+		this.binary = binary;
+	}
+	
+	public String getBinary() {
+		return binary;
+	}
 	
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {

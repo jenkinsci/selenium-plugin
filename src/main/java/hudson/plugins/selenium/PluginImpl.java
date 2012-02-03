@@ -41,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -240,10 +241,10 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      * @param standaloneServerJar
      *      The jar file of the grid to launch.
      */
-    static /*package*/ Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener) throws IOException, InterruptedException {
+    static /*package*/ Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties) throws IOException, InterruptedException {
         return Channels.newJVM("Selenium RC",listener,null,
                 new ClasspathBuilder().add(standaloneServerJar),
-                null);
+                properties);
     }
 
     /**
