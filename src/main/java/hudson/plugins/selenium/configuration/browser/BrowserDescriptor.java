@@ -1,8 +1,9 @@
 package hudson.plugins.selenium.configuration.browser;
 
-import java.util.List;
-
 import hudson.model.Descriptor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BrowserDescriptor extends
 		Descriptor<Browser> {
@@ -24,5 +25,25 @@ public abstract class BrowserDescriptor extends
 	protected BrowserDescriptor() {
 	}
 	
-	public abstract List<String> getArgs();
+	public int getMaxInstances() {
+		return maxInstances;
+	}
+
+	public List<String> getJVMArgs() {
+		List<String> args = new ArrayList<String>();
+		return args;
+	}
+	
+	public List<String> getArgs() {
+		List<String> args = new ArrayList<String>();
+		combine(args, "browserName", browserName);
+		combine(args, "maxInstances", maxInstances);
+		return args;
+	}
+	
+    public static void combine(List<String> options, String key, Object value) {
+    	if (value != null) {
+    		options.add(key + "=" + value.toString());
+    	}
+    }
 }

@@ -71,7 +71,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private String newSessionWaitTimeout;
     private boolean throwOnCapabilityNotPresent = false;
     private String hubLogLevel = "INFO";
-    private String rcDebug; 
+    private boolean rcDebug; 
     private String rcLog;
 
     /**
@@ -114,8 +114,8 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public void configure(StaplerRequest req, JSONObject formData) {
         port = formData.getInt("port");
         exclusionPatterns = formData.getString("exclusionPatterns");
-//        rcLog = formData.getString("rcLog");
-//        rcDebug = formData.getBoolean("rcDebug");
+        rcLog = formData.getString("rcLog");
+        rcDebug = formData.getBoolean("rcDebug");
 //        rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
 //        rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
 //        rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
@@ -169,7 +169,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
     
     @Exported
-    public String getRcDebug(){
+    public boolean getRcDebug(){
         return rcDebug;
     }
     

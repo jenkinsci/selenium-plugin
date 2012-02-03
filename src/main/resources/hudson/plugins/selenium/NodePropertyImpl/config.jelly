@@ -1,7 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   	<j:scope>
    		<f:entry>
-   			
    			<f:descriptorRadioList title="Types" varName="configuration" instance="${instance.configurationType}" descriptors="${descriptor.types}" targetType="${hudson.plugins.selenium.configuration.Configuration.class}" />
 		</f:entry>
   	</j:scope>
