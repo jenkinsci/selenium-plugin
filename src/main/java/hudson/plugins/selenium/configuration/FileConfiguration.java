@@ -4,8 +4,6 @@ import hudson.Extension;
 import hudson.model.Computer;
 import hudson.plugins.selenium.SeleniumRunOptions;
 
-import java.util.List;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class FileConfiguration extends Configuration {
