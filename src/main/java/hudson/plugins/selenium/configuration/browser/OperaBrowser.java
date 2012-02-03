@@ -4,12 +4,19 @@ import hudson.Extension;
 
 import java.util.List;
 
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.openqa.selenium.remote.BrowserType;
 
 
 public class OperaBrowser extends Browser {
 	
+	String binary;
 	
+	@DataBoundConstructor
+	public OperaBrowser(int maxInstances, String version, String binary) {
+		super(maxInstances, version, BrowserType.OPERA);
+		this.binary = binary;
+	}
 	
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {

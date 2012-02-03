@@ -5,9 +5,15 @@ import hudson.model.Descriptor;
 
 import java.util.List;
 
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.openqa.selenium.remote.BrowserType;
 
 public class IEBrowser extends Browser {
+	
+	@DataBoundConstructor
+	public IEBrowser(int maxInstances, String version, String binary) {
+		super(maxInstances, version, BrowserType.IEXPLORE);
+	}
 	
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {

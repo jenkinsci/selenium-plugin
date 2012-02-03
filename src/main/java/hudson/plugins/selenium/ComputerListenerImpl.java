@@ -11,7 +11,6 @@ import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
 import hudson.util.IOException2;
-import hudson.plugins.selenium.RemoteControlLauncher;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +19,7 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,13 +97,11 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             throw new IOException2("Failed to wait for the Hub launch to complete",e);
         }
 
-        
-        // user defined parameters for starting the RC
-        final List<String> userArgs = np.getUserArgs();
 
-        if (userArgs == null) {
-        	// case where inherit from master, but master is not set to run ... 
-        	return;
+        final SeleniumRunOptions options = np.initOptions(c);
+        if (options == null) {
+        	// if configuration returned no options, that means it doesn't want to start selenium
+        	return;        	
         }
         
         listener.getLogger().println("Starting Selenium Grid nodes on "+c.getName());
@@ -150,9 +148,9 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
                             "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
                     
                     // TODO change this
-                    PluginImpl.createSeleniumRCVM(localJar,listener).callAsync(
+                    PluginImpl.createSeleniumRCVM(localJar,listener, options.getJVMArguments()).callAsync(
                             new RemoteControlLauncher( nodeName,
-                                    (String[]) ArrayUtils.addAll(defaultArgs, userArgs.toArray(new String[0]))));
+                                    (String[]) ArrayUtils.addAll(defaultArgs, options.getSeleniumArguments().toArray(new String[0]))));
                 } catch (Exception t) {
                     LOGGER.log(Level.WARNING,"Selenium launch failed",t);
                     throw new IOException2("Selenium launch interrupted",t);

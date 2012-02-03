@@ -1,8 +1,10 @@
 package hudson.plugins.selenium.configuration;
 
 import hudson.Extension;
+import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.plugins.selenium.NodePropertyImpl;
+import hudson.plugins.selenium.SeleniumRunOptions;
 
 import java.util.List;
 
@@ -15,13 +17,6 @@ public class InheritConfiguration extends Configuration {
 		
 	}
 	
-	@Override
-	public List<String> getLaunchingArguments() {
-        NodePropertyImpl np = Hudson.getInstance().getNodeProperties().get(NodePropertyImpl.class);
-        return null;
-        //return (np == null || np.getConfigurationType() == null ? null : np.getConfigurationType().getLaunchingArguments());
-	}
-
 	@Extension	
 	public static class DescriptorImpl extends ConfigurationDescriptor {
 	
@@ -29,6 +24,12 @@ public class InheritConfiguration extends Configuration {
 		public String getDisplayName() {
 			return "Inherit configuration";
 		}
+	}
+
+	@Override
+	public SeleniumRunOptions initOptions(Computer c) {
+        NodePropertyImpl np = Hudson.getInstance().getNodeProperties().get(NodePropertyImpl.class);
+        return (np == null || np.getConfigurationType() == null ? null : np.getConfigurationType().initOptions(c));
 	}
 	
 }

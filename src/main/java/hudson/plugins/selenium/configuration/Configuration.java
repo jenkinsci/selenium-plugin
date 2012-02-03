@@ -1,11 +1,14 @@
 package hudson.plugins.selenium.configuration;
 
 import java.util.List;
+import java.util.Map;
 
 import hudson.DescriptorExtensionList;
+import hudson.model.Computer;
 import hudson.model.Describable;
 import hudson.model.Hudson;
 import hudson.model.Node;
+import hudson.plugins.selenium.SeleniumRunOptions;
 
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -24,7 +27,7 @@ public abstract class Configuration implements Describable<Configuration> {
     public static DescriptorExtensionList<Configuration,ConfigurationDescriptor> allExcept(Node current) {
         return Hudson.getInstance().<Configuration,ConfigurationDescriptor>getDescriptorList(Configuration.class);
     }
-    
-	public abstract List<String> getLaunchingArguments();
+
+	public abstract SeleniumRunOptions initOptions(Computer c);
 
 }

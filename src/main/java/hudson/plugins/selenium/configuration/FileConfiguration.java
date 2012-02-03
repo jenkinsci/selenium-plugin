@@ -1,6 +1,8 @@
 package hudson.plugins.selenium.configuration;
 
 import hudson.Extension;
+import hudson.model.Computer;
+import hudson.plugins.selenium.SeleniumRunOptions;
 
 import java.util.List;
 
@@ -19,11 +21,6 @@ public class FileConfiguration extends Configuration {
     	return fileURL;
     }
     
-	@Override
-	public List<String> getLaunchingArguments() {
-		return null;
-	}
-
 	@Extension
 	public static class DescriptorImpl extends ConfigurationDescriptor {
 
@@ -31,6 +28,12 @@ public class FileConfiguration extends Configuration {
 		public String getDisplayName() {
 			return "File configuration";
 		}
+	}
+
+	@Override
+	public SeleniumRunOptions initOptions(Computer c) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

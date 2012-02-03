@@ -4,11 +4,17 @@ import hudson.Extension;
 
 import java.util.List;
 
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.openqa.selenium.remote.BrowserType;
 
 
 public class FirefoxBrowser extends Browser {
 	
+	
+	@DataBoundConstructor
+	public FirefoxBrowser(int maxInstances, String version, String binary) {
+		super(maxInstances, version, BrowserType.FIREFOX);
+	}
 	
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {
