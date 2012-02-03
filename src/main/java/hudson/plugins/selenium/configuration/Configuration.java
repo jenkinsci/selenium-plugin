@@ -1,11 +1,8 @@
 package hudson.plugins.selenium.configuration;
 
-import java.util.List;
-import java.util.Map;
-
 import hudson.DescriptorExtensionList;
-import hudson.model.Computer;
 import hudson.model.Describable;
+import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.plugins.selenium.SeleniumRunOptions;
