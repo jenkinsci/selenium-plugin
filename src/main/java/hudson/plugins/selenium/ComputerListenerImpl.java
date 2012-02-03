@@ -36,18 +36,6 @@ import org.springframework.util.StringUtils;
 @Extension
 public class ComputerListenerImpl extends ComputerListener implements Serializable {
 	
-	Computer computer;
-	
-	/**
-	 * Handle when the configuration has changed ...
-	 */
-	@Override
-	public void onConfigurationChange() {
-		// how do I retrieve the node here ... ???
-		if (computer != null) computer.getClass();
-	}
-	
-	
     /**
      * Starts a selenium Grid node remotely.
      */
@@ -55,8 +43,6 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
         LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
-        computer = c;
-        
         final NodePropertyImpl np = c.getNode().getNodeProperties().get(NodePropertyImpl.class);
         if (np == null) {
         	//the node is configured to not start a grid node

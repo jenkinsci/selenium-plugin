@@ -104,7 +104,9 @@ public class CustomConfiguration extends Configuration {
 		}
 		
 		@Override
-		public Configuration newInstance(StaplerRequest req, JSONObject json) {
+		public CustomConfiguration newInstance(StaplerRequest req, JSONObject json) {
+			String rcLog = json.getString("rcLog");
+			
 			return null;
 		}
 		

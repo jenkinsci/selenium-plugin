@@ -2,7 +2,12 @@
 	<f:entry title="${%Maximum instances}" field="maxInstances">
       	<f:textbox />
 	</f:entry>
-	<f:entry title="${%Version}" field="maxInstances">
+	<f:entry title="${%Version}" field="version">
       	<f:textbox />
 	</f:entry>
+	<f:advanced>
+		<f:entry title="${%Firefox binary path}" field="binary">
+	      	<f:textbox />
+		</f:entry>
+	</f:advanced>
 </j:jelly>

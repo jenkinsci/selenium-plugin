@@ -3,7 +3,6 @@ package hudson.plugins.selenium;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.Node;
-import hudson.model.Descriptor.FormException;
 import hudson.plugins.selenium.configuration.Configuration;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.InheritConfiguration;
@@ -66,6 +65,8 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 		public NodeProperty<?> newInstance(StaplerRequest req, JSONObject json) {
 			Configuration conf = null;
 			try {
+				// TODO: FIX THIS SH...
+				json.element("stapler-class", json.getJSONArray("stapler-class").get(json.getJSONObject("configuration").getInt("value")));
 				conf = Configuration.all().get(json.getJSONObject("configuration").getInt("value")).newInstance(req, json);
 			} catch (FormException e) {
 				e.printStackTrace();

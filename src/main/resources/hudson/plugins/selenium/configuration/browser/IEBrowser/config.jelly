@@ -5,4 +5,9 @@
 	<f:entry title="${%Version}" field="version">
       	<f:textbox />
 	</f:entry>
+	<f:advanced>
+		<f:entry title="${%Ignore protected mode}" field="ignoreProtectedMode">
+	      	<f:checkbox />
+		</f:entry>
+	</f:advanced>
 </j:jelly>

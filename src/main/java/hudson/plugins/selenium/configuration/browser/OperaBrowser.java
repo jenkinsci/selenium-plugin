@@ -7,7 +7,8 @@ import java.util.List;
 import org.openqa.selenium.remote.BrowserType;
 
 
-public class FirefoxBrowser extends Browser {
+public class OperaBrowser extends Browser {
+	
 	
 	
     @Extension
@@ -16,18 +17,18 @@ public class FirefoxBrowser extends Browser {
     	String binary_path;
     	
     	public DescriptorImpl() {
-    		super(5, BrowserType.FIREFOX);
+    		super(5, BrowserType.OPERA);
     	}
     	
 		@Override
 		public String getDisplayName() {
-			return "Firefox";
+			return "Opera";
 		}
 	
 		@Override
 		public List<String> getArgs() {
     		List<String> options = super.getArgs();
-    		combine(options, "firefox_binary", binary_path);
+    		combine(options, "opera.binary", binary_path);
     		return options;
 		}
 
