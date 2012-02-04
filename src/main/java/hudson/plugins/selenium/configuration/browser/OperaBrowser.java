@@ -11,6 +11,10 @@ import org.openqa.selenium.remote.BrowserType;
 
 public class OperaBrowser extends Browser {
 	
+	transient final protected String PARAM_BINARY_PATH = "opera.binary";
+
+	transient private static final String BROWSER_NAME = "opera";
+	
 	String binary;
 	
 	@DataBoundConstructor
@@ -21,12 +25,12 @@ public class OperaBrowser extends Browser {
 	
 	@Override
 	public String getBrowserName() {
-		return BrowserType.OPERA;
+		return BROWSER_NAME;
 	}
 
 	public List<String> getAdditionnalArgs() {
 		List<String> args = new ArrayList<String>();
-		combine(args, "opera.binary", binary);
+		combine(args, PARAM_BINARY_PATH, binary);
 		return args;
 	}
 

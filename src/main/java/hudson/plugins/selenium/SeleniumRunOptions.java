@@ -1,5 +1,6 @@
 package hudson.plugins.selenium;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,12 @@ import org.springframework.util.StringUtils;
  * @author Richard Lavoie
  *
  */
-public class SeleniumRunOptions {
+public class SeleniumRunOptions implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5571585840451096944L;
 
 	private List<String> arguments;
 	

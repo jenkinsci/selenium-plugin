@@ -40,13 +40,6 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 		return configType;
 	}
 
-	public List<String> getUserArgs() {
-		if (configType == null)
-			return new ArrayList<String>();
-		return null;
-		// return configType.getLaunchingArguments();
-	}
-
 	@Extension
 	public static class DescriptorImpl extends NodePropertyDescriptor {
 

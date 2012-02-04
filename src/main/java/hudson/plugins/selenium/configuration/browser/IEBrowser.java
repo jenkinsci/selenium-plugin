@@ -10,13 +10,15 @@ import org.openqa.selenium.remote.BrowserType;
 
 public class IEBrowser extends Browser {
 	
+	transient private static final String BROWSER_NAME = "internet explorer";
+	
 	@DataBoundConstructor
 	public IEBrowser(int maxInstances, String version, String binary) {
 		super(maxInstances, version);
 	}
 	
 	public String getBrowserName() {
-		return BrowserType.IEXPLORE;
+		return BROWSER_NAME;
 	}
 	
     @Extension

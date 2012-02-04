@@ -18,11 +18,11 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 	
-	protected final String PARAM_BROWSER_NAME = "browserName";
+	transient protected final String PARAM_BROWSER_NAME = "browserName";
 
-	protected final String PARAM_MAX_INSTANCES = "maxInstances";
+	transient protected final String PARAM_MAX_INSTANCES = "maxInstances";
 	
-	protected final String PARAM_VERSION = "version";
+	transient protected final String PARAM_VERSION = "version";
 	
 	private int maxInstances = 0;
 	private String version;
@@ -63,7 +63,7 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
      * @param value Value option
      */
     public static void combine(List<String> options, String key, Object value) {
-    	if (value != null) {
+    	if (value != null && !StringUtils.isBlank(value.toString())) {
     		//TODO validate the " in the strings, this is error prone ...
     		options.add(key + "=" + value.toString());
     	}
@@ -79,8 +79,7 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 		List<String> opts = opt.getSeleniumArguments();
 		opts.add("-browser");
 		
-		//TODO fix this ... error prone, need more validation on the ", see comment in combine()
-		opts.add("\"" + StringUtils.join(args, ",") + "\"");
+		opts.add(StringUtils.join(args, ","));
 	}
 	
 	public List<String> getAdditionnalOptions() {
