@@ -100,7 +100,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         final SeleniumRunOptions options = np.initOptions(c);
         if (options == null) {
         	// if configuration returned no options, that means it doesn't want to start selenium
-        	LOGGER.fine("");
+        	LOGGER.fine("The configuration returned no run options. Skipping selenium execution.");
         	return;        	
         }
         
