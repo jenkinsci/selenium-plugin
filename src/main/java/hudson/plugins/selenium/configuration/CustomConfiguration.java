@@ -132,7 +132,7 @@ public class CustomConfiguration extends Configuration {
         	b.initOptions(c, opt);
         }
 
-		return null;
+		return opt;
 	}
 	
 }

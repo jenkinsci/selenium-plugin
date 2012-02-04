@@ -10,7 +10,11 @@ import org.openqa.selenium.remote.BrowserType;
 
 public class ChromeBrowser extends Browser {
 	
-	String binary;
+	transient final protected String PARAM_BINARY_PATH = "chrome.binary";
+	
+	transient private static final String BROWSER_NAME = "chrome";
+	
+	private String binary;
 	
 	@DataBoundConstructor
 	public ChromeBrowser(int maxInstances, String version, String binary) {
@@ -25,12 +29,14 @@ public class ChromeBrowser extends Browser {
 	
 	@Override
 	public String getBrowserName() {
-		return BrowserType.CHROME;
+		return BROWSER_NAME;
 	}
+	
+	
 
 	public List<String> getAdditionnalArgs() {
 		List<String> args = new ArrayList<String>();
-		combine(args, "chrome.binary", binary);
+		combine(args, PARAM_BINARY_PATH, binary);
 		return args;
 	}
 	

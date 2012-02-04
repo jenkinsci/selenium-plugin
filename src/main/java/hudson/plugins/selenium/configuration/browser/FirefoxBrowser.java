@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.export.Exported;
 import org.openqa.selenium.remote.BrowserType;
 
 
 public class FirefoxBrowser extends Browser {
 	
-	protected String PARAM_BINARY_PATH = "firefox_binary";
+	transient final protected String PARAM_BINARY_PATH = "firefox_binary";
+	
+	transient private static final String BROWSER_NAME = "firefox";
 	
 	private String binary_path;
 	
@@ -21,9 +24,14 @@ public class FirefoxBrowser extends Browser {
 		binary_path = binary;
 	}
 	
+	@Exported
+	public String getBinaryPath() {
+		return binary_path;
+	}
+	
 	@Override
 	public String getBrowserName() {
-		return BrowserType.FIREFOX;
+		return BROWSER_NAME;
 	}
 	
 	public List<String> getAdditionnalArgs() {
