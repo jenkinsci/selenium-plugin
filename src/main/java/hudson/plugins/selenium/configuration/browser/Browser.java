@@ -24,12 +24,20 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 	
 	transient protected final String PARAM_VERSION = "version";
 	
+	transient protected final String PARAM_SELENIUM_PROTOCOL = "seleniumProtocol";
+	
+	transient protected final String SELENIUM_WD_PROTOCOL = "WebDriver";
+	
+	transient protected final String SELENIUM_RC_PROTOCOL = "Selenium";
+	
 	private int maxInstances = 0;
 	private String version;
+	private Boolean configuredAsRC;
 
-	protected Browser(int instances, String version) {
+	protected Browser(int instances, String version, Boolean configuredAsRC) {
 		maxInstances = instances;
 		this.version = version;
+		this.configuredAsRC = configuredAsRC;
 	}
 	
 	@Exported
@@ -42,6 +50,12 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 		return version;
 	}
 	
+	@Exported
+	public Boolean getConfiguredAsRC() {
+		return configuredAsRC;
+	}
+
+	
 	public BrowserDescriptor getDescriptor() {
         return (BrowserDescriptor)Hudson.getInstance().getDescriptor(getClass());
     }
@@ -51,10 +65,17 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
     }
 
     /**
-     * Retrieve the browser name
-     * @return Browser name, must be one of 
+     * Retrieve WebDriver browser name
+     * @return Browser name, must be one of {} 
      */
     public abstract String getBrowserName();
+
+    /**
+     * Retrieve RC browser name
+     * @return Browser name, must be one of {} 
+     */
+    public abstract String getRCBrowserName();
+
     
     /**
      * Combine the key and value on the key=value form and add that form in the options list
@@ -71,7 +92,16 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 
 	public void initOptions(Computer c, SeleniumRunOptions opt) {
 		List<String> args = new ArrayList<String>();
-		combine(args, PARAM_BROWSER_NAME, getBrowserName());
+		if (configuredAsRC == null || !configuredAsRC) {
+			combine(args, PARAM_SELENIUM_PROTOCOL, SELENIUM_WD_PROTOCOL);
+			combine(args, PARAM_BROWSER_NAME, getBrowserName());
+		} else if (!StringUtils.isBlank(getRCBrowserName())){
+			combine(args, PARAM_SELENIUM_PROTOCOL, SELENIUM_RC_PROTOCOL);
+			combine(args, PARAM_BROWSER_NAME, getRCBrowserName());			
+		} else {
+			// configured as RC, but the browser is blank, so we don't add it in the startup config
+			return;
+		}
 		combine(args, PARAM_MAX_INSTANCES, maxInstances);
 		combine(args, PARAM_VERSION, version);
 		args.addAll(getAdditionnalOptions());
