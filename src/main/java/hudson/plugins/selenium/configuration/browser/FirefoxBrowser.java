@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
-import org.openqa.selenium.remote.BrowserType;
 
 
 public class FirefoxBrowser extends Browser {

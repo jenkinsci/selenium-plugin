@@ -1,9 +1,13 @@
 package hudson.plugins.selenium.configuration.browser;
 
-import hudson.model.Descriptor;
+import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.servlet.ServletException;
+
+import org.kohsuke.stapler.QueryParameter;
+
+import hudson.model.Descriptor;
+import hudson.util.FormValidation;
 
 public abstract class BrowserDescriptor extends
 		Descriptor<Browser> {
@@ -16,5 +20,10 @@ public abstract class BrowserDescriptor extends
 
 	protected BrowserDescriptor() {
 	}
+	
+    public FormValidation doCheckMaxInstances(@QueryParameter String value)
+    throws IOException, ServletException {
+    	return FormValidation.validatePositiveInteger(value);
+}
 	
 }

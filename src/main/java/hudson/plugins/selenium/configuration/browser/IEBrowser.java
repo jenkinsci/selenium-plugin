@@ -1,12 +1,8 @@
 package hudson.plugins.selenium.configuration.browser;
 
 import hudson.Extension;
-import hudson.model.Descriptor;
-
-import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.openqa.selenium.remote.BrowserType;
 
 public class IEBrowser extends Browser {
 	
@@ -17,6 +13,7 @@ public class IEBrowser extends Browser {
 		super(maxInstances, version);
 	}
 	
+	@Override
 	public String getBrowserName() {
 		return BROWSER_NAME;
 	}

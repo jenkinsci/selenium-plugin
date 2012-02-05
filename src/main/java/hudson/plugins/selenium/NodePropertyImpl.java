@@ -10,9 +10,6 @@ import hudson.plugins.selenium.configuration.InheritConfiguration;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
