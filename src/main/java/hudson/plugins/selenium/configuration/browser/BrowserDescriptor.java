@@ -21,9 +21,9 @@ public abstract class BrowserDescriptor extends
 	protected BrowserDescriptor() {
 	}
 	
-    public FormValidation doCheckMaxInstances(@QueryParameter String value)
-    throws IOException, ServletException {
+    public FormValidation doCheckMaxInstances(@QueryParameter String value) throws IOException, ServletException {
     	return FormValidation.validatePositiveInteger(value);
-}
+    }
 	
+    
 }

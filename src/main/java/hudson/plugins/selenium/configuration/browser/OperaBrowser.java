@@ -17,8 +17,8 @@ public class OperaBrowser extends Browser {
 	String binary;
 	
 	@DataBoundConstructor
-	public OperaBrowser(int maxInstances, String version, String binary) {
-		super(maxInstances, version);
+	public OperaBrowser(int maxInstances, String version, String binary, Boolean configuredAsRC) {
+		super(maxInstances, version, configuredAsRC);
 		this.binary = binary;
 	}
 	
@@ -26,6 +26,11 @@ public class OperaBrowser extends Browser {
 	public String getBrowserName() {
 		return BROWSER_NAME;
 	}
+
+	@Override
+	public String getRCBrowserName() {
+		return null;
+	}	
 
 	public List<String> getAdditionnalArgs() {
 		List<String> args = new ArrayList<String>();

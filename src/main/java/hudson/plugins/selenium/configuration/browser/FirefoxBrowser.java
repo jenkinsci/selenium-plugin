@@ -13,13 +13,15 @@ public class FirefoxBrowser extends Browser {
 	
 	transient final protected String PARAM_BINARY_PATH = "firefox_binary";
 	
-	transient private static final String BROWSER_NAME = "firefox";
+	transient private static final String WD_BROWSER_NAME = "firefox";
+	
+	transient private static final String RC_BROWSER_NAME = "*firefox";
 	
 	private String binary_path;
 	
 	@DataBoundConstructor
-	public FirefoxBrowser(int maxInstances, String version, String binary) {
-		super(maxInstances, version);
+	public FirefoxBrowser(int maxInstances, String version, String binary, Boolean configuredAsRC) {
+		super(maxInstances, version, configuredAsRC);
 		binary_path = binary;
 	}
 	
@@ -30,9 +32,14 @@ public class FirefoxBrowser extends Browser {
 	
 	@Override
 	public String getBrowserName() {
-		return BROWSER_NAME;
+		return WD_BROWSER_NAME;
 	}
 	
+	@Override
+	public String getRCBrowserName() {
+		return RC_BROWSER_NAME;
+	}	
+
 	public List<String> getAdditionnalArgs() {
 		List<String> args = new ArrayList<String>();
 		combine(args, PARAM_BINARY_PATH, binary_path);

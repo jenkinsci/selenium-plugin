@@ -6,18 +6,25 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class IEBrowser extends Browser {
 	
-	transient private static final String BROWSER_NAME = "internet explorer";
+	transient private static final String WD_BROWSER_NAME = "internet explorer";
+	
+	transient private static final String RC_BROWSER_NAME = "*iexplore";
 	
 	@DataBoundConstructor
-	public IEBrowser(int maxInstances, String version, String binary) {
-		super(maxInstances, version);
+	public IEBrowser(int maxInstances, String version, String binary, Boolean configuredAsRC) {
+		super(maxInstances, version, false);
 	}
 	
 	@Override
 	public String getBrowserName() {
-		return BROWSER_NAME;
+		return WD_BROWSER_NAME;
 	}
 	
+	@Override
+	public String getRCBrowserName() {
+		return RC_BROWSER_NAME;
+	}	
+
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {
 
