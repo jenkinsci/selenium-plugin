@@ -8,6 +8,7 @@ import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.model.TaskListener;
+import hudson.model.Hudson.MasterComputer;
 import hudson.remoting.Future;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
@@ -43,7 +44,13 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
         LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
-        final NodePropertyImpl np = c.getNode().getNodeProperties().get(NodePropertyImpl.class);
+        NodePropertyImpl np = null;
+        if (c instanceof MasterComputer) {
+        	np = Hudson.getInstance().getGlobalNodeProperties().get(NodePropertyImpl.class);
+        } else {
+        	np = c.getNode().getNodeProperties().get(NodePropertyImpl.class);
+        }
+        
         if (np == null) {
         	//the node is configured to not start a grid node
         	LOGGER.fine("Node " + c.getNode().getDisplayName() + " is excluded from Selenium Grid because it is disabled");
@@ -104,7 +111,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         	return;        	
         }
         
-        listener.getLogger().println("Starting Selenium Grid nodes on "+c.getName());
+        listener.getLogger().println("Starting Selenium Grid nodes on " + c.getName());
 
         final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
         final long jarTimestamp = seleniumJar.lastModified();
@@ -112,6 +119,11 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
 
         try {
 			Future<Object> future = c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 2047557797415325512L;
 
 				public Object invoke(File f, VirtualChannel channel) throws IOException {
 			        String alreadyStartedPropertyName = getClass().getName() + ".seleniumRcAlreadyStarted";

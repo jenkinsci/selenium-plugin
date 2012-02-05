@@ -6,8 +6,6 @@ import hudson.model.Hudson;
 import hudson.plugins.selenium.NodePropertyImpl;
 import hudson.plugins.selenium.SeleniumRunOptions;
 
-import java.util.List;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class InheritConfiguration extends Configuration {
@@ -28,7 +26,7 @@ public class InheritConfiguration extends Configuration {
 
 	@Override
 	public SeleniumRunOptions initOptions(Computer c) {
-        NodePropertyImpl np = Hudson.getInstance().getNodeProperties().get(NodePropertyImpl.class);
+        NodePropertyImpl np = Hudson.getInstance().getGlobalNodeProperties().get(NodePropertyImpl.class);
         return (np == null || np.getConfigurationType() == null ? null : np.getConfigurationType().initOptions(c));
 	}
 	

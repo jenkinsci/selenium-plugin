@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.openqa.selenium.remote.BrowserType;
 
 
 public class OperaBrowser extends Browser {
