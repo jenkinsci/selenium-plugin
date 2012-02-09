@@ -10,6 +10,7 @@ import hudson.plugins.selenium.SeleniumRunOptions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.export.Exported;
@@ -66,13 +67,13 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 
     /**
      * Retrieve WebDriver browser name
-     * @return Browser name, must be one of {} 
+     * @return Browser name, must be one of {htmlunit, firefox, chrome, opera, internet explorer, android, iphone, and others} 
      */
     public abstract String getBrowserName();
 
     /**
      * Retrieve RC browser name
-     * @return Browser name, must be one of {} 
+     * @return Browser name, must be one of {*firefox, *googlechrome, *iexplorer, and others} 
      */
     public abstract String getRCBrowserName();
 
@@ -83,12 +84,19 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
      * @param key Key option
      * @param value Value option
      */
-    public static void combine(List<String> options, String key, Object value) {
+    protected static void combine(List<String> options, String key, Object value) {
     	if (value != null && !StringUtils.isBlank(value.toString())) {
     		//TODO validate the " in the strings, this is error prone ...
     		options.add(key + "=" + value.toString());
     	}
     }
+    
+	
+    protected static void combine(Map<String, String> args, String key, String value) {
+		if (!StringUtils.isBlank(value)) {
+			args.put(key, value);
+		}
+	}
 
 	public void initOptions(Computer c, SeleniumRunOptions opt) {
 		List<String> args = new ArrayList<String>();
@@ -104,7 +112,9 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 		}
 		combine(args, PARAM_MAX_INSTANCES, maxInstances);
 		combine(args, PARAM_VERSION, version);
-		args.addAll(getAdditionnalOptions());
+		args.addAll(getOptions());
+		
+		opt.getJVMArguments().putAll(getJVMArgs());
 		
 		List<String> opts = opt.getSeleniumArguments();
 		opts.add("-browser");
@@ -112,7 +122,11 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 		opts.add(StringUtils.join(args, ","));
 	}
 	
-	public List<String> getAdditionnalOptions() {
+	public Map<String, String> getJVMArgs() {
+		return Collections.emptyMap();
+	}
+
+	public List<String> getOptions() {
 		return Collections.emptyList();
 	}
 
