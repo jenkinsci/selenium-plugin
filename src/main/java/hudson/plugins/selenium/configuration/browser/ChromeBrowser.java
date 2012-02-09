@@ -2,14 +2,15 @@ package hudson.plugins.selenium.configuration.browser;
 
 import hudson.Extension;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.export.Exported;
 
 public class ChromeBrowser extends Browser {
 	
-	transient final protected String PARAM_BINARY_PATH = "chrome.binary";
+	transient final protected String PARAM_BINARY_PATH = "webdriver.chrome.driver";
 	
 	transient private static final String WD_BROWSER_NAME = "chrome";
 	
@@ -23,6 +24,7 @@ public class ChromeBrowser extends Browser {
 		this.binary = binary;
 	}
 	
+	@Exported
 	public String getBinary() {
 		return binary;
 	}
@@ -38,13 +40,14 @@ public class ChromeBrowser extends Browser {
 		return RC_BROWSER_NAME;
 	}	
 
-	public List<String> getAdditionnalArgs() {
-		List<String> args = new ArrayList<String>();
+	@Override
+	public Map<String, String> getJVMArgs() {
+		 Map<String, String> args = new HashMap<String, String>();
 		combine(args, PARAM_BINARY_PATH, binary);
 		return args;
 	}
-	
-    @Extension
+
+	@Extension
     public static class DescriptorImpl extends BrowserDescriptor {
     	
     	public String getMaxInstances() {

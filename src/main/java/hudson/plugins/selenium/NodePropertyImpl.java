@@ -25,7 +25,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public class NodePropertyImpl extends NodeProperty<Node> {
 
-	Configuration configType;
+	Configuration configType = DescriptorImpl.DEFAULT_CONFIGURATION;
 
 	@DataBoundConstructor
 	public NodePropertyImpl(Configuration configuration) {

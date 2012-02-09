@@ -19,13 +19,28 @@
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
   </scm>
 
+  <developers>
+        <developer>
+            <id>darkrift</id>
+            <name>Richard Lavoie</name>
+            <email>lavoie.richard@gmail.com</email>
+            <organization></organization>
+            <url></url>
+            <roles>
+                <role>architect</role>
+                <role>maintainer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+  
   <dependencies>
     <dependency>
       <!-- selenium contains its own Jetty, and unless we declare this dependency first,
       its Jetty will show up in front of the jetty in the test harness -->
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-test-harness</artifactId>
-      <version>${parent.version}</version>
+      <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -33,7 +33,7 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
         RemoteProxy proxy = testSlot.getProxy();
         host = proxy.getRemoteHost();
         capabilities = toCapabilities(testSlot);
-        isReserved = testSlot.getSession()!=null;
+        isReserved = testSlot.getSession() != null;
     }
 
     private Map<String,String> toCapabilities(TestSlot testSlot) {
