@@ -3,7 +3,9 @@ package hudson.plugins.selenium.configuration.browser;
 import hudson.Extension;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
@@ -40,12 +42,13 @@ public class FirefoxBrowser extends Browser {
 		return RC_BROWSER_NAME;
 	}	
 
-	public List<String> getAdditionnalArgs() {
+	@Override
+	public List<String> getOptions() {
 		List<String> args = new ArrayList<String>();
 		combine(args, PARAM_BINARY_PATH, binary_path);
 		return args;
 	}
-	
+		
     @Extension
     public static class DescriptorImpl extends BrowserDescriptor {
     	

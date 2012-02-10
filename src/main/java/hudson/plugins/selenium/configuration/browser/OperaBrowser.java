@@ -2,8 +2,8 @@ package hudson.plugins.selenium.configuration.browser;
 
 import hudson.Extension;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -32,8 +32,9 @@ public class OperaBrowser extends Browser {
 		return null;
 	}	
 
-	public List<String> getAdditionnalArgs() {
-		List<String> args = new ArrayList<String>();
+	@Override
+	public Map<String, String> getJVMArgs() {
+		Map<String, String> args = new HashMap<String, String>();
 		combine(args, PARAM_BINARY_PATH, binary);
 		return args;
 	}

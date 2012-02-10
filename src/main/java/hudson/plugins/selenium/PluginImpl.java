@@ -26,6 +26,12 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.TaskListener;
+import hudson.plugins.selenium.configuration.Configuration;
+import hudson.plugins.selenium.configuration.CustomConfiguration;
+import hudson.plugins.selenium.configuration.browser.Browser;
+import hudson.plugins.selenium.configuration.browser.ChromeBrowser;
+import hudson.plugins.selenium.configuration.browser.FirefoxBrowser;
+import hudson.plugins.selenium.configuration.browser.IEBrowser;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.remoting.Which;
@@ -37,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +64,6 @@ import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
 import org.openqa.grid.selenium.GridLauncher;
-import org.springframework.util.StringUtils;
 
 /**
  * Starts Selenium Grid server in another JVM.
@@ -69,7 +75,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     private int port = 4444;
     private String exclusionPatterns;
-    private String newSessionWaitTimeout;
+    private Integer newSessionWaitTimeout = -1;
     private boolean throwOnCapabilityNotPresent = false;
     private String hubLogLevel = "INFO";
     private boolean rcDebug; 
@@ -81,10 +87,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private transient Channel channel;
 
     private transient Future<?> hubLauncher;
-
+    
     @Override
-    public void start() throws Exception {
+    public void postInitialize() throws Exception {
         load();
+        
         StreamTaskListener listener = new StreamTaskListener(getLogFile());
         File root = Hudson.getInstance().getRootDir();
         channel = createSeleniumGridVM(root, listener);
@@ -92,9 +99,9 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         System.out.println("Starting Selenium Grid");
         
         List<String> args = new ArrayList<String>();
-        if (StringUtils.hasText(getNewSessionWaitTimeout())) {
+        if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
         	args.add("-newSessionWaitTimeout");
-        	args.add(getNewSessionWaitTimeout());
+        	args.add(getNewSessionWaitTimeout().toString());
         }
         if (getThrowOnCapabilityNotPresent()) {
         	args.add("-throwOnCapabilityNotPresent");
@@ -117,11 +124,13 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         exclusionPatterns = formData.getString("exclusionPatterns");
         rcLog = formData.getString("rcLog");
         rcDebug = formData.getBoolean("rcDebug");
+        newSessionWaitTimeout = formData.getInt("newSessionWaitTimeout");
+        throwOnCapabilityNotPresent = formData.getBoolean("throwOnCapabilityNotPresent"); 
+        hubLogLevel = formData.getString("hubLogLevel");
 //        rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
 //        rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
 //        rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
 //        rcFirefoxProfileTemplate = formData.getString("rcFirefoxProfileTemplate");
-        hubLogLevel = formData.getString("hubLogLevel");
         try {
             save();
         } catch (IOException e) {
@@ -160,7 +169,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     @Exported
-    public String getNewSessionWaitTimeout() {
+    public Integer getNewSessionWaitTimeout() {
     	return newSessionWaitTimeout;
     }
     
@@ -183,7 +192,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public boolean getThrowOnCapabilityNotPresent() {
 		return throwOnCapabilityNotPresent;
 	}
-
     
     @Override
     public void stop() throws Exception {
@@ -276,7 +284,54 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         public String getDisplayName() {
             return "";
         }
+        
     }
 
     private static final long serialVersionUID = 1L;
+
+    
+    // this part take cares of the migration from 2.0 to 2.1
+    public Object readResolve() {
+    	
+    	if (rcFirefoxProfileTemplate != null || rcBrowserSessionReuse != null || rcTrustAllSSLCerts != null || rcBrowserSideLog != null) {
+    	    String rcFirefoxProfileTemplate_ = getDefaultForNull(rcFirefoxProfileTemplate, ""); 
+    	    Boolean rcBrowserSessionReuse_ = getDefaultForNull(rcBrowserSessionReuse, Boolean.FALSE); 
+    	    Boolean rcTrustAllSSLCerts_ = getDefaultForNull(rcTrustAllSSLCerts, Boolean.FALSE); 
+    	    Boolean rcBrowserSideLog_ = getDefaultForNull(rcBrowserSideLog, Boolean.FALSE); 
+    		
+    	    
+    	    List<Browser> browsers = new ArrayList<Browser>();
+    	    browsers.add(new IEBrowser(5, "", "", false));
+    	    browsers.add(new FirefoxBrowser(5, "", "", false));
+    	    browsers.add(new ChromeBrowser(5, "", "", false));
+    	    
+    	    int port_ = 4445;
+			try {
+				ServerSocket ss = new ServerSocket(0);
+				port_ = ss.getLocalPort();
+				ss.close();
+			} catch (IOException e) {
+			}
+    	    
+    	    Configuration c = new CustomConfiguration(port_, rcBrowserSideLog_, rcDebug, rcTrustAllSSLCerts_, rcBrowserSessionReuse_, -1, rcFirefoxProfileTemplate_, browsers);
+    	    
+    	    try {
+				Hudson.getInstance().getGlobalNodeProperties().add(new NodePropertyImpl(c));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	    
+    	}
+    	
+    	return this;
+    }
+    
+    private <T> T getDefaultForNull(T object, T defObject) {
+    	return object == null ? defObject : object;
+    }
+    
+    private transient String rcFirefoxProfileTemplate;
+    private transient Boolean rcBrowserSessionReuse;
+    private transient Boolean rcTrustAllSSLCerts;
+    private transient Boolean rcBrowserSideLog;
 }
