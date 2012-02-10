@@ -51,18 +51,18 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 			return Configuration.all();
 		}
 
-		@Override
-		public NodeProperty<?> newInstance(StaplerRequest req, JSONObject json) {
-			Configuration conf = null;
-			try {
-				// TODO: FIX THIS SH...
-				json.element("stapler-class", json.getJSONArray("stapler-class").get(json.getJSONObject("configuration").getInt("value")));
-				conf = Configuration.all().get(json.getJSONObject("configuration").getInt("value")).newInstance(req, json);
-			} catch (FormException e) {
-				e.printStackTrace();
-			}
-			return new NodePropertyImpl(conf);
-		}
+//		@Override
+//		public NodeProperty<?> newInstance(StaplerRequest req, JSONObject json) {
+//			Configuration conf = null;
+//			try {
+//				// TODO: FIX THIS SH...
+//				json.element("stapler-class", json.getJSONArray("stapler-class").get(json.getJSONObject("configuration").getInt("value")));
+//				conf = Configuration.all().get(json.getJSONObject("configuration").getInt("value")).newInstance(req, json);
+//			} catch (FormException e) {
+//				e.printStackTrace();
+//			}
+//			return new NodePropertyImpl(conf);
+//		}
 		
 		/**
 		 * @return default configuration for nodes
