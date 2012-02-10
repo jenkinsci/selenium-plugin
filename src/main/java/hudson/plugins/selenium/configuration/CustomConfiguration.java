@@ -7,13 +7,18 @@ import hudson.model.Descriptor;
 import hudson.plugins.selenium.SeleniumRunOptions;
 import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
+import hudson.util.FormValidation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.ServletException;
 
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
@@ -24,6 +29,7 @@ public class CustomConfiguration extends Configuration {
     private boolean rcDebug;
     private boolean rcTrustAllSSLCerts;
     private boolean rcBrowserSessionReuse;
+    private Integer timeout = -1;
     private String rcLog;
     private List<? extends Browser> browsers = new ArrayList<Browser>();
 
@@ -33,6 +39,7 @@ public class CustomConfiguration extends Configuration {
     							boolean rcDebug, 
     							boolean rcTrustAllSSLCerts, 
     							boolean rcBrowserSessionReuse,
+    							Integer timeout,
     							String rcLog, 
     							List<? extends Browser> browsers) {
     	this.port = port;
@@ -41,6 +48,7 @@ public class CustomConfiguration extends Configuration {
     	this.rcTrustAllSSLCerts = rcTrustAllSSLCerts;
     	this.rcBrowserSessionReuse = rcBrowserSessionReuse;
     	this.rcLog = rcLog;
+    	this.timeout = timeout;
     	this.browsers = browsers;
     	
     }
@@ -76,6 +84,11 @@ public class CustomConfiguration extends Configuration {
     }
 
     @Exported
+    public Integer getTimeout() {
+    	return timeout;
+    }
+    
+    @Exported
     public List<? extends Browser> getBrowsers() {
     	return browsers;
     }
@@ -108,6 +121,19 @@ public class CustomConfiguration extends Configuration {
 			return lst;
 		}
 		
+        public FormValidation doCheckTimeout(@QueryParameter String value) throws IOException, ServletException {
+        	try {
+        		Integer i = Integer.parseInt(value);
+        		if (i >= -1) {
+        			return FormValidation.ok();
+        		}
+        	} catch (NumberFormatException nfe) {
+        		
+        	}
+        	return FormValidation.error("Must be an integer greater than or equal to -1.");
+        }
+
+		
 	}
 
 	@Override
@@ -125,6 +151,10 @@ public class CustomConfiguration extends Configuration {
         }
         if (getRcBrowserSessionReuse()) {
         	opt.addOption("-browserSessionReuse");
+        }
+        if (getTimeout() != null && getTimeout() > -1) {
+	        opt.addOption("-timeout");
+	        opt.addOption(getTimeout().toString());
         }
         //addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
         for (Browser b : browsers) {
