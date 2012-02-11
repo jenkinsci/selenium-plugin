@@ -19,8 +19,8 @@ public class ChromeBrowser extends Browser {
 	private String binary;
 	
 	@DataBoundConstructor
-	public ChromeBrowser(int maxInstances, String version, String binary, Boolean configuredAsRC) {
-		super(maxInstances, version, configuredAsRC);
+	public ChromeBrowser(int maxInstances, String version, String binary) {
+		super(maxInstances, version);
 		this.binary = binary;
 	}
 	

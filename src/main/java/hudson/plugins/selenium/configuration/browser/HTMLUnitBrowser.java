@@ -12,7 +12,7 @@ public class HTMLUnitBrowser extends Browser {
 	
 	@DataBoundConstructor
 	public HTMLUnitBrowser(int maxInstances) {
-		super(maxInstances, null, false);
+		super(maxInstances, null);
 	}
 	
 	

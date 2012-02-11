@@ -22,8 +22,8 @@ public class FirefoxBrowser extends Browser {
 	private String binary_path;
 	
 	@DataBoundConstructor
-	public FirefoxBrowser(int maxInstances, String version, String binary, Boolean configuredAsRC) {
-		super(maxInstances, version, configuredAsRC);
+	public FirefoxBrowser(int maxInstances, String version, String binary) {
+		super(maxInstances, version);
 		binary_path = binary;
 	}
 	
@@ -43,7 +43,7 @@ public class FirefoxBrowser extends Browser {
 	}	
 
 	@Override
-	public List<String> getOptions() {
+	public List<String> getWDOptions() {
 		List<String> args = new ArrayList<String>();
 		combine(args, PARAM_BINARY_PATH, binary_path);
 		return args;

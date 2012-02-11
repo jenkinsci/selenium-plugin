@@ -18,7 +18,7 @@ public class OperaBrowser extends Browser {
 	
 	@DataBoundConstructor
 	public OperaBrowser(int maxInstances, String version, String binary, Boolean configuredAsRC) {
-		super(maxInstances, version, configuredAsRC);
+		super(maxInstances, version);
 		this.binary = binary;
 	}
 	
