@@ -3,16 +3,27 @@ package hudson.plugins.selenium;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.Computer;
+import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.plugins.selenium.configuration.Configuration;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
+import hudson.plugins.selenium.configuration.CustomConfiguration;
 import hudson.plugins.selenium.configuration.InheritConfiguration;
+import hudson.plugins.selenium.configuration.browser.Browser;
+import hudson.plugins.selenium.configuration.browser.ChromeBrowser;
+import hudson.plugins.selenium.configuration.browser.FirefoxBrowser;
+import hudson.plugins.selenium.configuration.browser.IEBrowser;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
+import hudson.util.FormValidation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -25,7 +36,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public class NodePropertyImpl extends NodeProperty<Node> {
 
-	Configuration configType = DescriptorImpl.DEFAULT_CONFIGURATION;
+	Configuration configType;
 
 	@DataBoundConstructor
 	public NodePropertyImpl(Configuration configuration) {
@@ -36,12 +47,10 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 	public Configuration getConfigurationType() {
 		return configType;
 	}
-
+	
 	@Extension
 	public static class DescriptorImpl extends NodePropertyDescriptor {
 
-		Configuration configType;
-		
 		@Override
 		public String getDisplayName() {
 			return "Enable Selenium Grid on this node";
@@ -50,28 +59,41 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 		public DescriptorExtensionList<Configuration, ConfigurationDescriptor> getTypes() {
 			return Configuration.all();
 		}
-
-//		@Override
-//		public NodeProperty<?> newInstance(StaplerRequest req, JSONObject json) {
-//			Configuration conf = null;
-//			try {
-//				// TODO: FIX THIS SH...
-//				json.element("stapler-class", json.getJSONArray("stapler-class").get(json.getJSONObject("configuration").getInt("value")));
-//				conf = Configuration.all().get(json.getJSONObject("configuration").getInt("value")).newInstance(req, json);
-//			} catch (FormException e) {
-//				e.printStackTrace();
-//			}
-//			return new NodePropertyImpl(conf);
-//		}
+		
+		@Override
+		public NodeProperty<?> newInstance(StaplerRequest req, JSONObject json) throws FormException {
+			if (json.has("configuration")) {
+				NodePropertyImpl np = Hudson.getInstance().getGlobalNodeProperties().get(NodePropertyImpl.class);
+				
+				Configuration configType = Configuration.all().newInstanceFromRadioList(json.getJSONObject("configuration"));
+				
+				if ((np.getConfigurationType() == null || np.getConfigurationType().getClass() == InheritConfiguration.class) && configType.getClass() == InheritConfiguration.class) {
+					throw new FormException("You cannot define an inherit configuration if the master has no configuration or the master is set with an inherit configuration.", "configuration");
+				}
+				
+				return new NodePropertyImpl(configType);
+			}
+			throw new FormException("You must choose the selenium configuration type for the node", "configuration");
+		}
 		
 		/**
 		 * @return default configuration for nodes
 		 */
-		public Configuration getDefaultConfiguration() {
+		public Configuration getConfigurationType() {
 			return DEFAULT_CONFIGURATION;
 		}
 
-		public static final Configuration DEFAULT_CONFIGURATION = new InheritConfiguration();
+		public static final Configuration DEFAULT_CONFIGURATION;
+		
+		static {
+			List<Browser> browsers = new ArrayList<Browser>();
+			browsers.add(new ChromeBrowser(5, null, null));
+			browsers.add(new FirefoxBrowser(5, null, null));
+			browsers.add(new IEBrowser(1, null, null));
+			
+			
+			DEFAULT_CONFIGURATION = new CustomConfiguration(4445, false, false, false, false, -1, "", browsers); 
+		}
 
 	}
 

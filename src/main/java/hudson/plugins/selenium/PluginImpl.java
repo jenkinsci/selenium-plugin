@@ -301,9 +301,9 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     		
     	    
     	    List<Browser> browsers = new ArrayList<Browser>();
-    	    browsers.add(new IEBrowser(5, "", "", false));
-    	    browsers.add(new FirefoxBrowser(5, "", "", false));
-    	    browsers.add(new ChromeBrowser(5, "", "", false));
+    	    browsers.add(new IEBrowser(5, "", ""));
+    	    browsers.add(new FirefoxBrowser(5, "", ""));
+    	    browsers.add(new ChromeBrowser(5, "", ""));
     	    
     	    int port_ = 4445;
 			try {

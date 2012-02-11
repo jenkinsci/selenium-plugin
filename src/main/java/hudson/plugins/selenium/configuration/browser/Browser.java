@@ -33,12 +33,10 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 	
 	private int maxInstances = 0;
 	private String version;
-	private Boolean configuredAsRC;
 
-	protected Browser(int instances, String version, Boolean configuredAsRC) {
+	protected Browser(int instances, String version) {
 		maxInstances = instances;
 		this.version = version;
-		this.configuredAsRC = configuredAsRC;
 	}
 	
 	@Exported
@@ -50,12 +48,6 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 	public String getVersion() {
 		return version;
 	}
-	
-	@Exported
-	public Boolean getConfiguredAsRC() {
-		return configuredAsRC;
-	}
-
 	
 	public BrowserDescriptor getDescriptor() {
         return (BrowserDescriptor)Hudson.getInstance().getDescriptor(getClass());
@@ -99,34 +91,57 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 	}
 
 	public void initOptions(Computer c, SeleniumRunOptions opt) {
-		List<String> args = new ArrayList<String>();
-		if (configuredAsRC == null || !configuredAsRC) {
-			combine(args, PARAM_SELENIUM_PROTOCOL, SELENIUM_WD_PROTOCOL);
-			combine(args, PARAM_BROWSER_NAME, getBrowserName());
-		} else if (!StringUtils.isBlank(getRCBrowserName())){
-			combine(args, PARAM_SELENIUM_PROTOCOL, SELENIUM_RC_PROTOCOL);
-			combine(args, PARAM_BROWSER_NAME, getRCBrowserName());			
-		} else {
-			// configured as RC, but the browser is blank, so we don't add it in the startup config
-			return;
+
+		if (getRCBrowserName() != null) {
+			List<String> wdArgs = new ArrayList<String>();
+			combine(wdArgs, PARAM_SELENIUM_PROTOCOL, SELENIUM_RC_PROTOCOL);
+			combine(wdArgs, PARAM_BROWSER_NAME, getRCBrowserName());			
+			wdArgs.addAll(getWDOptions());
+			
+			List<String> opts = opt.getSeleniumArguments();
+			opts.add("-browser");	
+			opts.add(StringUtils.join(wdArgs, ","));
 		}
-		combine(args, PARAM_MAX_INSTANCES, maxInstances);
-		combine(args, PARAM_VERSION, version);
-		args.addAll(getOptions());
+
+		if (getBrowserName() != null) {
+			List<String> rcArgs = new ArrayList<String>();
+			combine(rcArgs, PARAM_SELENIUM_PROTOCOL, SELENIUM_WD_PROTOCOL);
+			combine(rcArgs, PARAM_BROWSER_NAME, getBrowserName());
+			rcArgs.addAll(getRCOptions());
+
+			List<String> opts = opt.getSeleniumArguments();
+			opts.add("-browser");	
+			opts.add(StringUtils.join(rcArgs, ","));
+		}
+
+
 		
 		opt.getJVMArguments().putAll(getJVMArgs());
 		
-		List<String> opts = opt.getSeleniumArguments();
-		opts.add("-browser");
-		
-		opts.add(StringUtils.join(args, ","));
+	}
+	
+	private void initCommonOptions(List<String> args) {
+		combine(args, PARAM_MAX_INSTANCES, maxInstances);
+		combine(args, PARAM_VERSION, version);
 	}
 	
 	public Map<String, String> getJVMArgs() {
 		return Collections.emptyMap();
 	}
 
-	public List<String> getOptions() {
+	/**
+	 * Returns the options for the web driver capabilities
+	 * @return list of options in the format of key=value
+	 */
+	public List<String> getWDOptions() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Returns the options for the selenium rc capabilities
+	 * @return list of options in the format of key=value
+	 */
+	public List<String> getRCOptions() {
 		return Collections.emptyList();
 	}
 

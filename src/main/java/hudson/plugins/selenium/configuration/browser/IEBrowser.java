@@ -11,8 +11,8 @@ public class IEBrowser extends Browser {
 	transient private static final String RC_BROWSER_NAME = "*iexplore";
 	
 	@DataBoundConstructor
-	public IEBrowser(int maxInstances, String version, String binary, Boolean configuredAsRC) {
-		super(maxInstances, version, false);
+	public IEBrowser(int maxInstances, String version, String binary) {
+		super(maxInstances, version);
 	}
 	
 	@Override
