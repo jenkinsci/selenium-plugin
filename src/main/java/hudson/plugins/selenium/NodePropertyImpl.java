@@ -67,7 +67,7 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 				
 				Configuration configType = Configuration.all().newInstanceFromRadioList(json.getJSONObject("configuration"));
 				
-				if ((np.getConfigurationType() == null || np.getConfigurationType().getClass() == InheritConfiguration.class) && configType.getClass() == InheritConfiguration.class) {
+				if ((np == null || np.getConfigurationType() == null || np.getConfigurationType().getClass() == InheritConfiguration.class) && configType.getClass() == InheritConfiguration.class) {
 					throw new FormException("You cannot define an inherit configuration if the master has no configuration or the master is set with an inherit configuration.", "configuration");
 				}
 				
