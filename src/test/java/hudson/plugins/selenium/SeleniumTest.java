@@ -1,20 +1,34 @@
 package hudson.plugins.selenium;
 
-import com.thoughtworks.selenium.DefaultSelenium;
-import com.thoughtworks.selenium.Selenium;
 import hudson.model.Hudson;
 import hudson.model.Label;
+import hudson.model.Node.Mode;
+import hudson.plugins.selenium.configuration.CustomConfiguration;
+import hudson.plugins.selenium.configuration.browser.Browser;
+import hudson.plugins.selenium.configuration.browser.HTMLUnitBrowser;
+import hudson.slaves.DumbSlave;
+import hudson.slaves.RetentionStrategy;
 import hudson.tasks.Mailer;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.net.URL;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.thoughtworks.selenium.DefaultSelenium;
+import com.thoughtworks.selenium.Selenium;
 
 /**
  * @author Kohsuke Kawaguchi
+ * @author Richard Lavoie
  */
 public class SeleniumTest extends HudsonTestCase {
     @Override
@@ -28,14 +42,21 @@ public class SeleniumTest extends HudsonTestCase {
         getPlugin().waitForHubLaunch();
         
         // system config to set the root URL
-        submit(new WebClient().goTo("configure").getFormByName("config"));
+        
+        List<Browser> browsers = new ArrayList<Browser>();
+        browsers.add(new HTMLUnitBrowser(1));
 
-        createSlave(Label.get("foo"));
+        CustomConfiguration cc = new CustomConfiguration(4444, false, false, false, false, -1, "", browsers);        
+        
+        HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
+
+        hudson.addNode(slave);
+
         waitForRC();
         Thread.sleep(5000);
 
-        Selenium browser = new DefaultSelenium("localhost",
-            4444, "*firefox"/* /usr/lib/firefox-3.6.3/firefox-bin"*/, "http://www.google.com");
+        Selenium browser = new DefaultSelenium("localhost", 4444, "*htmlunit", "http://www.google.com");
         browser.start();
 
         try {
@@ -58,15 +79,17 @@ public class SeleniumTest extends HudsonTestCase {
             wd.get("http://www.yahoo.com/");
             wd.findElement(By.name("p")).sendKeys("hello world");
             wd.findElement(By.id("search-submit")).click();
+            wd.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            wd.findElement(By.id("main"));
             assertTrue(wd.getTitle().contains("hello world"));
             assertTrue(wd.getTitle().contains("Yahoo"));
         } finally {
             wd.close();
         }
     }
-    
+        
     private void waitForRC() throws Exception {
-        for(int i=0; i<100; i++) {
+        for(int i=0; i<10; i++) {
             if(!getPlugin().getRemoteControls().isEmpty())
                 return;
             Thread.sleep(500);
@@ -79,12 +102,26 @@ public class SeleniumTest extends HudsonTestCase {
     }
 
     public void testLabelMatch() throws Exception {
-        createSlave(Label.get("foo"));
+        getPlugin().waitForHubLaunch();
+        
+        // system config to set the root URL
+        
+        List<Browser> browsers = new ArrayList<Browser>();
+        browsers.add(new HTMLUnitBrowser(1));
 
-        DesiredCapabilities dc = DesiredCapabilities.firefox();
+        CustomConfiguration cc = new CustomConfiguration(4444, false, false, false, false, -1, "", browsers);        
+        
+        HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
+
+        hudson.addNode(slave);
+
+        waitForRC();
+
+        DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
         dc.setCapability("jenkins.label","bar");
         try {
-            new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
             fail(); // should have failed
         } catch (Exception e) {
             e.printStackTrace();

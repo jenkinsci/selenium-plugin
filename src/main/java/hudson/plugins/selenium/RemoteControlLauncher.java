@@ -1,5 +1,6 @@
 package hudson.plugins.selenium;
 
+import com.thoughtworks.xstream.mapper.SystemAttributeAliasingMapper;
 import hudson.remoting.Callable;
 import hudson.remoting.Which;
 import org.openqa.grid.common.RegistrationRequest;
@@ -39,9 +40,13 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
             System.out.println("Starting Selenium RC with "+ Arrays.asList(args));
             System.out.println(Which.jarFile(SeleniumServer.class));
 
+
+
             RegistrationRequest c = RegistrationRequest.build(args);
-            for (DesiredCapabilities dc : c.getCapabilities())
-                dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
+//            for (DesiredCapabilities dc : c.getCapabilities()) {
+//                System.out.println("Capabilities : " + dc);
+//                dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
+//            }
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
             remote.startRemoteServer();
             remote.startRegistrationProcess();

@@ -1,17 +1,21 @@
 package hudson.plugins.selenium;
 
-import antlr.ANTLRException;
+import hudson.model.Computer;
 import hudson.model.Hudson;
+import hudson.model.Hudson.MasterComputer;
 import hudson.model.Label;
 import hudson.model.Node;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
-import org.openqa.grid.internal.utils.CapabilityMatcher;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.openqa.grid.internal.utils.CapabilityMatcher;
+
+import antlr.ANTLRException;
 
 /**
  * {@link CapabilityMatcher} that adds "jenkins.label" support.
@@ -28,6 +32,9 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
     }
 
     public boolean matches(Map<String, Object> currentCapability, Map<String, Object> requestedCapability) {
+        LOGGER.log(Level.INFO, currentCapability.toString());
+        LOGGER.log(Level.INFO, requestedCapability.toString());
+
         if (!base.matches(currentCapability,requestedCapability))
             return false;
 
@@ -76,7 +83,18 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         }
 
         public Boolean call() throws ANTLRException {
-            Node n = Hudson.getInstance().getNode(nodeName);
+        	Node n = null;
+        	if (nodeName.equals("master")) {
+        		for (Computer c : Hudson.getInstance().getComputers()) {
+        			if (c instanceof MasterComputer) {
+        				n = c.getNode();
+        				break;
+        			}
+        		}
+        	}
+        	else 
+        		n = Hudson.getInstance().getNode(nodeName);
+            System.out.println(n);
             if (n==null)    return false;
             return Label.parseExpression(labelExpr).matches(n);
         }

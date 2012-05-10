@@ -37,6 +37,7 @@ import hudson.remoting.Channel;
 import hudson.remoting.Which;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
+import hudson.util.JVMBuilder;
 import hudson.util.StreamTaskListener;
 
 import java.io.File;
@@ -231,9 +232,12 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      *      The slave/master root.
      */
     static /*package*/ Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
-        return Channels.newJVM("Selenium Grid",listener,new FilePath(rootDir),
-                new ClasspathBuilder().add(findStandAloneServerJar()),
-                null);
+    	
+    	JVMBuilder vmb = new JVMBuilder();
+    	//vmb.debug(8000);
+    	vmb.systemProperties(null);
+        return Channels.newJVM("Selenium Grid",listener,vmb, new FilePath(rootDir),
+                new ClasspathBuilder().add(findStandAloneServerJar()));
     }
 
     /**
