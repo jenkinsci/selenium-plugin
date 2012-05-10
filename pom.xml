@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.413</version>
+    <version>1.448</version>
   </parent>
   
   <properties>
@@ -16,7 +16,107 @@
   <name>Jenkins Selenium Plugin</name>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
 
+<!-- 
+<build>
+  <pluginManagement>
+  <plugins>
+    <plugin>
+      <groupId>org.eclipse.m2e</groupId>
+      <artifactId>lifecycle-mapping</artifactId>
+      <version>1.0.0</version>
+      <configuration>
+        <lifecycleMappingMetadata>
+          <pluginExecutions>
+            <pluginExecution>
+              <pluginExecutionFilter>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <versionRange>[1.0.0,)</versionRange>
+                <goals>
+                  <goal>display-info</goal>
+                </goals>
+              </pluginExecutionFilter>
+              <action>
+                <execute >
+                  <runOnIncremental>false</runOnIncremental>
+                </execute >
+              </action>
+            </pluginExecution>
+            <pluginExecution>
+              <pluginExecutionFilter>
+              
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <versionRange>[1.0.0,)</versionRange>
+                <goals>
+                  <goal>generateTestStubs</goal>
+                  <goal>testCompile</goal>
+                </goals>
+              </pluginExecutionFilter>
+              <action>
+                <execute >
+                  <runOnIncremental>false</runOnIncremental>
+                </execute >
+              </action>
+            </pluginExecution>
+            <pluginExecution>
+              <pluginExecutionFilter>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <versionRange>[1.0.0,)</versionRange>
+                <goals>
+                  <goal>insert-test</goal>
+                  <goal>resolve-test</goal>
+                  <goal>test-hpl</goal>
+                  <goal>validate</goal>
+                  <goal>resolve-test-dependencies</goal>
+                </goals>
+              </pluginExecutionFilter>
+              <action>
+                <execute >
+                  <runOnIncremental>false</runOnIncremental>
+                </execute >
+              </action>
+            </pluginExecution>
+            <pluginExecution>
+              <pluginExecutionFilter>
+                <groupId>org.jvnet.localizer</groupId>
+                <artifactId>maven-localizer-plugin</artifactId>
+                <versionRange>[1.0.0,)</versionRange>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+              </pluginExecutionFilter>
+              <action>
+                <execute >
+                  <runOnIncremental>false</runOnIncremental>
+                </execute >
+              </action>
+            </pluginExecution>
+            <pluginExecution>
+              <pluginExecutionFilter>
+                <groupId>org.kohsuke</groupId>
+                <artifactId>access-modifier-checker</artifactId>
+                <versionRange>[1.0.0,)</versionRange>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+              </pluginExecutionFilter>
+              <action>
+                <execute >
+                  <runOnIncremental>false</runOnIncremental>
+                </execute >
+              </action>
+            </pluginExecution>
+          </pluginExecutions>
+        </lifecycleMappingMetadata>
+      </configuration>
+    </plugin>
+  </plugins>
+</pluginManagement>
 
+</build>
+-->
   <scm>
     <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
@@ -82,5 +182,6 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
+  
 
 </project>
