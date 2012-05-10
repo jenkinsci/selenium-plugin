@@ -6,8 +6,8 @@
     <f:section title="Selenium">
       <f:entry title="${%Selenium Grid Port}" field="port">
   	    <f:textbox />
-  	</f:entry>
-  	<f:advanced>
+  	  </f:entry>
+  	  <f:advanced>
           <f:entry title="${%Exclude from grid}" field="exclusionPatterns">
               <f:textbox />
           </f:entry>
@@ -34,9 +34,7 @@
           <f:entry title="${%Set -log}" field="rcLog">
               <f:textbox />
           </f:entry>
-          
-          
-  	</f:advanced>
+  	  </f:advanced>
     </f:section>
   </j:scope>
 </j:jelly>

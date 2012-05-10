@@ -15,7 +15,6 @@ import hudson.plugins.selenium.configuration.browser.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.IEBrowser;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
-import hudson.util.FormValidation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -67,7 +65,7 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 				
 				Configuration configType = Configuration.all().newInstanceFromRadioList(json.getJSONObject("configuration"));
 				
-				if ((np == null || np.getConfigurationType() == null || np.getConfigurationType().getClass() == InheritConfiguration.class) && configType.getClass() == InheritConfiguration.class) {
+				if (np != null && (np.getConfigurationType() == null || np.getConfigurationType().getClass() == InheritConfiguration.class) && configType.getClass() == InheritConfiguration.class) {
 					throw new FormException("You cannot define an inherit configuration if the master has no configuration or the master is set with an inherit configuration.", "configuration");
 				}
 				
