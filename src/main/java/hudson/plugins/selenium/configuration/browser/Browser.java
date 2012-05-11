@@ -80,7 +80,7 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
     protected static void combine(List<String> options, String key, Object value) {
     	if (value != null && !StringUtils.isBlank(value.toString())) {
     		//TODO validate the " in the strings, this is error prone ...
-    		options.add(key + "=" + value.toString());
+    		options.add(key + "=" + value.toString().replace("\"", "\\\""));
     	}
     }
     
@@ -97,7 +97,8 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 			List<String> wdArgs = new ArrayList<String>();
 			combine(wdArgs, PARAM_SELENIUM_PROTOCOL, SELENIUM_RC_PROTOCOL);
 			combine(wdArgs, PARAM_BROWSER_NAME, getRCBrowserName());
-            combine(wdArgs, JenkinsCapabilityMatcher.NODE_NAME, StringUtils.isEmpty(c.getNode().getNodeName()) ? "master" : c.getNode().getNodeName());
+			initCommonOptions(wdArgs);
+            //combine(wdArgs, JenkinsCapabilityMatcher.NODE_NAME, StringUtils.isEmpty(c.getName()) ? JenkinsCapabilityMatcher.MASTER_NAME : c.getName());
 			wdArgs.addAll(getWDOptions());
 			
 			List<String> opts = opt.getSeleniumArguments();
@@ -109,7 +110,8 @@ public abstract class Browser implements Describable<Browser>, ExtensionPoint {
 			List<String> rcArgs = new ArrayList<String>();
 			combine(rcArgs, PARAM_SELENIUM_PROTOCOL, SELENIUM_WD_PROTOCOL);
 			combine(rcArgs, PARAM_BROWSER_NAME, getBrowserName());
-            combine(rcArgs, JenkinsCapabilityMatcher.NODE_NAME, StringUtils.isEmpty(c.getNode().getNodeName()) ? "master" : c.getNode().getNodeName());
+			initCommonOptions(rcArgs);
+            //combine(rcArgs, JenkinsCapabilityMatcher.NODE_NAME, StringUtils.isEmpty(c.getName()) ? JenkinsCapabilityMatcher.MASTER_NAME : c.getName());
 			rcArgs.addAll(getRCOptions());
 
 			List<String> opts = opt.getSeleniumArguments();

@@ -46,17 +46,16 @@ public class SeleniumTest extends HudsonTestCase {
         List<Browser> browsers = new ArrayList<Browser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomConfiguration cc = new CustomConfiguration(4444, false, false, false, false, -1, "", browsers);        
+        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers);        
         
         HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
-
         hudson.addNode(slave);
 
         waitForRC();
         Thread.sleep(5000);
 
-        Selenium browser = new DefaultSelenium("localhost", 4444, "*htmlunit", "http://www.google.com");
+        Selenium browser = new DefaultSelenium("localhost", 5000, "*htmlunit", "http://www.google.com");
         browser.start();
 
         try {
@@ -109,7 +108,7 @@ public class SeleniumTest extends HudsonTestCase {
         List<Browser> browsers = new ArrayList<Browser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomConfiguration cc = new CustomConfiguration(4444, false, false, false, false, -1, "", browsers);        
+        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers);        
         
         HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
@@ -121,7 +120,7 @@ public class SeleniumTest extends HudsonTestCase {
         DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
         dc.setCapability("jenkins.label","bar");
         try {
-            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:5000/wd/hub"),dc);
             fail(); // should have failed
         } catch (Exception e) {
             e.printStackTrace();

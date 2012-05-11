@@ -13,15 +13,23 @@ import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.ChromeBrowser;
 import hudson.plugins.selenium.configuration.browser.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.IEBrowser;
+import hudson.remoting.VirtualChannel;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletException;
+
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.HttpResponses;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -34,7 +42,8 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public class NodePropertyImpl extends NodeProperty<Node> {
 
-	Configuration configType;
+	private Configuration configType;
+	private transient VirtualChannel channel;
 
 	@DataBoundConstructor
 	public NodePropertyImpl(Configuration configuration) {
@@ -97,5 +106,17 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 
 	public SeleniumRunOptions initOptions(Computer c) {
 		return configType.initOptions(c);
+	}
+	
+	public HttpResponse doRestart(@QueryParameter String computerName) throws IOException, ServletException {
+        Computer c = Jenkins.getInstance().getComputer(computerName);
+        if (c != null) {
+        	
+        }
+        return HttpResponses.forwardToPreviousPage();
+    }
+
+	public void setChannel(VirtualChannel channel) {
+		this.channel = channel;
 	}
 }
