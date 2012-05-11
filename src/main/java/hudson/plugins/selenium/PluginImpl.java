@@ -265,7 +265,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public static String getMasterHostName() throws MalformedURLException {
         String rootUrl = Hudson.getInstance().getRootUrl();
         if(rootUrl==null)
-            return null;
+            return "localhost";
         URL url = new URL(rootUrl);
         return url.getHost();
     }

@@ -69,6 +69,12 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
      * RC uses this to register, to designate its origin.
      */
     public static final String NODE_NAME = "jenkins.nodeName";
+    
+    
+    /**
+     * Node name of the master computer
+     */
+    public static final String MASTER_NAME = "(master)";
 
     /**
      * Checks if the given node satisfies the label expression.
@@ -78,22 +84,12 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         private final String labelExpr;
 
         public LabelMatcherCallable(String nodeName, String labelExpr) {
-            this.nodeName = nodeName;
+            this.nodeName = nodeName.equals(MASTER_NAME) ? "" : nodeName;
             this.labelExpr = labelExpr;
         }
 
         public Boolean call() throws ANTLRException {
-        	Node n = null;
-        	if (nodeName.equals("master")) {
-        		for (Computer c : Hudson.getInstance().getComputers()) {
-        			if (c instanceof MasterComputer) {
-        				n = c.getNode();
-        				break;
-        			}
-        		}
-        	}
-        	else 
-        		n = Hudson.getInstance().getNode(nodeName);
+        	Node n = Hudson.getInstance().getNode(nodeName);
             System.out.println(n);
             if (n==null)    return false;
             return Label.parseExpression(labelExpr).matches(n);

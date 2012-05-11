@@ -33,7 +33,7 @@ public class HubLauncher implements Callable<Void,Exception> {
 
     public Void call() throws Exception {
         configureLoggers();
-
+        System.out.println("Grid Hub preparing to start on port "+port);
         GridHubConfiguration c = GridHubConfiguration.build(args);
         c.setPort(port);  
         c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
