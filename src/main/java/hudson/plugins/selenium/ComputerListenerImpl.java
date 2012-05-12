@@ -4,11 +4,11 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.FilePath.FileCallable;
 import hudson.console.HyperlinkNote;
+import hudson.model.TaskListener;
 import hudson.model.Computer;
 import hudson.model.Hudson;
-import hudson.model.Label;
-import hudson.model.TaskListener;
 import hudson.model.Hudson.MasterComputer;
+import hudson.model.Label;
 import hudson.remoting.Future;
 import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
@@ -44,12 +44,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
         LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
-        NodePropertyImpl np = null;
-        if (c instanceof MasterComputer) {
-        	np = Hudson.getInstance().getGlobalNodeProperties().get(NodePropertyImpl.class);
-        } else {
-        	np = c.getNode().getNodeProperties().get(NodePropertyImpl.class);
-        }
+        NodePropertyImpl np = NodePropertyImpl.getNodeProperty(c);
         
         if (np == null) {
         	//the node is configured to not start a grid node
@@ -88,7 +83,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
             listener.getLogger().println("Unable to determine the host name. Skipping Selenium execution.");
             return;
         }
-        final int masterPort = p.getPort();
+        //final int masterPort = p.getPort();
         final StringBuilder labelList = new StringBuilder();
         for(Label l : c.getNode().getAssignedLabels()) {
             labelList.append('/');
@@ -114,62 +109,11 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         listener.getLogger().println("Starting Selenium Grid nodes on " + c.getName());
 
         final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
-        final long jarTimestamp = seleniumJar.lastModified();
         final String nodeName = c.getName();
 
         try {
-			Future<Object> future = c.getNode().getRootPath().actAsync(new FileCallable<Object>() {
-
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 2047557797415325512L;
-
-				public Object invoke(File f, VirtualChannel channel) throws IOException {
-			        String alreadyStartedPropertyName = getClass().getName() + ".seleniumRcAlreadyStarted";
-			        if (Boolean.valueOf(System.getProperty(alreadyStartedPropertyName))) {
-			            LOGGER.info("Skipping Selenium RC execution because this slave has already started its RCs");
-			            return null;
-			        }
-			        
-			        File localJar = new File(f,seleniumJar.getName());
-			        if (localJar.lastModified() != jarTimestamp) {
-			            try {
-			                seleniumJar.copyTo(new FilePath(localJar));
-			                localJar.setLastModified(jarTimestamp);
-			            } catch (InterruptedException e) {
-			                throw new IOException2("Failed to copy grid jar",e);
-			            }
-			        }
-
-			        try {
-			            // this is potentially unsafe way to figure out a free port number, but it's far easier
-			            // than patching Selenium
-			            ServerSocket ss = new ServerSocket(0);
-			            int port = ss.getLocalPort();
-			            ss.close();
-
-			            String[] defaultArgs = new String[] {
-			                    "-role","node",
-			                    "-host",hostName,
-			                    "-port",String.valueOf(port),
-//                          "-env",labelList.toString(),
-			                    "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
-			            
-			            // TODO change this
-			            PluginImpl.createSeleniumRCVM(localJar,listener, options.getJVMArguments()).callAsync(
-			                    new RemoteControlLauncher( nodeName,
-			                            (String[]) ArrayUtils.addAll(defaultArgs, options.getSeleniumArguments().toArray(new String[0]))));
-			        } catch (Exception t) {
-			            LOGGER.log(Level.WARNING,"Selenium launch failed",t);
-			            throw new IOException2("Selenium launch interrupted",t);
-			        }
-
-			        System.setProperty(alreadyStartedPropertyName, Boolean.TRUE.toString());
-			        return null;
-			    }
-			});
-			
+			Future<Object> future = c.getNode().getRootPath().actAsync(new SeleniumCallable(seleniumJar, hostName, masterName, p.getPort(), nodeName, listener, options));
+			np.setChannel(c.getNode().getRootPath().getChannel());
 			future.get();
 		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
@@ -182,5 +126,78 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
 
     private static final Logger LOGGER = Logger.getLogger(ComputerListenerImpl.class.getName());
 
-    private static final String SEPARATOR = ",";    
+    private static final String SEPARATOR = ",";
+    
+    private class SeleniumCallable implements FileCallable<Object> {
+    	private FilePath seleniumJar;
+    	private long jarTimestamp;
+    	private String masterName;
+    	private int masterPort;
+    	private String hostName;
+    	private String nodeName;
+    	private SeleniumRunOptions options;
+    	private TaskListener listener;
+    	
+    	public SeleniumCallable(FilePath jar, String hostName, String masterName, int masterPort, String nodeName, TaskListener listener, SeleniumRunOptions options) throws InterruptedException, IOException {
+    		seleniumJar = jar;
+    		jarTimestamp = jar.lastModified();
+    		this.masterName = masterName;
+    		this.masterPort = masterPort;
+    		this.hostName = hostName;
+    		this.nodeName = nodeName;
+    		this.options = options;
+    		this.listener = listener;
+    	}
+    	
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2047557797415325512L;
+
+		public Object invoke(File f, VirtualChannel channel) throws IOException {
+	        String alreadyStartedPropertyName = getClass().getName() + ".seleniumRcAlreadyStarted";
+	        if (Boolean.valueOf(System.getProperty(alreadyStartedPropertyName))) {
+	            LOGGER.info("Skipping Selenium RC execution because this slave has already started its RCs");
+	            return null;
+	        }
+	        
+	        File localJar = new File(f,seleniumJar.getName());
+	        if (localJar.lastModified() != jarTimestamp) {
+	            try {
+	                seleniumJar.copyTo(new FilePath(localJar));
+	                localJar.setLastModified(jarTimestamp);
+	            } catch (InterruptedException e) {
+	                throw new IOException2("Failed to copy grid jar",e);
+	            }
+	        }
+
+	        try {
+	            // this is potentially unsafe way to figure out a free port number, but it's far easier
+	            // than patching Selenium
+	            ServerSocket ss = new ServerSocket(0);
+	            int port = ss.getLocalPort();
+	            ss.close();
+
+	            String[] defaultArgs = new String[] {
+	                    "-role","node",
+	                    "-host",hostName,
+	                    "-port",String.valueOf(port),
+//                  "-env",labelList.toString(),
+	                    "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
+	            
+	            // TODO change this
+	            JVMHolder.channel = PluginImpl.createSeleniumRCVM(localJar,listener, options.getJVMArguments());
+	            JVMHolder.channel.callAsync(
+	                    new RemoteControlLauncher( nodeName,
+	                            (String[]) ArrayUtils.addAll(defaultArgs, options.getSeleniumArguments().toArray(new String[0]))));
+	        } catch (Exception t) {
+	            LOGGER.log(Level.WARNING,"Selenium launch failed",t);
+	            throw new IOException2("Selenium launch interrupted",t);
+	        }
+
+	        System.setProperty(alreadyStartedPropertyName, Boolean.TRUE.toString());
+	        return null;
+	    }
+    }
+    
 }

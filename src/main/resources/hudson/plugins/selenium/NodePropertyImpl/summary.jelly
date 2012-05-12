@@ -29,7 +29,7 @@ THE SOFTWARE.
      	${context.setVariable("computer", context.parent.getVariable("from").name.equals("") ? "(master)" : context.parent.getVariable("from").name)}
         Configuration type : ${it.configurationType.class.name} ${computer}
         
-        <form method="post" action="${it}/restart}">
+        <form method="post" action="selenium/restart">
         	<f:submit value="${%submit.restart}"  />
         </form>
         

@@ -5,6 +5,7 @@ import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Node;
+import hudson.model.Hudson.MasterComputer;
 import hudson.plugins.selenium.configuration.Configuration;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.CustomConfiguration;
@@ -107,16 +108,23 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 	public SeleniumRunOptions initOptions(Computer c) {
 		return configType.initOptions(c);
 	}
-	
-	public HttpResponse doRestart(@QueryParameter String computerName) throws IOException, ServletException {
-        Computer c = Jenkins.getInstance().getComputer(computerName);
-        if (c != null) {
-        	
-        }
-        return HttpResponses.forwardToPreviousPage();
-    }
 
 	public void setChannel(VirtualChannel channel) {
 		this.channel = channel;
 	}
+
+	public VirtualChannel getChannel() {
+		return channel;
+	}
+	
+	public static NodePropertyImpl getNodeProperty(Computer c) {
+		NodePropertyImpl np;
+        if (c instanceof MasterComputer) {
+        	np = Hudson.getInstance().getGlobalNodeProperties().get(NodePropertyImpl.class);
+        } else {
+        	np = c.getNode().getNodeProperties().get(NodePropertyImpl.class);
+        }        
+        return np;
+	}
+	
 }
