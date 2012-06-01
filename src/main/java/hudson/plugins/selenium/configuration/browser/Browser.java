@@ -2,10 +2,9 @@ package hudson.plugins.selenium.configuration.browser;
 
 import hudson.DescriptorExtensionList;
 import hudson.ExtensionPoint;
-import hudson.model.Computer;
 import hudson.model.Describable;
+import hudson.model.Computer;
 import hudson.model.Hudson;
-import hudson.plugins.selenium.JenkinsCapabilityMatcher;
 import hudson.plugins.selenium.SeleniumRunOptions;
 
 import java.util.ArrayList;

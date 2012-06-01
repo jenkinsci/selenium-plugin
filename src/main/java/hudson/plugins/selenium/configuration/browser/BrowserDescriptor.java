@@ -1,13 +1,13 @@
 package hudson.plugins.selenium.configuration.browser;
 
+import hudson.model.Descriptor;
+import hudson.util.FormValidation;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.QueryParameter;
-
-import hudson.model.Descriptor;
-import hudson.util.FormValidation;
 
 public abstract class BrowserDescriptor extends
 		Descriptor<Browser> {

@@ -1,15 +1,15 @@
 package hudson.plugins.selenium;
 
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
-import org.openqa.grid.internal.RemoteProxy;
-import org.openqa.grid.internal.TestSlot;
-
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
+import org.openqa.grid.internal.RemoteProxy;
+import org.openqa.grid.internal.TestSlot;
 
 /**
  * Selenium Remote Control instance.

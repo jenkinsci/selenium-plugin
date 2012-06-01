@@ -1,14 +1,19 @@
 package hudson.plugins.selenium.actions;
 
-import hudson.FilePath.FileCallable;
 import hudson.model.Action;
 import hudson.model.Computer;
 import hudson.plugins.selenium.NodePropertyImpl;
-import hudson.remoting.Callable;
-import hudson.remoting.VirtualChannel;
+import hudson.plugins.selenium.PluginImpl;
+import hudson.plugins.selenium.callables.DeepLevelCallable;
+import hudson.plugins.selenium.callables.PropertyUtils;
+import hudson.plugins.selenium.callables.RemoteStopSelenium;
+import hudson.plugins.selenium.callables.SeleniumCallable;
+import hudson.plugins.selenium.callables.SeleniumConstants;
+import hudson.remoting.Channel;
+import hudson.util.StreamTaskListener;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import javax.servlet.ServletException;
 
@@ -24,8 +29,8 @@ public class ServiceManagementAction implements Action {
 	}
 	
     public String getIconFileName() {
-//    	if (NodePropertyImpl.getNodeProperty(computer) != null)
-//    		return "/plugin/selenium/24x24/selenium.png";
+    	if (NodePropertyImpl.getNodeProperty(computer) != null)
+    		return "/plugin/selenium/24x24/selenium.png";
     	return null;
     }
 
@@ -40,37 +45,45 @@ public class ServiceManagementAction implements Action {
 	public HttpResponse doRestart() throws IOException, ServletException {
 		doStop();
 		doStart();
-        return HttpResponses.redirectViaContextPath("../..");
+        return HttpResponses.forwardToPreviousPage();
     }
 	
 	public HttpResponse doStop() throws IOException, ServletException {
 		NodePropertyImpl np = NodePropertyImpl.getNodeProperty(computer);
 		if (np != null) {
 			try {
-				Boolean response = np.getChannel().call(new Callable<Boolean,Exception>() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 3692858218403086907L;
-
-					public Boolean call() throws Exception {
-						
-						// TODO Auto-generated method stub
-						return null;
-					}
-				});
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				np.getChannel().call(new DeepLevelCallable<Void, Exception>(SeleniumConstants.PROPERTY_JVM, new RemoteStopSelenium()));
+				System.setProperty(SeleniumCallable.ALREADY_STARTED, Boolean.FALSE.toString());
+				Channel c = PropertyUtils.getProperty(SeleniumConstants.PROPERTY_JVM);
+				c.close();
+				//np.setChannel(null);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return HttpResponses.redirectViaContextPath("../..");
+		return HttpResponses.forwardToPreviousPage();
 	}
 	
 	public HttpResponse doStart() throws IOException, ServletException {
-		return HttpResponses.redirectViaContextPath("../..");
+		try {
+			//np.getChannel().call(new DeepLevelCallable<Void, Exception>(SeleniumConstants.PROPERTY_JVM, new RemoteStartSelenium()));
+			PluginImpl.startSeleniumNode(computer, new StreamTaskListener(new OutputStreamWriter(System.out)));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		NodePropertyImpl np = NodePropertyImpl.getNodeProperty(computer);
+//		if (np != null) {
+//		}
+		return HttpResponses.forwardToPreviousPage();
+	}
+	
+	public NodePropertyImpl getProperty() {
+		return NodePropertyImpl.getNodeProperty(computer);
+	}
+	
+	public Computer getComputer() {
+		return computer;
 	}
 }

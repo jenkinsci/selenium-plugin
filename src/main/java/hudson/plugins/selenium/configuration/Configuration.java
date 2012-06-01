@@ -12,6 +12,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public abstract class Configuration implements Describable<Configuration> {
 
+	protected String display = null;
 
 	public ConfigurationDescriptor getDescriptor() {
         return (ConfigurationDescriptor)Hudson.getInstance().getDescriptor(getClass());
@@ -27,4 +28,20 @@ public abstract class Configuration implements Describable<Configuration> {
 
 	public abstract SeleniumRunOptions initOptions(Computer c);
 
+	public String getDisplayName() {
+		if (display == null) {
+			String name = getClass().getSimpleName();
+			StringBuffer b = new StringBuffer(name.length());
+			b.append(name.charAt(0));
+			for (int i = 1; i < name.length(); i++) {
+				if (Character.isUpperCase(name.charAt(i))) {
+					b.append(" ");	
+				}
+		        b.append(name.charAt(i));
+		    }
+			display = b.toString();
+		}
+		return display;
+	}
+	
 }
