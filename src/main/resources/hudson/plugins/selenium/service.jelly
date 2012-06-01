@@ -1,0 +1,32 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+	<h2>
+		<img src="/plugin/selenium/24x24/selenium.png" width="24" height="24" alt=""/>
+		Selenium Configuration</h2>
+    ${context.setVariable("computer", context.parent.getVariable("from").name.equals("") ? "(master)" : context.parent.getVariable("from").name)}
+    Configuration type : ${it.configurationType.displayName}
+	<st:include it="${it.configurationType}" page="summary.jelly" optional="true" />
+	<br />
+	<h3>Management</h3>
+    <div>
+    	Current status : ${it.status}
+    	<br /><br />
+    	<div>
+    	${%Restart description}
+        <form method="post" action="${prefix}restart">
+        	<f:submit value="${%submit.restart}" />
+        </form>
+        </div><br />
+        <div>
+        ${%Start description}
+        <form method="post" action="${prefix}start">
+        	<f:submit value="${%submit.start}" />
+        </form>
+        </div><br />
+        <div>
+        ${%Stop description}
+        <form method="post" action="${prefix}stop">
+        	<f:submit value="${%submit.stop}" />
+        </form>
+        </div>
+    </div>
+</j:jelly>

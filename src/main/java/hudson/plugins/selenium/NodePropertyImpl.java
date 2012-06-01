@@ -4,8 +4,11 @@ import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Hudson;
-import hudson.model.Node;
 import hudson.model.Hudson.MasterComputer;
+import hudson.model.Node;
+import hudson.plugins.selenium.callables.DeepLevelCallable;
+import hudson.plugins.selenium.callables.RemoteGetStatus;
+import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.plugins.selenium.configuration.Configuration;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.CustomConfiguration;
@@ -22,15 +25,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-
-import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.HttpResponses;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -115,6 +112,15 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 
 	public VirtualChannel getChannel() {
 		return channel;
+	}
+	
+	public String getStatus() {
+		try {
+			if (channel == null) return SeleniumConstants.STOPPED;
+			return channel.call(new DeepLevelCallable<String, Exception>(SeleniumConstants.PROPERTY_JVM, new RemoteGetStatus(), SeleniumConstants.STOPPED));
+		} catch (Throwable e) {
+			return "An error occured while retrieving the status of the selenium process " + e.getMessage();
+		}
 	}
 	
 	public static NodePropertyImpl getNodeProperty(Computer c) {

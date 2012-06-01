@@ -20,12 +20,18 @@ package hudson.plugins.selenium;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Plugin;
+import hudson.Proc;
+import hudson.Launcher.LocalLauncher;
+import hudson.console.HyperlinkNote;
 import hudson.model.Action;
-import hudson.model.Api;
 import hudson.model.Describable;
+import hudson.model.TaskListener;
+import hudson.model.Api;
+import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
-import hudson.model.TaskListener;
+import hudson.model.Label;
+import hudson.plugins.selenium.callables.SeleniumCallable;
 import hudson.plugins.selenium.configuration.Configuration;
 import hudson.plugins.selenium.configuration.CustomConfiguration;
 import hudson.plugins.selenium.configuration.browser.Browser;
@@ -34,25 +40,35 @@ import hudson.plugins.selenium.configuration.browser.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.IEBrowser;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
+import hudson.remoting.Launcher;
+import hudson.remoting.SocketInputStream;
+import hudson.remoting.SocketOutputStream;
 import hudson.remoting.Which;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
+import hudson.util.IOException2;
 import hudson.util.JVMBuilder;
 import hudson.util.StreamTaskListener;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.json.JSONObject;
 
@@ -65,6 +81,7 @@ import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
 import org.openqa.grid.selenium.GridLauncher;
+import org.springframework.util.StringUtils;
 
 /**
  * Starts Selenium Grid server in another JVM.
@@ -74,6 +91,10 @@ import org.openqa.grid.selenium.GridLauncher;
 @ExportedBean
 public class PluginImpl extends Plugin implements Action, Serializable, Describable<PluginImpl> {
 
+    private static final String SEPARATOR = ",";
+
+	private static final Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
+	
     private int port = 4444;
     private String exclusionPatterns;
     private Integer newSessionWaitTimeout = -1;
@@ -253,10 +274,39 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      * @param standaloneServerJar
      *      The jar file of the grid to launch.
      */
-    static /*package*/ Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties) throws IOException, InterruptedException {
-        return Channels.newJVM("Selenium RC",listener,null,
+    static public Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties) throws IOException, InterruptedException {
+        /*return Channels.newJVM("Selenium RC",listener,null,
                 new ClasspathBuilder().add(standaloneServerJar),
-                properties);
+                properties);*/
+    	String displayName = "Selenium RC";
+    	
+    	ClasspathBuilder classpath = new ClasspathBuilder().add(standaloneServerJar);
+    	JVMBuilder vmb = new JVMBuilder();
+        vmb.systemProperties(properties);
+    	
+    	ServerSocket serverSocket = new ServerSocket();
+        serverSocket.bind(new InetSocketAddress("localhost",0));
+        serverSocket.setSoTimeout(10*1000);
+
+        // use -cp + FQCN instead of -jar since remoting.jar can be rebundled (like in the case of the swarm plugin.)
+        vmb.classpath().addJarOf(Channel.class);
+        vmb.mainClass(Launcher.class);
+
+        if(classpath!=null)
+            vmb.args().add("-cp").add(classpath);
+        vmb.args().add("-connectTo","localhost:"+serverSocket.getLocalPort());
+
+        listener.getLogger().println("Starting " + displayName);
+        
+        // TODO add XVFB options here
+        Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener).start();
+
+        Socket s = serverSocket.accept();
+        serverSocket.close();
+
+        return Channels.forProcess("Channel to "+displayName, Computer.threadPoolForRemoting,
+                new BufferedInputStream(new SocketInputStream(s)),
+                new BufferedOutputStream(new SocketOutputStream(s)),null,p);
     }
 
     /**
@@ -265,7 +315,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public static String getMasterHostName() throws MalformedURLException {
         String rootUrl = Hudson.getInstance().getRootUrl();
         if(rootUrl==null)
-            return "localhost";
+            return null;
         URL url = new URL(rootUrl);
         return url.getHost();
     }
@@ -338,4 +388,85 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private transient Boolean rcBrowserSessionReuse;
     private transient Boolean rcTrustAllSSLCerts;
     private transient Boolean rcBrowserSideLog;
+
+	public static void startSeleniumNode(Computer c, TaskListener listener) throws IOException, InterruptedException {
+        LOGGER.fine("Examining if we need to start Selenium Grid Node");
+
+        NodePropertyImpl np = NodePropertyImpl.getNodeProperty(c);
+        
+        if (np == null) {
+        	//the node is configured to not start a grid node
+        	LOGGER.fine("Node " + c.getNode().getDisplayName() + " is excluded from Selenium Grid because it is disabled");
+        	return;
+        }        
+        
+        final PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
+        
+        final String exclusions = p.getExclusionPatterns();
+        List<String> exclusionPatterns = new ArrayList<String>();
+        if (StringUtils.hasText(exclusions)) {
+            exclusionPatterns = Arrays.asList(exclusions.split(SEPARATOR));
+        }
+        if (exclusionPatterns.size() > 0){
+            // loop over all the labels and check if we need to exclude a node based on the exlusionPatterns
+            for(Label l : c.getNode().getAssignedLabels()) {
+                for(String pattern : exclusionPatterns){
+                    if (l.toString().matches(pattern)) {
+                        LOGGER.fine("Node " + c.getNode().getDisplayName() + " is excluded from Selenium Grid because its label '"
+                                + l + "' matches exclusion pattern '" + pattern + "'");
+                        return;
+                    }
+                }
+            }
+        }
+
+        final String masterName = PluginImpl.getMasterHostName();
+        if(masterName==null) {
+            listener.getLogger().println("Unable to determine the host name of the master. Skipping Selenium execution. "
+                +"Please "+ HyperlinkNote.encodeTo("/configure", "configure the Jenkins URL")+" from the system configuration screen.");
+            return;
+        }
+        final String hostName = c.getHostName();
+        if(hostName==null) {
+            listener.getLogger().println("Unable to determine the host name. Skipping Selenium execution.");
+            return;
+        }
+        //final int masterPort = p.getPort();
+        final StringBuilder labelList = new StringBuilder();
+        for(Label l : c.getNode().getAssignedLabels()) {
+            labelList.append('/');
+            labelList.append(l);
+        }
+        labelList.append('/');
+
+        
+        // make sure that Selenium Hub is started before we start RCs.
+        try {
+            p.waitForHubLaunch();
+        } catch (ExecutionException e) {
+            throw new IOException2("Failed to wait for the Hub launch to complete",e);
+        }
+
+        final SeleniumRunOptions options = np.initOptions(c);
+        if (options == null) {
+        	// if configuration returned no options, that means it doesn't want to start selenium
+        	LOGGER.fine("The configuration returned no run options. Skipping selenium execution.");
+        	return;        	
+        }
+        
+        listener.getLogger().println("Starting Selenium Grid nodes on " + c.getName());
+
+        final FilePath seleniumJar = new FilePath(PluginImpl.findStandAloneServerJar());
+        final String nodeName = c.getName();
+
+        try {
+			Future<Object> future = c.getNode().getRootPath().actAsync(new SeleniumCallable(seleniumJar, hostName, masterName, p.getPort(), nodeName, listener, options));
+			np.setChannel(c.getNode().getRootPath().getChannel());
+			future.get();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		
+	}
+}
 }

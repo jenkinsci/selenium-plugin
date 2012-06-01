@@ -1,0 +1,22 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+	<h3>Configured browsers</h3>
+	<div>
+	<table class="sortable pane bigtable">
+    	<tr>
+          <th>${%Browser Name}</th>
+          <th>${%Required Version}</th>
+          <th>${%Maximum instances}</th>
+          <th>${%Capabilities}</th>
+        </tr>
+        <j:forEach var="b" items="${it.browsers}">
+          <tr>
+            <td><b>${b.browserName}</b></td>
+            <td class="center">${b.version}</td>
+            <td class="center">${b.maxInstances}</td>
+            <td class="center">${b.wdOptions}</td>
+          </tr>
+        </j:forEach>
+      </table>
+	</div>
+</j:jelly>

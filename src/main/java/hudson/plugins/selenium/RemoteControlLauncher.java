@@ -1,5 +1,7 @@
 package hudson.plugins.selenium;
 
+import hudson.plugins.selenium.callables.PropertyUtils;
+import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.remoting.Callable;
 import hudson.remoting.Which;
 
@@ -41,8 +43,6 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
             System.out.println("Starting Selenium RC with "+ Arrays.asList(args));
             System.out.println(Which.jarFile(SeleniumServer.class));
 
-
-
             RegistrationRequest c = RegistrationRequest.build(args);
             for (DesiredCapabilities dc : c.getCapabilities()) {
                 System.out.println("Capabilities : " + dc);
@@ -50,12 +50,15 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
                 //dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
             }
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
+            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_INSTANCE, remote);
+            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTING);
             remote.startRemoteServer();
+            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTED);
             remote.startRegistrationProcess();
-
-            System.out.println("Blocking");
+            
             // block forever
             Object o = new Object();
+            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_LOCK, o);
             synchronized (o) {
                 o.wait();
             }

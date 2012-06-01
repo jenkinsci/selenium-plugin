@@ -1,7 +1,6 @@
 package hudson.plugins.selenium;
 
 import hudson.model.Hudson;
-import hudson.model.Label;
 import hudson.model.Node.Mode;
 import hudson.plugins.selenium.configuration.CustomConfiguration;
 import hudson.plugins.selenium.configuration.browser.Browser;

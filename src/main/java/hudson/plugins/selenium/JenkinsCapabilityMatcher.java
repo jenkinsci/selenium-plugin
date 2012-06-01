@@ -1,8 +1,6 @@
 package hudson.plugins.selenium;
 
-import hudson.model.Computer;
 import hudson.model.Hudson;
-import hudson.model.Hudson.MasterComputer;
 import hudson.model.Label;
 import hudson.model.Node;
 import hudson.remoting.Callable;
