@@ -45,7 +45,7 @@ public class SeleniumTest extends HudsonTestCase {
         List<Browser> browsers = new ArrayList<Browser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers);        
+        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
         
         HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
@@ -107,7 +107,7 @@ public class SeleniumTest extends HudsonTestCase {
         List<Browser> browsers = new ArrayList<Browser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers);        
+        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
         
         HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
