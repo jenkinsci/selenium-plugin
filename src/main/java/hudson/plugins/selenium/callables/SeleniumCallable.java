@@ -68,7 +68,9 @@ public class SeleniumCallable implements FileCallable<Object> {
         }
 
         try {
-            // this is potentially unsafe way to figure out a free port number, but it's far easier
+        	PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTING);
+            
+        	// this is potentially unsafe way to figure out a free port number, but it's far easier
             // than patching Selenium
             ServerSocket ss = new ServerSocket(0);
             int port = ss.getLocalPort();
@@ -82,12 +84,14 @@ public class SeleniumCallable implements FileCallable<Object> {
                     "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
             
             // TODO change this
-            Channel jvm = PluginImpl.createSeleniumRCVM(localJar,listener, options.getJVMArguments());
+            Channel jvm = PluginImpl.createSeleniumRCVM(localJar,listener, options.getJVMArguments(), options.getEnvironmentVariables());
             PropertyUtils.setProperty(SeleniumConstants.PROPERTY_JVM, jvm);
             jvm.callAsync(
                     new RemoteControlLauncher( nodeName,
                             (String[]) ArrayUtils.addAll(defaultArgs, options.getSeleniumArguments().toArray(new String[0]))));
+            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTED);
         } catch (Exception t) {
+        	PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.ERROR);
             LOGGER.log(Level.WARNING,"Selenium launch failed",t);
             throw new IOException2("Selenium launch interrupted",t);
         }

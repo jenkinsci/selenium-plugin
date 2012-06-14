@@ -97,7 +97,7 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 			browsers.add(new IEBrowser(1, null, null));
 			
 			
-			DEFAULT_CONFIGURATION = new CustomConfiguration(4445, false, false, false, false, -1, "", browsers); 
+			DEFAULT_CONFIGURATION = new CustomConfiguration(4445, false, false, false, false, -1, "", browsers, null); 
 		}
 
 	}
@@ -117,7 +117,7 @@ public class NodePropertyImpl extends NodeProperty<Node> {
 	public String getStatus() {
 		try {
 			if (channel == null) return SeleniumConstants.STOPPED;
-			return channel.call(new DeepLevelCallable<String, Exception>(SeleniumConstants.PROPERTY_JVM, new RemoteGetStatus(), SeleniumConstants.STOPPED));
+			return channel.call(new RemoteGetStatus());
 		} catch (Throwable e) {
 			return "An error occured while retrieving the status of the selenium process " + e.getMessage();
 		}
@@ -131,6 +131,14 @@ public class NodePropertyImpl extends NodeProperty<Node> {
         	np = c.getNode().getNodeProperties().get(NodePropertyImpl.class);
         }        
         return np;
+	}
+	
+	public boolean isShowable(Computer c) {
+		if (c instanceof MasterComputer) {
+			return true;
+		} else {
+			return !equals(Hudson.getInstance().getGlobalNodeProperties().get(NodePropertyImpl.class));
+		}
 	}
 	
 }

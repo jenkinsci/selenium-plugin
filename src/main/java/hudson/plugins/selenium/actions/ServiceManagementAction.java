@@ -4,12 +4,15 @@ import hudson.model.Action;
 import hudson.model.Computer;
 import hudson.plugins.selenium.NodePropertyImpl;
 import hudson.plugins.selenium.PluginImpl;
+import hudson.plugins.selenium.callables.ChannelPropertyGetterCallable;
+import hudson.plugins.selenium.callables.ChannelPropertySetterCallable;
 import hudson.plugins.selenium.callables.DeepLevelCallable;
-import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.RemoteStopSelenium;
 import hudson.plugins.selenium.callables.SeleniumCallable;
 import hudson.plugins.selenium.callables.SeleniumConstants;
+import hudson.plugins.selenium.callables.SetSysPropertyCallable;
 import hudson.remoting.Channel;
+import hudson.remoting.VirtualChannel;
 import hudson.util.StreamTaskListener;
 
 import java.io.IOException;
@@ -52,30 +55,32 @@ public class ServiceManagementAction implements Action {
 		NodePropertyImpl np = NodePropertyImpl.getNodeProperty(computer);
 		if (np != null) {
 			try {
-				np.getChannel().call(new DeepLevelCallable<Void, Exception>(SeleniumConstants.PROPERTY_JVM, new RemoteStopSelenium()));
-				System.setProperty(SeleniumCallable.ALREADY_STARTED, Boolean.FALSE.toString());
-				Channel c = PropertyUtils.getProperty(SeleniumConstants.PROPERTY_JVM);
+				VirtualChannel slaveChannel = np.getChannel(); 
+				slaveChannel.call(new ChannelPropertySetterCallable<String>(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STOPPING));
+				slaveChannel.call(new DeepLevelCallable<Void, Exception>(SeleniumConstants.PROPERTY_JVM, new RemoteStopSelenium()));
+				slaveChannel.call(new ChannelPropertySetterCallable<String>(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STOPPED));
+				Channel c = slaveChannel.call(new ChannelPropertyGetterCallable<Channel, Exception>(SeleniumConstants.PROPERTY_JVM));
+				slaveChannel.call(new SetSysPropertyCallable(SeleniumCallable.ALREADY_STARTED, Boolean.FALSE.toString()));
 				c.close();
 				//np.setChannel(null);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					np.getChannel().call(new ChannelPropertySetterCallable<String>(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.ERROR));
+				} catch (Exception e1) {
+				}
 			}
 		}
 		return HttpResponses.forwardToPreviousPage();
 	}
 	
 	public HttpResponse doStart() throws IOException, ServletException {
-		try {
-			//np.getChannel().call(new DeepLevelCallable<Void, Exception>(SeleniumConstants.PROPERTY_JVM, new RemoteStartSelenium()));
-			PluginImpl.startSeleniumNode(computer, new StreamTaskListener(new OutputStreamWriter(System.out)));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		NodePropertyImpl np = NodePropertyImpl.getNodeProperty(computer);
+		if (np != null) {
+			try {
+				PluginImpl.startSeleniumNode(computer, new StreamTaskListener(new OutputStreamWriter(System.out)));
+			} catch (Exception e) {
+			}
 		}
-//		NodePropertyImpl np = NodePropertyImpl.getNodeProperty(computer);
-//		if (np != null) {
-//		}
 		return HttpResponses.forwardToPreviousPage();
 	}
 	

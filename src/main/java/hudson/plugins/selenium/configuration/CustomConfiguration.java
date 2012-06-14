@@ -32,6 +32,7 @@ public class CustomConfiguration extends Configuration {
     private Integer timeout = -1;
     private String rcLog;
     private List<? extends Browser> browsers = new ArrayList<Browser>();
+    private String display;
 
     @DataBoundConstructor
     public CustomConfiguration(int port, 
@@ -41,7 +42,8 @@ public class CustomConfiguration extends Configuration {
     							boolean rcBrowserSessionReuse,
     							Integer timeout,
     							String rcLog, 
-    							List<? extends Browser> browsers) {
+    							List<? extends Browser> browsers,
+    							String display) {
     	this.port = port;
     	this.rcBrowserSideLog = rcBrowserSideLog;
     	this.rcDebug = rcDebug;
@@ -50,6 +52,7 @@ public class CustomConfiguration extends Configuration {
     	this.rcLog = rcLog;
     	this.timeout = timeout;
     	this.browsers = browsers;
+    	this.display = display;
     	
     }
     
@@ -95,6 +98,11 @@ public class CustomConfiguration extends Configuration {
     
 	public DescriptorExtensionList<Browser, BrowserDescriptor> getBrowserTypes() {
 		return Browser.all();
+	}
+	
+	@Exported
+	public String getDisplay() {
+		return display;
 	}
 	
 	@Extension
@@ -161,6 +169,8 @@ public class CustomConfiguration extends Configuration {
         	b.initOptions(c, opt);
         }
 
+        opt.setEnvVar("DISPLAY", display);
+        
 		return opt;
 	}
 	
