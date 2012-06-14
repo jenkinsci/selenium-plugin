@@ -26,9 +26,12 @@ public class SeleniumRunOptions implements Serializable {
 	
 	private Map<String, String> jvmArgs;
 	
+	private Map<String, String> envVars;
+	
 	public SeleniumRunOptions() {
 		arguments = new ArrayList<String>();
 		jvmArgs = new HashMap<String, String>();
+		envVars = new HashMap<String, String>();
 	}
 	
 	/**
@@ -67,6 +70,18 @@ public class SeleniumRunOptions implements Serializable {
 		if (StringUtils.hasText(value)) {
 			arguments.add(option);
 			arguments.add(value);
+		}
+	}
+
+	public Map<String, String> getEnvironmentVariables() {
+		return envVars;
+	}
+	
+	public void setEnvVar(String key, String value) {
+		if (value == null) {
+			envVars.remove(key);
+		} else {
+			envVars.put(key, value);
 		}
 	}
 	

@@ -274,7 +274,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      * @param standaloneServerJar
      *      The jar file of the grid to launch.
      */
-    static public Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties) throws IOException, InterruptedException {
+    static public Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties, Map<String, String> envVariables) throws IOException, InterruptedException {
         /*return Channels.newJVM("Selenium RC",listener,null,
                 new ClasspathBuilder().add(standaloneServerJar),
                 properties);*/
@@ -299,7 +299,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         listener.getLogger().println("Starting " + displayName);
         
         // TODO add XVFB options here
-        Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener).start();
+        Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener).envs(envVariables).start();
 
         Socket s = serverSocket.accept();
         serverSocket.close();
@@ -367,7 +367,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 			} catch (IOException e) {
 			}
     	    
-    	    Configuration c = new CustomConfiguration(port_, rcBrowserSideLog_, rcDebug, rcTrustAllSSLCerts_, rcBrowserSessionReuse_, -1, rcFirefoxProfileTemplate_, browsers);
+    	    Configuration c = new CustomConfiguration(port_, rcBrowserSideLog_, rcDebug, rcTrustAllSSLCerts_, rcBrowserSessionReuse_, -1, rcFirefoxProfileTemplate_, browsers, null);
     	    
     	    try {
 				Hudson.getInstance().getGlobalNodeProperties().add(new NodePropertyImpl(c));

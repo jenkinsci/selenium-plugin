@@ -15,9 +15,11 @@ public class SeleniumConstants {
 	
 	public static final ChannelProperty<SelfRegisteringRemote> PROPERTY_INSTANCE = new ChannelProperty<SelfRegisteringRemote>(SelfRegisteringRemote.class, "instance");
 	
-	public static final String STARTING = "starting";
-	public static final String STARTED = "started";
-	public static final String RESTARTING = "restarting";
-	public static final String STOPPING = "stopping";
-	public static final String STOPPED = "stopped";
+	public static final String STARTING = "Starting";
+	public static final String STARTED = "Started";
+	public static final String RESTARTING = "Restarting";
+	public static final String STOPPING = "Stopping";
+	public static final String STOPPED = "Stopped";
+
+	public static final String ERROR = "Error";
 }

@@ -2,11 +2,12 @@ package hudson.plugins.selenium;
 
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
-import org.openqa.grid.internal.utils.GridHubConfiguration;
-import org.openqa.grid.web.Hub;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.openqa.grid.internal.utils.GridHubConfiguration;
+import org.openqa.grid.web.Hub;
 
 /**
  * Starts the selenium grid server.

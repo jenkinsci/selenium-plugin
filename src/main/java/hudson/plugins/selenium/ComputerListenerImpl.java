@@ -8,6 +8,7 @@ import hudson.model.TaskListener;
 import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Label;
+import hudson.plugins.selenium.actions.ServiceManagementAction;
 import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.remoting.Channel;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.util.StringUtils;
@@ -47,6 +50,14 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
 		PluginImpl.startSeleniumNode(c, listener);
     }
 
+	
+	@Override
+	public void onOffline(Computer c) {
+		try {
+			new ServiceManagementAction(c).doStop();
+		} catch (Exception e) {
+		}
+	}
 
     private static final long serialVersionUID = 1L;
     

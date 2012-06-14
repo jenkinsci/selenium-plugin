@@ -17,6 +17,9 @@
 			  <f:entry title="${%Set -log}" field="rcLog">
 			      <f:textbox  value="${configuration.class}"/>
 			  </f:entry>
+			  <f:entry title="${%X11 display}" field="display">
+			      <f:textbox  value="${display}"/>
+			  </f:entry>
 			  <!-- This config should now be in the particular firefox browser configuration ...
 			  	   Problem is that it is valid with RC1, but not RC2 ... I guess I'll have to add 
 			  	   another special configuration type to handle RC1 configs, as well as WebDriver 
