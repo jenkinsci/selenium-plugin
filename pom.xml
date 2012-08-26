@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.463</version>
+    <version>1.478</version>
   </parent>
   
   <properties>
@@ -16,7 +16,7 @@
   <name>Jenkins Selenium Plugin</name>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
 
-<!-- 
+
 <build>
   <pluginManagement>
   <plugins>
@@ -44,7 +44,6 @@
             </pluginExecution>
             <pluginExecution>
               <pluginExecutionFilter>
-              
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
                 <versionRange>[1.0.0,)</versionRange>
@@ -116,7 +115,7 @@
 </pluginManagement>
 
 </build>
--->
+
   <scm>
     <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
@@ -172,14 +171,14 @@
   <repositories>
     <repository>
       <id>m.g.o-public</id>
-      <url>http://maven.glassfish.org/content/groups/public/</url>
+      <url>http://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
 
   <pluginRepositories>
     <pluginRepository>
       <id>m.g.o-public</id>
-      <url>http://maven.glassfish.org/content/groups/public/</url>
+      <url>http://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
   
