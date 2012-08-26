@@ -42,10 +42,15 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         String labelExpr = label.toString();
         if (labelExpr.trim().length() == 0)   return true;    // treat "" as null
 
+        Object reqNode = requestedCapability.get(NODE_NAME);
+        
         String nodeName = (String)currentCapability.get(NODE_NAME);
         if (nodeName == null)
             return false;   // must have been added from elsewhere
 
+        if (reqNode != null && nodeName != null)
+            return nodeName.equals(reqNode);
+        
         try {
             return master.call(new LabelMatcherCallable(nodeName, labelExpr));
         } catch (IOException e) {
