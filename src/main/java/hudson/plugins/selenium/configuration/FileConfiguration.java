@@ -76,9 +76,9 @@ public class FileConfiguration extends SeleniumNodeConfiguration {
 
 	private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
 
-	@Override
-	public String getSummary() {
-		return "Configuration located at " + getConfigURL();
+	public String getIcon() {
+		return "/images/24x24/document.png";
 	}
 	
+		
 }

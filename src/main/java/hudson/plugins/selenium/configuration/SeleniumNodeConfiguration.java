@@ -2,6 +2,8 @@ package hudson.plugins.selenium.configuration;
 
 import java.io.Serializable;
 
+import jenkins.model.Jenkins;
+
 import hudson.DescriptorExtensionList;
 import hudson.model.Describable;
 import hudson.model.Computer;
@@ -46,6 +48,13 @@ public abstract class SeleniumNodeConfiguration implements Describable<SeleniumN
 		return display;
 	}
 
-	public abstract String getSummary();
+	
+	public String getIcon() {
+		return "/images/24x24/gear.png";
+	}
+	
+	public String getIconAltText() {
+		return getDescriptor().getDisplayName();
+	}
 	
 }
