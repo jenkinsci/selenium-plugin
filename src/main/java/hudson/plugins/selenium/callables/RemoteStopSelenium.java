@@ -1,11 +1,13 @@
 package hudson.plugins.selenium.callables;
 
 import hudson.remoting.Callable;
-import hudson.remoting.Channel;
-
-import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
 public class RemoteStopSelenium implements Callable<Void, Exception> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5448989386458342771L;
 
 	public Void call() throws Exception {
 		PropertyUtils.getProperty(SeleniumConstants.PROPERTY_INSTANCE).stopRemoteServer();

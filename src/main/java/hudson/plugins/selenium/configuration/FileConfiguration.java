@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class FileConfiguration extends Configuration {
+public class FileConfiguration extends SeleniumNodeConfiguration {
 
 	private String configURL;
 	
@@ -75,5 +75,10 @@ public class FileConfiguration extends Configuration {
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
+
+	@Override
+	public String getSummary() {
+		return "Configuration located at " + getConfigURL();
+	}
 	
 }

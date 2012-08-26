@@ -1,7 +1,0 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
-  <j:if test="${it.isShowable(context.getVariable('parentScope').from)}">
-  	<j:set var="from" value="${parent.from}" />
-  	<j:set var="prefix" value="selenium/" />
-  	<st:include page="../service.jelly" />
-  </j:if>
-</j:jelly>

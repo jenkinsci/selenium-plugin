@@ -7,6 +7,7 @@ import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.plugins.selenium.SeleniumRunOptions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
-public abstract class Browser implements Describable<Browser>, ExtensionPoint {
+public abstract class Browser implements Describable<Browser>, ExtensionPoint, Serializable {
 	
 	transient protected final String PARAM_BROWSER_NAME = "browserName";
 

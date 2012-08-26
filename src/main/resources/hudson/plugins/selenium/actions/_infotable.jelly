@@ -1,0 +1,22 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" >
+  <table id="configurations" class="sortable pane bigtable">
+      <tr>
+        <th width="55">Type</th>
+        <th initialSortDir="down">${%Name}</th>
+        <th >Matching type</th>
+        <th >Description summary</th>
+      </tr>
+      <j:forEach var="c" items="${configurations}">
+        <tr id="node_${c.name}">
+          <td width="55" data="${c.name}">
+            <img src="${resURL}/32x32/${c.icon}" width="32" height="32" alt="${c.iconAltText}"/>
+          </td>
+          <td>${c.name}</td>
+          <td>${c.matcherSummary}</td>
+          <td><st:include it="${c.configuration}" page="config_summary.jelly" optional="true"/></td>
+        </tr>
+      </j:forEach>
+
+  </table>
+</j:jelly>

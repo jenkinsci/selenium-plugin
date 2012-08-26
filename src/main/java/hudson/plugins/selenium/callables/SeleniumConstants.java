@@ -1,9 +1,9 @@
 package hudson.plugins.selenium.callables;
 
-import org.openqa.grid.internal.utils.SelfRegisteringRemote;
-
 import hudson.remoting.Channel;
 import hudson.remoting.ChannelProperty;
+
+import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
 public class SeleniumConstants {
 	
