@@ -3,15 +3,11 @@ package hudson.plugins.selenium;
 import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.remoting.Callable;
-import hudson.remoting.Which;
-
-import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.server.SeleniumServer;
 
 /**
  * Launches Selenium RC.
@@ -40,12 +36,8 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
     // exception needs to be reported explicitly.
     public Void call() throws Exception {
         try {
-            System.out.println("Starting Selenium RC with "+ Arrays.asList(args));
-            System.out.println(Which.jarFile(SeleniumServer.class));
-
             RegistrationRequest c = RegistrationRequest.build(args);
             for (DesiredCapabilities dc : c.getCapabilities()) {
-                System.out.println("Capabilities : " + dc);
                 dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME, StringUtils.isEmpty(nodeName) ? JenkinsCapabilityMatcher.MASTER_NAME : nodeName);
                 //dc.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
             }
