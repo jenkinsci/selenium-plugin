@@ -62,10 +62,6 @@ public class SeleniumGlobalConfiguration implements Serializable {
 		return configuration;
 	}
 	
-	public String getConfigSummary() {
-		return configuration.getSummary();
-	}
-	
 	public String getDisplayName() {
 		return configuration.getDescriptor().getDisplayName();
 	}

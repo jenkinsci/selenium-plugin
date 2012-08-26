@@ -4,6 +4,7 @@ import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.AutoCompletionCandidates;
 import hudson.model.Describable;
+import hudson.model.Failure;
 import hudson.model.ManagementLink;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
@@ -17,9 +18,12 @@ import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
 import hudson.security.Permission;
+import hudson.util.FormValidation;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
 
@@ -31,6 +35,8 @@ import antlr.ANTLRException;
 
 @Extension
 public class SeleniumConfigurationAction extends ManagementLink implements Describable<SeleniumConfigurationAction> {
+
+	private SeleniumGlobalConfiguration config;
 
 	public String getIconFileName() {
 		return "/plugin/selenium/24x24/selenium.png";
@@ -96,6 +102,10 @@ public class SeleniumConfigurationAction extends ManagementLink implements Descr
             }
             return candidates;
         }
+        
+        public FormValidation doCheckName(@QueryParameter String name) throws IOException, ServletException {
+        	return FormValidation.validateRequired(name);
+        }
     }
 
 
@@ -116,15 +126,56 @@ public class SeleniumConfigurationAction extends ManagementLink implements Descr
      * @param rsp StaplerResponse to redirect with
      * @throws IOException if redirection goes wrong
      */
-    public void doCreate(StaplerRequest req, StaplerResponse rsp, @QueryParameter String name) throws Exception {
+    public void doCreate(StaplerRequest req, StaplerResponse rsp) throws Exception {
         Hudson.getInstance().checkPermission(getRequiredPermission());
         SeleniumGlobalConfiguration conf = req.bindJSON(SeleniumGlobalConfiguration.class, req.getSubmittedForm());
+        if (null == conf.getName() || conf.getName().trim().equals("")) {
+        	throw new Failure("You must specify a name for the configuration");
+        } 
+        
+        if (PluginImpl.getPlugin().hasGlobalConfiguration(conf.getName())) {
+        	throw new Failure("The configuration name you have chosen is already taken, please choose a unique name.");
+        }
+        
         PluginImpl.getPlugin().getGlobalConfigurations().add(conf);
         PluginImpl.getPlugin().save();
         rsp.sendRedirect2(".");
     }
     
 
+    public void doDelete(StaplerRequest req, StaplerResponse rsp, @QueryParameter String name) throws Exception {
+        Hudson.getInstance().checkPermission(getRequiredPermission());
+        if (null == name) {
+        	throw new Failure("You must specify a name for the configuration you want to delete");
+        } 
+        
+        PluginImpl.getPlugin().removeGlobalConfigurations(name);
+        PluginImpl.getPlugin().save();
+        rsp.sendRedirect2(".");
+    }
+
+//    public void doEditRedirect(StaplerRequest req, StaplerResponse rsp) throws IOException {
+//        Hudson.getInstance().checkPermission(getRequiredPermission());
+//        String name = req.getRestOfPath().substring(1);
+//        config = PluginImpl.getPlugin().getGlobalConfigurations(name);
+//        //rsp.sendRedirect2("edit");
+//    }
+//
+//    
+//    public void doCommitEdit(StaplerRequest req, StaplerResponse rsp) throws Exception {
+//        Hudson.getInstance().checkPermission(getRequiredPermission());
+//        SeleniumGlobalConfiguration conf = req.bindJSON(SeleniumGlobalConfiguration.class, req.getSubmittedForm());
+//        if (null == conf.getName() || conf.getName().trim().equals("")) {
+//        	throw new Failure("You must specify a name for the configuration");
+//        } 
+//        
+//        PluginImpl.getPlugin().removeGlobalConfigurations(conf.getName());
+//        PluginImpl.getPlugin().getGlobalConfigurations().add(conf);
+//        PluginImpl.getPlugin().save();
+//        rsp.sendRedirect2(".");
+//    }
+
+    
 	public Permission getRequiredPermission() {
 		return Hudson.ADMINISTER;
 	}
@@ -135,6 +186,10 @@ public class SeleniumConfigurationAction extends ManagementLink implements Descr
 
 	public DescriptorExtensionList<SeleniumConfigurationMatcher, MatcherDescriptor> getMatcherTypes() {
 		return SeleniumConfigurationMatcher.all();
+	}
+	
+	public SeleniumGlobalConfiguration getConfiguration() {
+		return config;
 	}
 	
 }

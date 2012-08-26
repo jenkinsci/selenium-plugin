@@ -176,21 +176,9 @@ public class CustomConfiguration extends SeleniumNodeConfiguration {
 		return opt;
 	}
 
-	@Override
-	public String getSummary() {
-		StringBuilder sb = new StringBuilder();
-		for (Browser b : browsers) {
-			sb.append(b.getMaxInstances()).append(" instance(s) of ");
-			sb.append(b.getBrowserName());
-			if (b.getVersion() != null && !"".equals(b.getVersion())) {
-				sb.append(" v");
-				sb.append(b.getVersion());
-			}
-			sb.append("&x20;");
-		}
-		return sb.toString();
+	public String getIcon() {
+		return "/plugin/selenium/24x24/internet-web-browser.png";
 	}
-	
-	
+
 	
 }
