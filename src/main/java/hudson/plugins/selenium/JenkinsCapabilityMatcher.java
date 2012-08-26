@@ -30,8 +30,8 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
     }
 
     public boolean matches(Map<String, Object> currentCapability, Map<String, Object> requestedCapability) {
-        LOGGER.log(Level.INFO, currentCapability.toString());
-        LOGGER.log(Level.INFO, requestedCapability.toString());
+//        LOGGER.log(Level.INFO, currentCapability.toString());
+//        LOGGER.log(Level.INFO, requestedCapability.toString());
 
         if (!base.matches(currentCapability,requestedCapability))
             return false;

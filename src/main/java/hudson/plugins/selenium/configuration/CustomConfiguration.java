@@ -22,7 +22,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
-public class CustomConfiguration extends Configuration {
+public class CustomConfiguration extends SeleniumNodeConfiguration {
 
 	private int port = 4444;
     private boolean rcBrowserSideLog;
@@ -148,6 +148,8 @@ public class CustomConfiguration extends Configuration {
 	public SeleniumRunOptions initOptions(Computer c) {
 		SeleniumRunOptions opt = new SeleniumRunOptions();
         opt.addOptionIfSet("-log", getRcLog());
+        opt.addOptionIfSet("-port", getPort());
+        
         if (getRcBrowserSideLog()){
         	opt.addOption("-browserSideLog");
         }
@@ -173,5 +175,22 @@ public class CustomConfiguration extends Configuration {
         
 		return opt;
 	}
+
+	@Override
+	public String getSummary() {
+		StringBuilder sb = new StringBuilder();
+		for (Browser b : browsers) {
+			sb.append(b.getMaxInstances()).append(" instance(s) of ");
+			sb.append(b.getBrowserName());
+			if (b.getVersion() != null && !"".equals(b.getVersion())) {
+				sb.append(" v");
+				sb.append(b.getVersion());
+			}
+			sb.append("&x20;");
+		}
+		return sb.toString();
+	}
+	
+	
 	
 }

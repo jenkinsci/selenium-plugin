@@ -5,6 +5,7 @@ import hudson.model.Node.Mode;
 import hudson.plugins.selenium.configuration.CustomConfiguration;
 import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.HTMLUnitBrowser;
+import hudson.slaves.NodeProperty;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.RetentionStrategy;
 import hudson.tasks.Mailer;
@@ -48,7 +49,7 @@ public class SeleniumTest extends HudsonTestCase {
         CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
         
         HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, null);
         hudson.addNode(slave);
 
         waitForRC();
@@ -110,7 +111,7 @@ public class SeleniumTest extends HudsonTestCase {
         CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
         
         HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, Collections.singletonList(new NodePropertyImpl(cc)));
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, null);
 
         hudson.addNode(slave);
 

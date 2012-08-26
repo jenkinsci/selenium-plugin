@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
  * @author Richard Lavoie
  *
  */
-public class SeleniumRunOptions implements Serializable {
+public final class SeleniumRunOptions implements Serializable {
 
 	/**
 	 * 
@@ -66,10 +66,10 @@ public class SeleniumRunOptions implements Serializable {
 	 * @param option Option to set
 	 * @param value Value of the option
 	 */
-	public void addOptionIfSet(String option, String value) {
-		if (StringUtils.hasText(value)) {
+	public void addOptionIfSet(String option, Object value) {
+		if (value != null && StringUtils.hasText(value.toString())) {
 			arguments.add(option);
-			arguments.add(value);
+			arguments.add(value.toString());
 		}
 	}
 
@@ -85,4 +85,26 @@ public class SeleniumRunOptions implements Serializable {
 		}
 	}
 	
+	public static SeleniumRunOptions merge(SeleniumRunOptions options1, SeleniumRunOptions options2) {
+		SeleniumRunOptions newOpts = new SeleniumRunOptions();
+		addAllOptions(newOpts, options1);
+		addAllOptions(newOpts, options2);
+		
+		return newOpts;
+	}
+
+	private static void addAllOptions(SeleniumRunOptions newOpts, SeleniumRunOptions options) {
+		if (options == null) {
+			return;
+		}
+		for (String arg : options.arguments) {
+			newOpts.arguments.add(arg);
+		}
+		for (Map.Entry<String, String> arg : options.jvmArgs.entrySet()) {
+			newOpts.jvmArgs.put(arg.getKey(), arg.getValue());
+		}
+		for (Map.Entry<String, String> arg : options.envVars.entrySet()) {
+			newOpts.envVars.put(arg.getKey(), arg.getValue());
+		}
+	}
 }

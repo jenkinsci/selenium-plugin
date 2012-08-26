@@ -1,37 +1,13 @@
 package hudson.plugins.selenium;
 
 import hudson.Extension;
-import hudson.FilePath;
-import hudson.FilePath.FileCallable;
-import hudson.console.HyperlinkNote;
 import hudson.model.TaskListener;
 import hudson.model.Computer;
-import hudson.model.Hudson;
-import hudson.model.Label;
 import hudson.plugins.selenium.actions.ServiceManagementAction;
-import hudson.plugins.selenium.callables.PropertyUtils;
-import hudson.plugins.selenium.callables.SeleniumConstants;
-import hudson.remoting.Channel;
-import hudson.remoting.Future;
-import hudson.remoting.VirtualChannel;
 import hudson.slaves.ComputerListener;
-import hudson.util.IOException2;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * When a new slave is connected, launch a selenium RC.
@@ -55,7 +31,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
 	public void onOffline(Computer c) {
 		try {
 			new ServiceManagementAction(c).doStop();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 	}
 

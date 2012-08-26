@@ -3,8 +3,9 @@
 		<img src="/plugin/selenium/24x24/selenium.png" width="24" height="24" alt=""/>
 		Selenium Configuration</h2>
     ${context.setVariable("computer", context.parent.getVariable("from").name.equals("") ? "(master)" : context.parent.getVariable("from").name)}
-    Configuration type : ${it.configurationType.displayName}
-	<st:include it="${it.configurationType}" page="summary.jelly" optional="true" />
+    <h3>Matching configurations</h3>
+    <j:set var="configurations" value="${it.configurations}"/>
+    <st:include page="../_infotable.jelly" />
 	<br />
 	<h3>Management</h3>
     <div>
