@@ -5,6 +5,8 @@ import hudson.model.Node.Mode;
 import hudson.plugins.selenium.configuration.CustomConfiguration;
 import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.HTMLUnitBrowser;
+import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
+import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.RetentionStrategy;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import jenkins.model.Jenkins;
 
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.openqa.selenium.By;
@@ -47,9 +51,11 @@ public class SeleniumTest extends HudsonTestCase {
         browsers.add(new HTMLUnitBrowser(1));
 
         CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
-        
-        HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, null);
+        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
+        //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
+        //Mailer.descriptor().setHudsonUrl("http://localhost:8080/");
+        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP);
         hudson.addNode(slave);
 
         waitForRC();
@@ -110,8 +116,11 @@ public class SeleniumTest extends HudsonTestCase {
 
         CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
         
-        HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP, null);
+        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
+        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
+        
+        //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP);
 
         hudson.addNode(slave);
 
