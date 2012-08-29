@@ -1,0 +1,11 @@
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+    <l:side-panel>
+        <l:tasks>
+            <l:task icon="images/24x24/up.png" href="${rootURL}/selenium/configurations" title="${%Back to list of configurations}"/>
+            <l:task icon="plugin/selenium/24x24/selenium.png" href="${rootURL}/${it.UrlName}" title="${%Plugin home}"/>
+            <l:task icon="images/24x24/setting.png" href="." title="${%Configure}"/>
+            <l:task icon="images/24x24/edit-delete.png" href="delete" title="${%Delete}"/>
+            <l:task icon="images/24x24/new-document.png" href="../../add" title="${%New configuration}"/>
+        </l:tasks>
+    </l:side-panel>
+</j:jelly>

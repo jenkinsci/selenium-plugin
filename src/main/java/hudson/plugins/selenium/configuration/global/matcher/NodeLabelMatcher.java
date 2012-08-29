@@ -1,11 +1,15 @@
 package hudson.plugins.selenium.configuration.global.matcher;
 
 import hudson.Extension;
+import hudson.model.AutoCompletionCandidates;
+import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.model.Node;
+import hudson.model.labels.LabelAtom;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 
@@ -54,6 +58,27 @@ public class NodeLabelMatcher extends SeleniumConfigurationMatcher {
         public FormValidation doCheckLabel(@QueryParameter String value) throws IOException, ServletException {
         	return FormValidation.validateRequired(value);
         }
+        
+        /**
+         * Returns a list of auto completion candidates.
+         * @param value to search for
+         * @return candidates
+         */
+        public AutoCompletionCandidates doAutoCompleteLabel() {
+            AutoCompletionCandidates candidates = new AutoCompletionCandidates();
+            List<Node> masterNodeList = Hudson.getInstance().getNodes();
+            for (Node node : masterNodeList) {
+            	try {
+					for (LabelAtom atom : Label.parseExpression(node.getLabelString()).listAtoms()) {
+						candidates.add(atom.getName());
+					}
+				} catch (ANTLRException e) {
+					// invalid expression, skipped
+				}
+            }
+            return candidates;
+        }
+
 	}
 
 	public String getSummary() {

@@ -1,0 +1,9 @@
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+    <l:side-panel>
+        <l:tasks>
+            <l:task icon="images/24x24/up.png" href="${rootURL}/" title="${%Back to Dashboard}"/>
+            <l:task icon="images/24x24/computer.png" href="${rootURL}/selenium" title="${%Connected nodes}"/>
+            <l:task icon="images/24x24/new-document.png" href="add" title="${%New configuration}"/>
+        </l:tasks>
+    </l:side-panel>
+</j:jelly>

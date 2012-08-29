@@ -7,6 +7,9 @@ import hudson.model.Descriptor;
 import hudson.plugins.selenium.SeleniumRunOptions;
 import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
+import hudson.plugins.selenium.configuration.browser.ChromeBrowser;
+import hudson.plugins.selenium.configuration.browser.FirefoxBrowser;
+import hudson.plugins.selenium.configuration.browser.IEBrowser;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
@@ -31,9 +34,15 @@ public class CustomConfiguration extends SeleniumNodeConfiguration {
     private boolean rcBrowserSessionReuse;
     private Integer timeout = -1;
     private String rcLog;
-    private List<? extends Browser> browsers = new ArrayList<Browser>();
+    private List<Browser> browsers = new ArrayList<Browser>();
     private String display;
 
+    private CustomConfiguration() {
+    	browsers.add(new IEBrowser(1, "", ""));
+		browsers.add(new FirefoxBrowser(5, "", ""));
+		browsers.add(new ChromeBrowser(5, "", ""));
+    }
+    
     @DataBoundConstructor
     public CustomConfiguration(int port, 
     							boolean rcBrowserSideLog, 
@@ -42,7 +51,7 @@ public class CustomConfiguration extends SeleniumNodeConfiguration {
     							boolean rcBrowserSessionReuse,
     							Integer timeout,
     							String rcLog, 
-    							List<? extends Browser> browsers,
+    							List<Browser> browsers,
     							String display) {
     	this.port = port;
     	this.rcBrowserSideLog = rcBrowserSideLog;
@@ -111,6 +120,10 @@ public class CustomConfiguration extends SeleniumNodeConfiguration {
 		@Override
 		public String getDisplayName() {
 			return "Custom configuration";
+		}
+		
+		public CustomConfiguration getDefault() {
+			return new CustomConfiguration();
 		}
 		
 		@Override

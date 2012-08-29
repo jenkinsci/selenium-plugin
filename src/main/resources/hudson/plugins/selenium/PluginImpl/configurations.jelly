@@ -1,10 +1,10 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
 	<l:layout title="${it.displayName}">
-	    <st:include page="sidepanel.jelly" />
+	    <st:include page="conf_sidepanel.jelly" />
     	<l:main-panel>
-	  	<j:set var="configurations" value="${it._all}"/>
-		<st:include page="../_infotable.jelly" />
+	  	<j:set var="configurations" value="${it.globalConfigurations}"/>
+		<st:include page="_infotable.jelly" />
 
 		</l:main-panel>
 

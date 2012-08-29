@@ -78,7 +78,7 @@ public class SeleniumCallable implements FileCallable<Object> {
 
             String[] defaultArgs = new String[] {
                     "-role","node",
-                    "-host",hostName,
+                    //"-host",hostName,
                     "-port",String.valueOf(port),
 //              "-env",labelList.toString(),
                     "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
