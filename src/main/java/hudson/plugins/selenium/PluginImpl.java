@@ -478,13 +478,13 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 									+ " from the system configuration screen.");
 			return;
 		}
-		final String hostName = c.getHostName();
-		if (hostName == null) {
-			listener.getLogger()
-					.println(
-							"Unable to determine the host name. Skipping Selenium execution.");
+//		final String hostName = c.getHostName();
+//		if (hostName == null) {
+//			listener.getLogger()
+//					.println(
+//							"Unable to determine the host name. Skipping Selenium execution.");
 //			return;
-		}
+//		}
 		// final int masterPort = p.getPort();
 		final StringBuilder labelList = new StringBuilder();
 		for (Label l : c.getNode().getAssignedLabels()) {
@@ -523,7 +523,7 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 					.getNode()
 					.getRootPath()
 					.actAsync(
-							new SeleniumCallable(seleniumJar, hostName,
+							new SeleniumCallable(seleniumJar, null,
 									masterName, p.getPort(), nodeName,
 									listener, options));
 			future.get();

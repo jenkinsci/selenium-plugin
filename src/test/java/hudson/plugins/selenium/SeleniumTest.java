@@ -7,26 +7,25 @@ import hudson.plugins.selenium.configuration.browser.Browser;
 import hudson.plugins.selenium.configuration.browser.HTMLUnitBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
-import hudson.slaves.NodeProperty;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.RetentionStrategy;
 import hudson.tasks.Mailer;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import jenkins.model.Jenkins;
 
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 
@@ -53,48 +52,25 @@ public class SeleniumTest extends HudsonTestCase {
         CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
         //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        //Mailer.descriptor().setHudsonUrl("http://localhost:8080/");
-        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP);
         hudson.addNode(slave);
 
         waitForRC();
-        Thread.sleep(5000);
 
-        Selenium browser = new DefaultSelenium("localhost", 5000, "*htmlunit", "http://www.google.com");
-        browser.start();
-
-        try {
-            browser.open("http://www.yahoo.com/");
-            browser.type("p", "hello world");
-            browser.click("search-submit");
-            browser.waitForPageToLoad("10000");
-            assertTrue(browser.getTitle().contains("hello world"));
-            assertTrue(browser.getTitle().contains("Yahoo"));
-        } finally {
-            browser.stop();
-        }
-
-
-        DesiredCapabilities dc = DesiredCapabilities.firefox();
+        DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
         dc.setCapability("jenkins.label","foo");
         WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
 
         try {
-            wd.get("http://www.yahoo.com/");
-            wd.findElement(By.name("p")).sendKeys("hello world");
-            wd.findElement(By.id("search-submit")).click();
-            wd.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            wd.findElement(By.id("main"));
-            assertTrue(wd.getTitle().contains("hello world"));
-            assertTrue(wd.getTitle().contains("Yahoo"));
+            wd.get("http://www.google.com/");
+            new WebDriverWait(wd, 5).until(ExpectedConditions.presenceOfElementLocated(By.id("pocs")));
         } finally {
             wd.close();
         }
     }
         
     private void waitForRC() throws Exception {
-        for(int i=0; i<10; i++) {
+        for(int i=0; i<100; i++) {
             if(!getPlugin().getRemoteControls().isEmpty())
                 return;
             Thread.sleep(500);
@@ -129,10 +105,31 @@ public class SeleniumTest extends HudsonTestCase {
         DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
         dc.setCapability("jenkins.label","bar");
         try {
-            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:5000/wd/hub"),dc);
+            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
             fail(); // should have failed
         } catch (Exception e) {
-            e.printStackTrace();
+        	e.printStackTrace();
         }
+        
+        dc.setCapability("jenkins.label","foo");
+        try {
+            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	fail(); // should have failed
+        }
+
     }
+    
+    protected WebDriver configureSelenium() {
+    	WebDriver wd = new HtmlUnitDriver();
+    	wd.get("http://localhost:8080/configure");
+    	
+    	WebElement main = wd.findElement(By.id("main-table"));
+    	new WebDriverWait(wd, 5000).until(ExpectedConditions.elementToBeClickable(By.name("Submit")));
+    	wd.findElement(By.name("Submit")).click();
+        new WebDriverWait(wd, 5000).until(ExpectedConditions.stalenessOf(main));
+        return wd;
+    }
+    
 }
