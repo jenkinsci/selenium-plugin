@@ -3,14 +3,15 @@
 	<l:layout title="${it.displayName}">
 	    <st:include page="sidepanel.jelly" />
     	<l:main-panel>
-    		<h3>${it.displayName}</h3>
-            <f:form method="post" action="submitEdit" name="settingsForm">
+    		<h3>${it.descriptor.displayName}</h3>
+            <j:set var="instance" value="${it}" />
+            <f:form method="post" action="commitEdit" name="settingsForm">
 				<f:entry title="${%Name of the configuration}" field="name">
 				    <f:textbox />
 				</f:entry>
 				
-				<f:descriptorRadioList title="Matcher" varName="matcher" instance="config.matcher" descriptors="${it.matcherTypes}" targetType="${hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.class}" />
-				<f:descriptorRadioList title="Type" varName="configuration" instance="config.configuration" descriptors="${it.configTypes}" targetType="${hudson.plugins.selenium.configuration.SeleniumNodeConfiguration.class}" />
+				<f:descriptorRadioList title="Matcher" varName="matcher" instance="${instance.matcher}" descriptors="${it.matcherTypes}" targetType="${hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.class}" />
+				<f:descriptorRadioList title="Type" varName="configuration" instance="${instance.configuration}" descriptors="${it.configTypes}" targetType="${hudson.plugins.selenium.configuration.SeleniumNodeConfiguration.class}" />
 				
 				<f:block>
 				  <div id="bottom-sticker" >

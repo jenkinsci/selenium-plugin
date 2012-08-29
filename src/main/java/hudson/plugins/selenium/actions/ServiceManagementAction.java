@@ -89,13 +89,7 @@ public class ServiceManagementAction implements Action {
 	}
 	
 	public List<SeleniumGlobalConfiguration> getConfigurations() {
-		List<SeleniumGlobalConfiguration> confs = new ArrayList<SeleniumGlobalConfiguration>();
-		for (SeleniumGlobalConfiguration c : PluginImpl.getPlugin().getGlobalConfigurations()) {
-			if (c.getOptions(computer) != null) {
-				confs.add(c);
-			}
-		}
-		return confs;
+		return PluginImpl.getPlugin().getGlobalConfigurationForComputer(computer);
 	}
 	
 	public String getStatus() {

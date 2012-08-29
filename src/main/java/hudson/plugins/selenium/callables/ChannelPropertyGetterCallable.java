@@ -3,6 +3,13 @@ package hudson.plugins.selenium.callables;
 import hudson.remoting.Callable;
 import hudson.remoting.ChannelProperty;
 
+/**
+ * Callable that returns a property set on the channel
+ * @author Richard Lavoie
+ *
+ * @param <T>
+ * @param <E>
+ */
 public class ChannelPropertyGetterCallable<T,E extends Exception> implements Callable<T,E> {
 
 	/**

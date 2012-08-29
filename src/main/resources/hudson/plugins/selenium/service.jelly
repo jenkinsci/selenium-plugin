@@ -5,7 +5,27 @@
     ${context.setVariable("computer", context.parent.getVariable("from").name.equals("") ? "(master)" : context.parent.getVariable("from").name)}
     <h3>Matching configurations</h3>
     <j:set var="configurations" value="${it.configurations}"/>
-    <st:include page="../_infotable.jelly" />
+     <table id="configurations" class="sortable pane bigtable">
+      <tr>
+        <th width="55">Type</th>
+        <th width="55">Delete</th>
+        <th initialSortDir="down">${%Name}</th>
+        <th >Matching type</th>
+        <th >Description summary</th>
+      </tr>
+      <j:forEach var="c" items="${configurations}">
+        <tr id="node_${c.name}">
+          <td width="55" data="${c.name}">
+            <img src="${rootUrl}${c.configuration.icon}" width="24" height="24" alt="${c.iconAltText}"/>
+          </td>
+          <td><a href="configuration/${c.name}/delete" class="model-link"><img src="${rootUrl}/images/24x24/edit-delete.png" width="24" height="24"/></a></td>
+          <td><a href="configuration/${c.name}" class="model-link">${c.name}</a></td>
+          <td>${c.matcherSummary}</td>
+          <td><st:include it="${c.configuration}" page="config_summary.jelly" optional="true"/></td>
+        </tr>
+      </j:forEach>
+
+  </table>
 	<br />
 	<h3>Management</h3>
     <div>

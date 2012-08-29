@@ -5,9 +5,7 @@
 	<f:entry title="${%Version}" field="version">
       	<f:textbox />
 	</f:entry>
-	<f:advanced>
-		<f:entry title="${%Chrome binary path}" field="binary">
-	      	<f:textbox />
-		</f:entry>
-	</f:advanced>
+	<f:entry title="${%Chrome binary path}" field="binary">
+      	<f:textbox />
+	</f:entry>
 </j:jelly>
