@@ -21,7 +21,7 @@ public class SeleniumConfigurationAction extends ManagementLink implements Descr
 	}
 
 	public String getUrlName() {
-		return "selenium/configuration";
+		return "selenium/configurations";
 	}
 	
 	public String getDescription() {
