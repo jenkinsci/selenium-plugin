@@ -9,7 +9,6 @@ public class HTMLUnitBrowser extends Browser {
 	
 	transient private static final String WD_BROWSER_NAME = "htmlunit";
 
-	
 	@DataBoundConstructor
 	public HTMLUnitBrowser(int maxInstances) {
 		super(maxInstances, null);

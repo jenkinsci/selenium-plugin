@@ -33,15 +33,16 @@ public class HubLauncher implements Callable<Void,Exception> {
     }
 
     public Void call() throws Exception {
+    	Logger LOG = Logger.getLogger(HubLauncher.class.getName());
         configureLoggers();
-        System.out.println("Grid Hub preparing to start on port "+port);
+        LOG.fine("Grid Hub preparing to start on port "+port);
         GridHubConfiguration c = GridHubConfiguration.build(args);
         c.setPort(port);  
         c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
         Hub hub = new Hub(c);
         hub.start();
         RegistryHolder.registry = hub.getRegistry();
-        System.out.println("Grid Hub started on port "+port);
+        LOG.fine("Grid Hub started on port "+port);
         
 //        HubRegistry r = HubRegistry.registry();
 //        // hack up the pool
