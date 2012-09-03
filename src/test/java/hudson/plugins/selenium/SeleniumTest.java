@@ -39,6 +39,7 @@ public class SeleniumTest extends HudsonTestCase {
     protected Hudson newHudson() throws Exception {
         Hudson h = super.newHudson();
         Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
+        configureSelenium();
         return h;
     }
 
@@ -64,7 +65,7 @@ public class SeleniumTest extends HudsonTestCase {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);        
+        CustomWDConfiguration cc = new CustomWDConfiguration(5001, -1, browsers, null);
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
         //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP);
@@ -83,49 +84,14 @@ public class SeleniumTest extends HudsonTestCase {
             wd.close();
         }
 
-    }
-        
-    private void waitForRC() throws Exception {
-        for(int i=0; i<100; i++) {
-            if(!getPlugin().getRemoteControls().isEmpty())
-                return;
-            Thread.sleep(500);
-        }
-        throw new AssertionError("No RC had checked in");
-    }
-
-    private PluginImpl getPlugin() {
-        return hudson.getPlugin(PluginImpl.class);
-    }
-
-    public void testLabelMatch() throws Exception {
-        getPlugin().waitForHubLaunch();
-        
-        // system config to set the root URL
-        
-        List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
-        browsers.add(new HTMLUnitBrowser(1));
-
-        CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);        
-        
-        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new NodeLabelMatcher("foolabel"), cc));
-        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
-
-        //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foolabel", createComputerLauncher(null), RetentionStrategy.NOOP);
-
-        hudson.addNode(slave);
-
-        waitForRC();
-
-        DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
+        dc = DesiredCapabilities.htmlUnit();
         System.out.println("jenkins.label=foolabel");
         dc.setCapability("jenkins.label","foolabel");
         try {
             WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
             dr.quit();
         } catch (Exception e) {
-        	fail(e.getMessage()); // should have passed
+            fail(e.getMessage()); // should have passed
         }
 
         System.out.println("jenkins.nodeName=foo");
@@ -156,6 +122,42 @@ public class SeleniumTest extends HudsonTestCase {
         } catch (Exception e) {
 
         }
+
+    }
+        
+    private void waitForRC() throws Exception {
+        for(int i=0; i<100; i++) {
+            if(!getPlugin().getRemoteControls().isEmpty())
+                return;
+            Thread.sleep(500);
+        }
+        throw new AssertionError("No RC had checked in");
+    }
+
+    private PluginImpl getPlugin() {
+        return hudson.getPlugin(PluginImpl.class);
+    }
+
+    public void testLabelMatch() throws Exception {
+        getPlugin().waitForHubLaunch();
+        
+        // system config to set the root URL
+        
+        List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
+        browsers.add(new HTMLUnitBrowser(1));
+
+        CustomWDConfiguration cc = new CustomWDConfiguration(5002, -1, browsers, null);
+        
+        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new NodeLabelMatcher("foolabel"), cc));
+        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
+
+        //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foolabel", createComputerLauncher(null), RetentionStrategy.NOOP);
+
+        hudson.addNode(slave);
+
+        waitForRC();
+
 
 
     }
