@@ -40,15 +40,15 @@
                   <td>
                       <form method="post" action="${prefix}restart">
                           <input type="hidden" name="conf" value="${c.key}" />
-                          <f:submit value="${%submit.restart}" />
+                          <f:submit value="${%Restart}" />
                       </form><br />
                       <form method="post" action="${prefix}start">
                           <input type="hidden" name="conf" value="${c.key}" />
-                          <f:submit value="${%submit.start}" />
+                          <f:submit value="${%Start}" />
                       </form><br />
                       <form method="post" action="${prefix}stop">
                           <input type="hidden" name="conf" value="${c.key}" />
-                          <f:submit value="${%submit.stop}" />
+                          <f:submit value="${%Stop}" />
                       </form>
                   </td>
 		      </tr>
@@ -78,13 +78,13 @@
                             <j:if test="${configurations.keySet().contains(c.name)}">
                             <form method="post" action="${prefix}restart">
                                 <input type="hidden" name="conf" value="${c.name}" />
-                                <f:submit value="${%submit.restart}" />
+                                <f:submit value="${%Restart}" />
                             </form>
                             </j:if>
                             <j:if test="${!configurations.keySet().contains(c.name)}">
                                 <form method="post" action="${prefix}start">
                                     <input type="hidden" name="conf" value="${c.name}" />
-                                    <f:submit value="${%submit.start}" />
+                                    <f:submit value="${%Start}" />
                                 </form>
                             </j:if>
                         </td>
