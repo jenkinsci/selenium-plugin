@@ -2,9 +2,12 @@ package hudson.plugins.selenium;
 
 import hudson.model.Hudson;
 import hudson.model.Node.Mode;
-import hudson.plugins.selenium.configuration.CustomConfiguration;
-import hudson.plugins.selenium.configuration.browser.Browser;
-import hudson.plugins.selenium.configuration.browser.HTMLUnitBrowser;
+import hudson.plugins.selenium.configuration.CustomWDConfiguration;
+import hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser;
+import hudson.plugins.selenium.configuration.browser.webdriver.HTMLUnitBrowser;
+import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
+import hudson.plugins.selenium.configuration.browser.webdriver.OperaBrowser;
+import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.slaves.DumbSlave;
@@ -14,7 +17,6 @@ import hudson.tasks.Mailer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.openqa.selenium.By;
@@ -25,9 +27,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.thoughtworks.selenium.DefaultSelenium;
-import com.thoughtworks.selenium.Selenium;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -41,15 +40,29 @@ public class SeleniumTest extends HudsonTestCase {
         return h;
     }
 
+    public void testWDConfiguration() throws Exception {
+        List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
+        browsers.add(new HTMLUnitBrowser(1));
+        browsers.add(new IEBrowser(1, "", ""));
+        browsers.add(new FirefoxBrowser(1, "", ""));
+        browsers.add(new OperaBrowser(1, "", ""));
+
+    	CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);
+    	SeleniumRunOptions opt = cc.initOptions(null);
+    	System.out.println(opt.getEnvironmentVariables());
+    	System.out.println(opt.getJVMArguments());
+    	System.out.println(opt.getSeleniumArguments());
+    }
+    
     public void testSelenium1() throws Exception {
         getPlugin().waitForHubLaunch();
         
         // system config to set the root URL
         
-        List<Browser> browsers = new ArrayList<Browser>();
+        List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
+        CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);        
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
         //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP);
@@ -87,10 +100,10 @@ public class SeleniumTest extends HudsonTestCase {
         
         // system config to set the root URL
         
-        List<Browser> browsers = new ArrayList<Browser>();
+        List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomConfiguration cc = new CustomConfiguration(5000, false, false, false, false, -1, "", browsers, null);        
+        CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);        
         
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
         Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());

@@ -2,9 +2,9 @@ package hudson.plugins.selenium.configuration.global;
 
 import hudson.DescriptorExtensionList;
 import hudson.model.Describable;
+import hudson.model.Failure;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
-import hudson.model.Failure;
 import hudson.model.Hudson;
 import hudson.plugins.selenium.PluginImpl;
 import hudson.plugins.selenium.SeleniumRunOptions;
@@ -12,7 +12,6 @@ import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
-import hudson.security.Permission;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
@@ -27,7 +26,9 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
+@ExportedBean
 public class SeleniumGlobalConfiguration implements Serializable, Describable<SeleniumGlobalConfiguration> {
 
 	/**
@@ -70,7 +71,6 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
 	 * @return
 	 */
 	@Exported
-
 	public String getName() {
 		return name;
 	}

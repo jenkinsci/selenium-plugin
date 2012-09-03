@@ -16,7 +16,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public abstract class SeleniumNodeConfiguration implements Describable<SeleniumNodeConfiguration>, Serializable{
 
-	protected String display = null;
+	private String displayName = null;
 
 	public ConfigurationDescriptor getDescriptor() {
         return (ConfigurationDescriptor)Hudson.getInstance().getDescriptor(getClass());
@@ -33,7 +33,7 @@ public abstract class SeleniumNodeConfiguration implements Describable<SeleniumN
 	public abstract SeleniumRunOptions initOptions(Computer c);
 
 	public String getDisplayName() {
-		if (display == null) {
+		if (displayName == null) {
 			String name = getClass().getSimpleName();
 			StringBuffer b = new StringBuffer(name.length());
 			b.append(name.charAt(0));
@@ -43,9 +43,9 @@ public abstract class SeleniumNodeConfiguration implements Describable<SeleniumN
 				}
 		        b.append(name.charAt(i));
 		    }
-			display = b.toString();
+			displayName = b.toString();
 		}
-		return display;
+		return displayName;
 	}
 
 	

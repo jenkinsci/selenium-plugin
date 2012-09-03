@@ -4,6 +4,7 @@ import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.remoting.Callable;
 
+import hudson.remoting.Channel;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
@@ -16,6 +17,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  * This callable is run on the JVM dedicated to selenium RC.
  *
  * @author Kohsuke Kawaguchi
+ * @author Richard Lavoie
  */
 public class RemoteControlLauncher implements Callable<Void,Exception> {
     /**
@@ -26,10 +28,12 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
 	
 	private final String[] args;
     private final String nodeName;
+    private String conf;
 
-    public RemoteControlLauncher(String nodeName, String[] args) {
+    public RemoteControlLauncher(String nodeName, String[] args, String conf) {
         this.nodeName = nodeName;
         this.args = args;
+        this.conf = conf;
     }
 
     // because this method is called asynchronously and no one waits for the completion,
@@ -43,17 +47,16 @@ public class RemoteControlLauncher implements Callable<Void,Exception> {
             }
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
             PropertyUtils.setProperty(SeleniumConstants.PROPERTY_INSTANCE, remote);
-            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTING);
             remote.startRemoteServer();
-            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTED);
             remote.startRegistrationProcess();
-            
+
+            Channel.current().waitForProperty(SeleniumConstants.PROPERTY_LOCK);
             // block forever
-            Object o = new Object();
-            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_LOCK, o);
-            synchronized (o) {
-                o.wait();
-            }
+            //Object o = new Object();
+            //PropertyUtils.setProperty(SeleniumConstants.PROPERTY_LOCK, o);
+            //synchronized (o) {
+//                o.wait();
+//            }
             return null;
         } catch (Exception e) {
             e.printStackTrace();

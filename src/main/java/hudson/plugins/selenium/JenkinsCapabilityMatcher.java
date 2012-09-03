@@ -30,29 +30,41 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
     }
 
     public boolean matches(Map<String, Object> currentCapability, Map<String, Object> requestedCapability) {
-//        LOGGER.log(Level.INFO, currentCapability.toString());
-//        LOGGER.log(Level.INFO, requestedCapability.toString());
+        LOGGER.log(Level.INFO, "CURRENT : " + currentCapability.toString());
+        LOGGER.log(Level.INFO, "REQUEST : " + requestedCapability.toString());
 
         if (!base.matches(currentCapability,requestedCapability))
             return false;
 
         Object label = requestedCapability.get(LABEL);
-        if (label == null)    return true;    // no additional matching required
+        Object reqNode = requestedCapability.get(NODE_NAME);
+        String nodeName = (String) currentCapability.get(NODE_NAME);
+
+        if (label == null && reqNode == null)    return true;    // no additional matching required
+
+        LOGGER.log(Level.INFO, "NODE : " + reqNode + " - " + nodeName);
+
+        boolean nodeMatch = false;
+        boolean labelMatch = false;
+
+
+        if (reqNode != null && nodeName != null) {
+            LOGGER.log(Level.INFO, "BOTH NOT NULL");
+            nodeMatch = nodeName.equals(reqNode);
+        }
+
+        if (label == null) {
+            return nodeMatch;
+        }
 
         String labelExpr = label.toString();
-        if (labelExpr.trim().length() == 0)   return true;    // treat "" as null
+        if (labelExpr.trim().length() == 0) {
+            LOGGER.log(Level.INFO, "returning node match");
+            return nodeMatch;    // treat "" as null
+        }
 
-        Object reqNode = requestedCapability.get(NODE_NAME);
-        
-        String nodeName = (String)currentCapability.get(NODE_NAME);
-        if (nodeName == null)
-            return false;   // must have been added from elsewhere
-
-        if (reqNode != null && nodeName != null)
-            return nodeName.equals(reqNode);
-        
         try {
-            return master.call(new LabelMatcherCallable(nodeName, labelExpr));
+            return nodeMatch && master.call(new LabelMatcherCallable(nodeName, labelExpr));
         } catch (IOException e) {
             LOGGER.log(Level.INFO, "Failed to communicate with master for capability matching", e);
         } catch (ANTLRException e) {
@@ -93,7 +105,6 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
 
         public Boolean call() throws ANTLRException {
         	Node n = Hudson.getInstance().getNode(nodeName);
-            System.out.println(n);
             if (n==null)    return false;
             return Label.parseExpression(labelExpr).matches(n);
         }

@@ -1,0 +1,11 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+	<f:entry title="${%Maximum instances}" field="maxInstances">
+      	<f:textbox />
+	</f:entry>
+	<f:entry title="${%Version}" field="version">
+      	<f:textbox />
+	</f:entry>
+	<f:entry title="${%Chrome binary path}" field="server_binary">
+      	<f:textbox />
+	</f:entry>
+</j:jelly>

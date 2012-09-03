@@ -5,6 +5,7 @@ import hudson.FilePath.FileCallable;
 import hudson.model.TaskListener;
 import hudson.plugins.selenium.PluginImpl;
 import hudson.plugins.selenium.RemoteControlLauncher;
+import hudson.plugins.selenium.RemoteRunningStatus;
 import hudson.plugins.selenium.SeleniumRunOptions;
 import hudson.remoting.Channel;
 import hudson.remoting.VirtualChannel;
@@ -12,7 +13,8 @@ import hudson.util.IOException2;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,20 +29,20 @@ public class SeleniumCallable implements FileCallable<Object> {
 	private long jarTimestamp;
 	private String masterName;
 	private int masterPort;
-	private String hostName;
 	private String nodeName;
 	private SeleniumRunOptions options;
+	private String config;
 	private TaskListener listener;
 	
-	public SeleniumCallable(FilePath jar, String hostName, String masterName, int masterPort, String nodeName, TaskListener listener, SeleniumRunOptions options) throws InterruptedException, IOException {
+	public SeleniumCallable(FilePath jar, String masterName, int masterPort, String nodeName, TaskListener listener, String confName, SeleniumRunOptions options) throws InterruptedException, IOException {
 		seleniumJar = jar;
 		jarTimestamp = jar.lastModified();
 		this.masterName = masterName;
 		this.masterPort = masterPort;
-		this.hostName = hostName;
 		this.nodeName = nodeName;
 		this.options = options;
 		this.listener = listener;
+		config = confName;
 	}
 	
 	/**
@@ -48,15 +50,28 @@ public class SeleniumCallable implements FileCallable<Object> {
 	 */
 	private static final long serialVersionUID = 2047557797415325512L;
 	
-	public final static String ALREADY_STARTED = SeleniumCallable.class.getName() + ".seleniumRcAlreadyStarted";
+	//public final static String ALREADY_STARTED = SeleniumCallable.class.getName() + ".seleniumRcAlreadyStarted";
 
 	public Object invoke(File f, VirtualChannel channel) throws IOException {
-        String alreadyStartedPropertyName = ALREADY_STARTED;
-        if (Boolean.valueOf(System.getProperty(alreadyStartedPropertyName))) {
-            LOGGER.info("Skipping Selenium RC execution because this slave has already started its RCs");
+        //String alreadyStartedPropertyName = ALREADY_STARTED;
+		//@SuppressWarnings("unchecked")
+		//Map<String, RemoteRunningStatus> rConfig = (Map<String, RemoteRunningStatus>) PropertyUtils.getProperty(SeleniumConstants.PROPERTY_STATUS);
+        RemoteRunningStatus status = (RemoteRunningStatus) PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS.displayName, config);
+
+//		if (rConfig == null) {
+            //listener.getLogger().println("rConfig is null");
+//			rConfig = new HashMap<String, RemoteRunningStatus>();
+//            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, rConfig);
+		//}
+
+        listener.getLogger().println("is running");
+		//RemoteRunningStatus status = rConfig.get(config);
+        if (status != null && status.isRunning()) {
+            listener.getLogger().println("Skipping Selenium RC execution because this slave has already started its RCs");
             return null;
         }
-        
+
+        listener.getLogger().println("Copy grid jar");
         File localJar = new File(f,seleniumJar.getName());
         if (localJar.lastModified() != jarTimestamp) {
             try {
@@ -68,35 +83,35 @@ public class SeleniumCallable implements FileCallable<Object> {
         }
 
         try {
-        	PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTING);
-            
-        	// this is potentially unsafe way to figure out a free port number, but it's far easier
-            // than patching Selenium
-            ServerSocket ss = new ServerSocket(0);
-            int port = ss.getLocalPort();
-            ss.close();
+        	//PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTING);
 
             String[] defaultArgs = new String[] {
                     "-role","node",
-                    //"-host",hostName,
-                    "-port",String.valueOf(port),
-//              "-env",labelList.toString(),
                     "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
             
             // TODO change this
+            listener.getLogger().println("Creating selenium VM");
             Channel jvm = PluginImpl.createSeleniumRCVM(localJar,listener, options.getJVMArguments(), options.getEnvironmentVariables());
-            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_JVM, jvm);
+            status = new RemoteRunningStatus(jvm, options);
+            //rConfig.put(config, status);
+            // again ??
+            listener.getLogger().println("Starting the selenium process");
             jvm.callAsync(
                     new RemoteControlLauncher( nodeName,
-                            (String[]) ArrayUtils.addAll(defaultArgs, options.getSeleniumArguments().toArray(new String[0]))));
-            PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.STARTED);
+                            (String[]) ArrayUtils.addAll(defaultArgs, options.getSeleniumArguments().toArray(new String[0])), config));
+            status.setStatus(SeleniumConstants.STARTED);
+            status.setRunning(true);
         } catch (Exception t) {
-        	PropertyUtils.setProperty(SeleniumConstants.PROPERTY_STATUS, SeleniumConstants.ERROR);
-            LOGGER.log(Level.WARNING,"Selenium launch failed",t);
+        	status.setRunning(false);
+        	status.setStatus(SeleniumConstants.ERROR);
+        	LOGGER.log(Level.WARNING,"Selenium launch failed",t);
+            listener.getLogger().println(       "Selenium launch failed" + t.getMessage());
+            
             throw new IOException2("Selenium launch interrupted",t);
         }
+		PropertyUtils.setMapProperty(SeleniumConstants.PROPERTY_STATUS.displayName, config, status);
 
-        System.setProperty(alreadyStartedPropertyName, Boolean.TRUE.toString());
+        //System.setProperty(alreadyStartedPropertyName, Boolean.TRUE.toString());
         return null;
     }
 }

@@ -34,13 +34,16 @@ import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.plugins.selenium.callables.SeleniumCallable;
+import hudson.plugins.selenium.callables.SeleniumConstants;
+import hudson.plugins.selenium.callables.running.RemoteGetConfigurations;
+import hudson.plugins.selenium.callables.running.RemoteGetStatus;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
-import hudson.plugins.selenium.configuration.CustomConfiguration;
+import hudson.plugins.selenium.configuration.CustomRCConfiguration;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
-import hudson.plugins.selenium.configuration.browser.Browser;
-import hudson.plugins.selenium.configuration.browser.ChromeBrowser;
-import hudson.plugins.selenium.configuration.browser.FirefoxBrowser;
-import hudson.plugins.selenium.configuration.browser.IEBrowser;
+import hudson.plugins.selenium.configuration.browser.selenium.ChromeBrowser;
+import hudson.plugins.selenium.configuration.browser.selenium.FirefoxBrowser;
+import hudson.plugins.selenium.configuration.browser.selenium.IEBrowser;
+import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
@@ -72,11 +75,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -397,7 +402,7 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 			Boolean rcBrowserSideLog_ = getDefaultForNull(rcBrowserSideLog,
 					Boolean.FALSE);
 
-			List<Browser> browsers = new ArrayList<Browser>();
+			List<SeleniumBrowser> browsers = new ArrayList<SeleniumBrowser>();
 			browsers.add(new IEBrowser(5, "", ""));
 			browsers.add(new FirefoxBrowser(5, "", ""));
 			browsers.add(new ChromeBrowser(5, "", ""));
@@ -410,13 +415,15 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 			} catch (IOException e) {
 			}
 
-			SeleniumNodeConfiguration c = new CustomConfiguration(port_,
+			SeleniumNodeConfiguration c = new CustomRCConfiguration(port_,
 					rcBrowserSideLog_, rcDebug, rcTrustAllSSLCerts_,
 					rcBrowserSessionReuse_, -1, rcFirefoxProfileTemplate_,
 					browsers, null);
 
-			configurations.add(new SeleniumGlobalConfiguration(
-					"Selenium v2.0 configuration", new MatchAllMatcher(), c));
+            synchronized(configurations) {
+                configurations.add(new SeleniumGlobalConfiguration(
+                        "Selenium v2.0 configuration", new MatchAllMatcher(), c));
+            }
 
 		}
 
@@ -427,22 +434,16 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 		return object == null ? defObject : object;
 	}
 
+	// Kept only for backward compatibility...
 	private transient String rcFirefoxProfileTemplate;
 	private transient Boolean rcBrowserSessionReuse;
 	private transient Boolean rcTrustAllSSLCerts;
 	private transient Boolean rcBrowserSideLog;
 
-	public static void startSeleniumNode(Computer c, TaskListener listener)
+	public static void startSeleniumNode(Computer c, TaskListener listener, String conf)
 			throws IOException, InterruptedException {
 		LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
-		/*
-		 * NodePropertyImpl np = NodePropertyImpl.getNodeProperty(c);
-		 * 
-		 * if (np == null) { //the node is configured to not start a grid node
-		 * LOGGER.fine("Node " + c.getNode().getDisplayName() +
-		 * " is excluded from Selenium Grid because it is disabled"); return; }
-		 */
 		final PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
 
 		final String exclusions = p.getExclusionPatterns();
@@ -486,12 +487,12 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 //			return;
 //		}
 		// final int masterPort = p.getPort();
-		final StringBuilder labelList = new StringBuilder();
-		for (Label l : c.getNode().getAssignedLabels()) {
-			labelList.append('/');
-			labelList.append(l);
-		}
-		labelList.append('/');
+//		final StringBuilder labelList = new StringBuilder();
+//		for (Label l : c.getNode().getAssignedLabels()) {
+//			labelList.append('/');
+//			labelList.append(l);
+//		}
+//		labelList.append('/');
 
 		// make sure that Selenium Hub is started before we start RCs.
 		try {
@@ -501,49 +502,47 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 					"Failed to wait for the Hub launch to complete", e);
 		}
 
-		final SeleniumRunOptions options = getPlugin().getRunOptions(c);
-
-		// final SeleniumRunOptions options = np.initOptions(c);
-		if (options == null) {
-			// if configuration returned no options, that means it doesn't want
-			// to start selenium
+		List<SeleniumGlobalConfiguration> confs = getPlugin().getGlobalConfigurationForComputer(c);
+		if (confs == null || confs.size() == 0) {
 			LOGGER.fine("There is no matching configurations for that computer. Skipping selenium execution.");
 			return;
 		}
 
-		listener.getLogger().println(
-				"Starting Selenium Grid nodes on " + c.getName());
+		listener.getLogger().println("Starting Selenium Grid nodes on " + c.getName());
 
 		final FilePath seleniumJar = new FilePath(
 				PluginImpl.findStandAloneServerJar());
 		final String nodeName = c.getName();
 
-		try {
-			Future<Object> future = c
-					.getNode()
-					.getRootPath()
-					.actAsync(
-							new SeleniumCallable(seleniumJar, null,
-									masterName, p.getPort(), nodeName,
-									listener, options));
-			future.get();
-			launchedComputers.add(c);
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
+		for (SeleniumGlobalConfiguration config : confs) {
+			try {
+				listener.getLogger().println("Testing " + config);
+				if ((conf != null && config.getName().equals(conf)) || conf == null) {
+					listener.getLogger().println("Starting " + config);
+                    SeleniumRunOptions opts = config.getOptions(c);
+                    if (opts == null) {
+                        LOGGER.fine("The specified configuration returned null, skipping.");
+                    } else {
+                        Future<Object> future = c
+                                .getNode()
+                                .getRootPath()
+                                .actAsync(
+                                        new SeleniumCallable(seleniumJar,
+                                                masterName, p.getPort(), nodeName,
+                                                listener, config.getName(), opts));
+                        future.get();
+                        launchedComputers.add(c);
+                    }
+				}
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
-	private SeleniumRunOptions getRunOptions(Computer c) {
-		SeleniumRunOptions base = null;
-        for (SeleniumGlobalConfiguration conf : getPlugin().getGlobalConfigurations()) {
-        	base = SeleniumRunOptions.merge(base, conf.getOptions(c));
-        }
-        return base;
-	}
 
-
+	
 	public static PluginImpl getPlugin() {
 		return Jenkins.getInstance().getPlugin(PluginImpl.class);
 	}
@@ -591,7 +590,7 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 		List<SeleniumGlobalConfiguration> confs = new ArrayList<SeleniumGlobalConfiguration>();
 		for (SeleniumGlobalConfiguration c : PluginImpl.getPlugin()
 				.getGlobalConfigurations()) {
-			if (c.getOptions(computer) != null) {
+			if (c.getMatcher().match(computer.getNode())) {
 				confs.add(c);
 			}
 		}
@@ -658,4 +657,45 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 		return SeleniumConfigurationMatcher.all();
 	}
 	
+	public Map<Computer, List<SeleniumGlobalConfiguration>> getComputers() {
+		Map<Computer, List<SeleniumGlobalConfiguration>> cps = new TreeMap<Computer, List<SeleniumGlobalConfiguration>>(new Comparator<Computer>() {
+
+			public int compare(Computer o1, Computer o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		for (Computer c : Jenkins.getInstance().getComputers()) {
+			List<SeleniumGlobalConfiguration> confs = getGlobalConfigurationForComputer(c);
+			if (confs != null && confs.size() > 0) {
+				cps.put(c, confs);
+			}
+		}
+		return cps;
+		
+	}
+
+	public static Set<String> getRunningConfigurations(Computer computer) {
+		try {
+			VirtualChannel channel = PluginImpl.getChannel(computer);
+			if (channel == null) return Collections.emptySet();
+			return channel.call(new RemoteGetConfigurations());
+		} catch (Throwable e) {
+			return null;
+		}
+	}
+	
+	public static String getStatus(Computer computer, String conf) {
+		try {
+			VirtualChannel channel = PluginImpl.getChannel(computer);
+			if (channel == null) return SeleniumConstants.STOPPED;
+			return channel.call(new RemoteGetStatus(conf));
+		} catch (Throwable e) {
+			return "An error occured while retrieving the status of the selenium process " + e.getMessage();
+		}
+	}
+	
+	public Channel getHubChannel () {
+		return channel;
+	}
+
 }

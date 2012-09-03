@@ -1,16 +1,10 @@
 package hudson.plugins.selenium.actions;
 
 import hudson.Extension;
-import hudson.model.Describable;
 import hudson.model.ManagementLink;
-import hudson.model.Descriptor;
-import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
-import jenkins.model.Jenkins;
 
 @Extension
-public class SeleniumConfigurationAction extends ManagementLink implements Describable<SeleniumConfigurationAction> {
-
-	private SeleniumGlobalConfiguration config;
+public class SeleniumConfigurationAction extends ManagementLink /* implements Describable<SeleniumConfigurationAction> */{
 
 	public String getIconFileName() {
 		return "/plugin/selenium/24x24/selenium.png";
@@ -28,25 +22,25 @@ public class SeleniumConfigurationAction extends ManagementLink implements Descr
 		return "Selenium node configurations";
 	}
 
-    /**
-     * Gets the descriptor.
-     * @return descriptor.
-     */
-    public Descriptor<SeleniumConfigurationAction> getDescriptor() {
-        return Jenkins.getInstance().getDescriptorByType(DescriptorImpl.class);
-    }
-	
-    /**
-     * Descriptor is only used for auto completion.
-     */
-    @Extension
-    public static final class DescriptorImpl extends Descriptor<SeleniumConfigurationAction> {
-        
-    	@Override
-        public String getDisplayName() {
-            return null; //Not used.
-        }
-        
-    }
+//    /**
+//     * Gets the descriptor.
+//     * @return descriptor.
+//     */
+//    public Descriptor<SeleniumConfigurationAction> getDescriptor() {
+//        return Jenkins.getInstance().getDescriptorByType(DescriptorImpl.class);
+//    }
+//	
+//    /**
+//     * Descriptor is only used for auto completion.
+//     */
+//    @Extension
+//    public static final class DescriptorImpl extends Descriptor<SeleniumConfigurationAction> {
+//        
+//    	@Override
+//        public String getDisplayName() {
+//            return null; //Not used.
+//        }
+//        
+//    }
 
 }
