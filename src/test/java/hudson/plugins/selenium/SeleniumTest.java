@@ -1,5 +1,6 @@
 package hudson.plugins.selenium;
 
+import com.thoughtworks.xstream.mapper.SystemAttributeAliasingMapper;
 import hudson.model.Hudson;
 import hudson.model.Node.Mode;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
@@ -103,7 +104,7 @@ public class SeleniumTest extends HudsonTestCase {
         // system config to set the root URL
         
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
-        browsers.add(new HTMLUnitBrowser(2));
+        browsers.add(new HTMLUnitBrowser(1));
 
         CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);        
         
@@ -118,41 +119,44 @@ public class SeleniumTest extends HudsonTestCase {
         waitForRC();
 
         DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
-        dc.setCapability("jenkins.label","bar");
-        try {
-            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
-            fail(); // should have failed
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
+        System.out.println("jenkins.label=foolabel");
         dc.setCapability("jenkins.label","foolabel");
         try {
             WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
-            dr.close();
+            dr.quit();
         } catch (Exception e) {
-        	e.printStackTrace();
-        	fail(); // should have passed
+        	fail(e.getMessage()); // should have passed
         }
 
+        System.out.println("jenkins.nodeName=foo");
         dc = DesiredCapabilities.htmlUnit();
         dc.setCapability("jenkins.nodeName","foo");
         try {
             WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
-            dr.close();
+            dr.quit();
         } catch (Exception e) {
-            e.printStackTrace();
-            fail(); // should have passed
+            fail(e.getMessage()); // should have passed
         }
 
         dc.setCapability("jenkins.label","foolabel");
+        System.out.println("jenkins.label=foolabel & jenkins.nodeName=foo");
         try {
             WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
-            dr.close();
+            dr.quit();
         } catch (Exception e) {
-            e.printStackTrace();
-            fail(); // should have passed
+            fail(e.getMessage()); // should have passed
         }
+
+        dc = DesiredCapabilities.htmlUnit();
+        dc.setCapability("jenkins.label","bar");
+        System.out.println("jenkins.label=bar");
+        try {
+            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+            fail("jenkins.label=bar should not return a valid session"); // should have failed
+        } catch (Exception e) {
+
+        }
+
 
     }
     
