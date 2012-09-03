@@ -1,0 +1,5 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+	<j:forEach var="b" items="${it.browsers}">
+	  ${b.maxInstances} instances of ${b.descriptor.displayName} (version : ${b.version == null || b.version.equals("") ? "Not specified" : b.version})<br/>
+	</j:forEach>
+</j:jelly>

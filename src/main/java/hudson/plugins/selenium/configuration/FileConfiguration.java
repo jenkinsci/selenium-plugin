@@ -14,21 +14,31 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.export.Exported;
 
 public class FileConfiguration extends SeleniumNodeConfiguration {
 
 	private String configURL;
 	
+	private String display;
+	
     @DataBoundConstructor
-    public FileConfiguration(String configURL) {
+    public FileConfiguration(String configURL, String display) {
     	this.configURL = configURL;
+    	this.display = display;
     }
     
+    @Exported
     public String getConfigURL() {
     	return configURL;
     }
     
-	@Extension
+    @Exported
+    public String getDisplay() {
+    	return display;
+    }
+    
+    @Extension
 	public static class DescriptorImpl extends ConfigurationDescriptor {
 
 		@Override
@@ -41,7 +51,7 @@ public class FileConfiguration extends SeleniumNodeConfiguration {
 	public SeleniumRunOptions initOptions(Computer c) {
 		SeleniumRunOptions opt = new SeleniumRunOptions();
 		try {
-			final String filename = "selenium-temp-config.json";
+			final String filename = "selenium-temp-config-" + System.currentTimeMillis() + ".json";
 			
 			String fullPath = c.getNode().getRootPath().act(new FileCallable<String>() {
 
@@ -66,6 +76,10 @@ public class FileConfiguration extends SeleniumNodeConfiguration {
 			});
 
 			opt.addOptionIfSet("-nodeConfig", fullPath);
+			
+			if (display != null && !display.equals("")) {
+	        	opt.setEnvVar("DISPLAY", display);
+	        }
 			
 			return opt;
 		} catch (Exception e) {

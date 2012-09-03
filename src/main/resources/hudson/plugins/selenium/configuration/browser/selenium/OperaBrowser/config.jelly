@@ -1,0 +1,9 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+    <st:include page="../../AbstractSeleniumBrowser/config.jelly" from="${instance}" it="${instance}"/>
+
+    <f:advanced>
+		<f:entry title="${%Opera binary path}" field="binary">
+	      	<f:textbox />
+		</f:entry>
+	</f:advanced>
+</j:jelly>

@@ -1,42 +1,33 @@
 package hudson.plugins.selenium.callables;
 
+import hudson.plugins.selenium.RemoteRunningStatus;
 import hudson.remoting.Callable;
-import hudson.remoting.Channel;
-import hudson.remoting.ChannelProperty;
 
-import java.io.IOException;
-
-public class DeepLevelCallable<V, T extends Exception> implements Callable<V, T> {
+public class DeepLevelCallable<V> implements Callable<V, Exception> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4335118073900964890L;
-	private ChannelProperty<Channel> property;
-	private Callable<V, T> call; 
+	private Callable<V, ? extends Exception> call; 
 	private V defaultValue = null;
+	private String config;
 	
-	public DeepLevelCallable(ChannelProperty<Channel> property, Callable<V, T> callable) {
-		this(property, callable, null);
+	public DeepLevelCallable(String conf, Callable<V, ? extends Exception> callable) {
+		this(conf, callable, null);
 	}
 	
-	public DeepLevelCallable(ChannelProperty<Channel> property, Callable<V, T> callable, V value) {
+	public DeepLevelCallable(String conf, Callable<V, ? extends Exception> callable, V value) {
 		call = callable;
-		this.property = property;
 		defaultValue = value;
+		config = conf;
 	}
 
-	public V call() throws T {
-		
-		try {
-			Channel chan = PropertyUtils.getProperty(property);
-			if (chan == null)
-				return defaultValue;
-			return chan.call(call);
-		} catch (IOException e) {
-		} catch (InterruptedException e) {
-		}
-		return null;
+	public V call() throws Exception {
+        RemoteRunningStatus opt = (RemoteRunningStatus) PropertyUtils.getProperty(SeleniumConstants.PROPERTY_STATUS).get(config);
+        if (opt== null)
+            return defaultValue;
+        return opt.getSeleniumChannel().call(call);
 	}
 	
 }

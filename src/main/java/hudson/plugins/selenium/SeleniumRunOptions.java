@@ -53,8 +53,8 @@ public final class SeleniumRunOptions implements Serializable {
 	}
 	
 	/**
-	 * Add an option to the selenium process' arguments list 
-	 * @param option
+	 * Add an option to the selenium process' command line arguments list 
+	 * @param option Option to add
 	 */
 	public void addOption(String option) {
 		arguments.add(option);
@@ -77,6 +77,11 @@ public final class SeleniumRunOptions implements Serializable {
 		return envVars;
 	}
 	
+	/**
+	 * Sets the environment variables to the specified value. If the value is null, the environment variable is removed.
+	 * @param key Variable name
+	 * @param value Variable value
+	 */
 	public void setEnvVar(String key, String value) {
 		if (value == null) {
 			envVars.remove(key);
@@ -86,6 +91,8 @@ public final class SeleniumRunOptions implements Serializable {
 	}
 	
 	public static SeleniumRunOptions merge(SeleniumRunOptions options1, SeleniumRunOptions options2) {
+		if (options1 == null && options2 == null)
+			return null;
 		SeleniumRunOptions newOpts = new SeleniumRunOptions();
 		addAllOptions(newOpts, options1);
 		addAllOptions(newOpts, options2);

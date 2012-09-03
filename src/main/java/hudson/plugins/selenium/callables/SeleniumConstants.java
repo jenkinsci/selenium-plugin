@@ -1,15 +1,15 @@
 package hudson.plugins.selenium.callables;
 
-import hudson.remoting.Channel;
 import hudson.remoting.ChannelProperty;
+
+import java.util.Map;
 
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
 public class SeleniumConstants {
 	
-	public static final ChannelProperty<Channel> PROPERTY_JVM = new ChannelProperty<Channel>(Channel.class, "jvm");
-	
-	public static final ChannelProperty<String> PROPERTY_STATUS = new ChannelProperty<String>(String.class, "selenium.status");
+	@SuppressWarnings("rawtypes")
+	public static final ChannelProperty<Map> PROPERTY_STATUS = new ChannelProperty<Map>(Map.class, "selenium.status");
 	
 	public static final ChannelProperty<Object> PROPERTY_LOCK = new ChannelProperty<Object>(Object.class, "selenium.lock");
 	

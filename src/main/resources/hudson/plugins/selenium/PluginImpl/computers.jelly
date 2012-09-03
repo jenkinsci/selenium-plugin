@@ -1,0 +1,47 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
+	<l:layout title="${it.displayName}">
+	    <st:include page="conf_sidepanel.jelly" />
+    	<l:main-panel>
+			<table id="configurations" class="sortable pane bigtable">
+			      <tr>
+			        <th width="55"></th>
+			        <th initialSortDir="down">${%Name}</th>
+			        <th >Matching configurations</th>
+			      </tr>
+			      <j:set var="masterlink" value="${rootUrl}/computer/(master)"/>
+			      <j:forEach var="comp" items="${it.computers}">
+			      	<j:set var="c" value="${comp.key}"/>
+			      	<j:set var="confs" value="${comp.value}"/>
+			        <tr id="node_${c.name}">
+			          <td width="55" data="${c.node.icon}">
+			            <img src="${resUrl}/images/24x24/computer.png" width="24" height="24" alt="${c.iconAltText}"/>
+			          </td>
+			          <j:choose>
+			          <j:when test="${empty(c.node.searchUrl)}">
+			          	<td><a href="../${masterlink}/selenium" class="model-link">(master)</a></td>
+	                  </j:when>
+				      <j:otherwise>
+				      	<td><a href="../${c.node.searchUrl}/selenium" class="model-link">${c.displayName}</a></td>
+				        
+				      </j:otherwise>
+			          </j:choose>
+			          
+			          <td><st:include it="${c.configuration}" page="config_summary.jelly" optional="true"/>
+			          <table>
+			          	<j:forEach var="conf" items="${confs}">
+			          		<tr>
+			          		<td><img src="${conf.configuration.icon}" width="24" height="24" alt="${c.configuration.iconAltText}"/></td>
+			          		<td><a href="configuration/${conf.name}">${conf.name}</a></td>
+			          		</tr>
+			          	</j:forEach>
+			          	</table>
+			          </td>
+			        </tr>
+			      </j:forEach>
+			
+			  </table>
+		</l:main-panel>
+
+    </l:layout>
+</j:jelly>

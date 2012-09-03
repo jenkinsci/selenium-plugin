@@ -3,11 +3,25 @@ package hudson.plugins.selenium;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jfree.util.Log;
+import org.json.JSONObject;
+import org.openqa.grid.common.RegistrationRequest;
+import org.openqa.grid.common.exception.GridException;
+import org.openqa.grid.internal.Registry;
+import org.openqa.grid.internal.RemoteProxy;
+import org.openqa.grid.internal.TestSession;
+import org.openqa.grid.internal.TestSlot;
+import org.openqa.grid.internal.utils.CapabilityMatcher;
 import org.openqa.grid.internal.utils.GridHubConfiguration;
+import org.openqa.grid.internal.utils.HtmlRenderer;
 import org.openqa.grid.web.Hub;
+import org.openqa.selenium.remote.internal.HttpClientFactory;
 
 /**
  * Starts the selenium grid server.
@@ -32,28 +46,23 @@ public class HubLauncher implements Callable<Void,Exception> {
         this.logLevel = logLevel;
     }
 
-    public Void call() throws Exception {
-    	Logger LOG = Logger.getLogger(HubLauncher.class.getName());
-        configureLoggers();
-        LOG.fine("Grid Hub preparing to start on port "+port);
-        GridHubConfiguration c = GridHubConfiguration.build(args);
-        c.setPort(port);  
-        c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
-        Hub hub = new Hub(c);
-        hub.start();
-        RegistryHolder.registry = hub.getRegistry();
-        LOG.fine("Grid Hub started on port "+port);
+    public Void call() {
+    	try {
+	    	Logger LOG = Logger.getLogger(HubLauncher.class.getName());
+	        configureLoggers();
+	        LOG.fine("Grid Hub preparing to start on port "+port);
+	        GridHubConfiguration c = GridHubConfiguration.build(args);
+	        c.setPort(port);  
+	        c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
+	        Hub hub = new Hub(c);
+	        hub.start();
+	        RegistryHolder.registry = hub.getRegistry();
+	        
+	        LOG.fine("Grid Hub started on port "+port);
+    	} catch (Exception e) {
+    		Log.error("An error occured while starting the hub", e);
+    	}
         
-//        HubRegistry r = HubRegistry.registry();
-//        // hack up the pool
-//        Field pool = r.getClass().getDeclaredField("pool");
-//        pool.setAccessible(true);
-//        pool.set(r,new HudsonRemoteControlPool());
-//        // and environment manager
-//        Field env = r.getClass().getDeclaredField("environmentManager");
-//        env.setAccessible(true);
-//        env.set(r,new HudsonEnvironmentManager());
-
         return null;
     }
 

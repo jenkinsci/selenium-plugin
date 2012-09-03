@@ -4,6 +4,7 @@
   <l:side-panel>
     <l:tasks>
       <l:task icon="images/24x24/up.png" href=".." title="${%Back to Computer}" contextMenu="false"/>
+      <l:task icon="plugin/selenium/24x24/selenium.png" href="${rootURL}/selenium" title="${%Plugin home}" contextMenu="false"/>
     </l:tasks>
   </l:side-panel>
 </j:jelly>

@@ -1,5 +1,6 @@
 package hudson.plugins.selenium.configuration.browser;
 
+import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.util.FormValidation;
 
@@ -9,12 +10,12 @@ import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.QueryParameter;
 
-public abstract class BrowserDescriptor extends
-		Descriptor<Browser> {
+public abstract class BrowserDescriptor<T extends AbstractSeleniumBrowser<T>&Describable<T>> extends
+		Descriptor<T> {
 
 	// define additional constructor parameters if you want
 	protected BrowserDescriptor(
-			Class<? extends Browser> clazz) {
+			Class<? extends T> clazz) {
 		super(clazz);
 	}
 

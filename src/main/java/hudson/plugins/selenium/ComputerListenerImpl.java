@@ -23,14 +23,14 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
      */
 	@Override
     public void onOnline(Computer c, final TaskListener listener) throws IOException, InterruptedException {
-		PluginImpl.startSeleniumNode(c, listener);
+		PluginImpl.startSeleniumNode(c, listener, null);
     }
 
 	
 	@Override
 	public void onOffline(Computer c) {
 		try {
-			new ServiceManagementAction(c).doStop();
+			new ServiceManagementAction(c).doStop(null);
 		} catch (Throwable e) {
 		}
 	}
