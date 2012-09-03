@@ -10,6 +10,7 @@ import hudson.plugins.selenium.configuration.browser.webdriver.OperaBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
+import hudson.plugins.selenium.configuration.global.matcher.NodeLabelMatcher;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.RetentionStrategy;
 import hudson.tasks.Mailer;
@@ -80,6 +81,7 @@ public class SeleniumTest extends HudsonTestCase {
         } finally {
             wd.close();
         }
+
     }
         
     private void waitForRC() throws Exception {
@@ -101,15 +103,15 @@ public class SeleniumTest extends HudsonTestCase {
         // system config to set the root URL
         
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
-        browsers.add(new HTMLUnitBrowser(1));
+        browsers.add(new HTMLUnitBrowser(2));
 
         CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);        
         
-        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
+        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new NodeLabelMatcher("foolabel"), cc));
         Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
-        
+
         //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP);
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foolabel", createComputerLauncher(null), RetentionStrategy.NOOP);
 
         hudson.addNode(slave);
 
@@ -121,15 +123,35 @@ public class SeleniumTest extends HudsonTestCase {
             WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
             fail(); // should have failed
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
         
-        dc.setCapability("jenkins.label","foo");
+        dc.setCapability("jenkins.label","foolabel");
         try {
             WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+            dr.close();
         } catch (Exception e) {
         	e.printStackTrace();
-        	fail(); // should have failed
+        	fail(); // should have passed
+        }
+
+        dc = DesiredCapabilities.htmlUnit();
+        dc.setCapability("jenkins.nodeName","foo");
+        try {
+            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+            dr.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(); // should have passed
+        }
+
+        dc.setCapability("jenkins.label","foolabel");
+        try {
+            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"),dc);
+            dr.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(); // should have passed
         }
 
     }
