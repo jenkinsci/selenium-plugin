@@ -32,13 +32,15 @@ public class SeleniumCallable implements FileCallable<Object> {
 	private String nodeName;
 	private SeleniumRunOptions options;
 	private String config;
+	private String nodehost;
 	private TaskListener listener;
 	
-	public SeleniumCallable(FilePath jar, String masterName, int masterPort, String nodeName, TaskListener listener, String confName, SeleniumRunOptions options) throws InterruptedException, IOException {
+	public SeleniumCallable(FilePath jar, String nodehost, String masterName, int masterPort, String nodeName, TaskListener listener, String confName, SeleniumRunOptions options) throws InterruptedException, IOException {
 		seleniumJar = jar;
 		jarTimestamp = jar.lastModified();
 		this.masterName = masterName;
 		this.masterPort = masterPort;
+		this.nodehost = nodehost;
 		this.nodeName = nodeName;
 		this.options = options;
 		this.listener = listener;
@@ -87,7 +89,9 @@ public class SeleniumCallable implements FileCallable<Object> {
 
             String[] defaultArgs = new String[] {
                     "-role","node",
+                    "-host", nodehost,
                     "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
+            
             
             // TODO change this
             listener.getLogger().println("Creating selenium VM");

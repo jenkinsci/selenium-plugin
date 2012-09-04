@@ -507,6 +507,11 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 			LOGGER.fine("There is no matching configurations for that computer. Skipping selenium execution.");
 			return;
 		}
+		String nodehost = c.getHostName();
+		if (nodehost == null) {
+			LOGGER.warning("Unable to determine node's hostname. Skipping");
+			return;
+		}
 
 		listener.getLogger().println("Starting Selenium Grid nodes on " + c.getName());
 
@@ -527,7 +532,7 @@ public class PluginImpl extends Plugin implements Action, Serializable,
                                 .getNode()
                                 .getRootPath()
                                 .actAsync(
-                                        new SeleniumCallable(seleniumJar,
+                                        new SeleniumCallable(seleniumJar, nodehost,
                                                 masterName, p.getPort(), nodeName,
                                                 listener, config.getName(), opts));
                         future.get();
