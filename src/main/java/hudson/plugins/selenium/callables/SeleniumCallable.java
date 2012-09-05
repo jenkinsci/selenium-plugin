@@ -93,12 +93,10 @@ public class SeleniumCallable implements FileCallable<Object> {
                     "-hub","http://"+masterName+":"+masterPort+"/grid/register" };
             
             
-            // TODO change this
             listener.getLogger().println("Creating selenium VM");
             Channel jvm = PluginImpl.createSeleniumRCVM(localJar,listener, options.getJVMArguments(), options.getEnvironmentVariables());
             status = new RemoteRunningStatus(jvm, options);
-            //rConfig.put(config, status);
-            // again ??
+
             listener.getLogger().println("Starting the selenium process");
             jvm.callAsync(
                     new RemoteControlLauncher( nodeName,

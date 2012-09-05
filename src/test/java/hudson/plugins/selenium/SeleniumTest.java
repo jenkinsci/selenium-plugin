@@ -1,6 +1,5 @@
 package hudson.plugins.selenium;
 
-import com.thoughtworks.xstream.mapper.SystemAttributeAliasingMapper;
 import hudson.model.Hudson;
 import hudson.model.Node.Mode;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
@@ -16,6 +15,7 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.RetentionStrategy;
 import hudson.tasks.Mailer;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,6 @@ public class SeleniumTest extends HudsonTestCase {
     protected Hudson newHudson() throws Exception {
         Hudson h = super.newHudson();
         Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
-        configureSelenium();
         return h;
     }
 
@@ -158,19 +157,6 @@ public class SeleniumTest extends HudsonTestCase {
 
         waitForRC();
 
-
-
     }
-    
-    protected WebDriver configureSelenium() {
-    	WebDriver wd = new HtmlUnitDriver();
-    	wd.get("http://localhost:8080/configure");
-    	
-    	WebElement main = wd.findElement(By.id("main-table"));
-    	new WebDriverWait(wd, 5000).until(ExpectedConditions.elementToBeClickable(By.name("Submit")));
-    	wd.findElement(By.name("Submit")).click();
-        new WebDriverWait(wd, 5000).until(ExpectedConditions.stalenessOf(main));
-        return wd;
-    }
-    
+
 }
