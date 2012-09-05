@@ -67,7 +67,7 @@ public class SeleniumTest extends HudsonTestCase {
         CustomWDConfiguration cc = new CustomWDConfiguration(5001, -1, browsers, null);
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
         //HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foo", createComputerLauncher(null), RetentionStrategy.NOOP);
+        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foolabel", createComputerLauncher(null), RetentionStrategy.NOOP);
         hudson.addNode(slave);
 
         waitForRC();
