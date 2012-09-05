@@ -62,7 +62,7 @@ public class SeleniumTest extends HudsonTestCase {
         // system config to set the root URL
         
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
-        browsers.add(new HTMLUnitBrowser(1));
+        browsers.add(new HTMLUnitBrowser(10));
 
         CustomWDConfiguration cc = new CustomWDConfiguration(5001, -1, browsers, null);
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
@@ -80,7 +80,7 @@ public class SeleniumTest extends HudsonTestCase {
             wd.get("http://www.google.com/");
             new WebDriverWait(wd, 5).until(ExpectedConditions.presenceOfElementLocated(By.id("pocs")));
         } finally {
-            wd.close();
+            wd.quit();
         }
 
         dc = DesiredCapabilities.htmlUnit();
