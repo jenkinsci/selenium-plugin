@@ -4,7 +4,7 @@
 		<j:set var="from" value="${it.computer}" />
 	    <st:include page="sidepanel.jelly" />
 	    <l:main-panel>
-            <h2><img src="/plugin/selenium/24x24/selenium.png" width="24" height="24" alt=""/>Selenium Configuration</h2>
+            <h2><img src="${rootURL}/plugin/selenium/24x24/selenium.png" width="24" height="24" alt=""/>Selenium Configuration</h2>
 		    ${context.setVariable("computer", context.parent.getVariable("from").name.equals("") ? "(master)" : context.parent.getVariable("from").name)}
 		    <h3>Running configurations</h3>
 		    <j:set var="configurations" value="${it.configurations}"/>
@@ -69,7 +69,7 @@
                 <j:forEach var="c" items="${mconfigurations}">
                     <tr id="node_${c.name}">
                         <td width="55" data="${c.name}">
-                            <img src="${rootUrl}${c.configuration.icon}" width="24" height="24" alt="${c.iconAltText}"/>
+                            <img src="${rootURL}${c.configuration.icon}" width="24" height="24" alt="${c.iconAltText}"/>
                         </td>
                         <td><a href="${rootURL}/selenium/configuration/${c.name}" class="model-link">${c.name}</a></td>
                         <td>${c.matcherSummary}</td>

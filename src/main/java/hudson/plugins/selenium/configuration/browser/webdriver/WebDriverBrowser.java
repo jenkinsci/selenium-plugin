@@ -1,7 +1,6 @@
 package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.DescriptorExtensionList;
-import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.plugins.selenium.configuration.browser.AbstractSeleniumBrowser;
@@ -11,6 +10,11 @@ import jenkins.model.Jenkins;
 import org.openqa.grid.common.SeleniumProtocol;
 
 public abstract class WebDriverBrowser extends AbstractSeleniumBrowser<WebDriverBrowser> implements Describable<WebDriverBrowser> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1666042840629819766L;
 
 	protected WebDriverBrowser(int instances, String version, String name) {
 		super(SeleniumProtocol.WebDriver, instances, version, name);
@@ -25,7 +29,6 @@ public abstract class WebDriverBrowser extends AbstractSeleniumBrowser<WebDriver
         return Jenkins.getInstance().<WebDriverBrowser,WebDriverBrowserDescriptor>getDescriptorList(WebDriverBrowser.class);
     }
 
-	@Extension
 	public static class WebDriverBrowserDescriptor extends BrowserDescriptor<WebDriverBrowser> {
 		
 		@Override

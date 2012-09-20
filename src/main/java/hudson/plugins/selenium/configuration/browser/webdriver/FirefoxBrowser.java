@@ -3,7 +3,6 @@ package hudson.plugins.selenium.configuration.browser.webdriver;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.plugins.selenium.SeleniumRunOptions;
-import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 
 import java.util.List;
 

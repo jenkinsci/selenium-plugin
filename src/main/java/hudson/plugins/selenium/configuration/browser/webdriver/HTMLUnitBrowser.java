@@ -1,8 +1,6 @@
 package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
-import hudson.plugins.selenium.configuration.browser.AbstractSeleniumBrowser;
-import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 

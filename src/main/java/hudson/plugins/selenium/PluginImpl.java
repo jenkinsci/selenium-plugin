@@ -39,11 +39,13 @@ import hudson.plugins.selenium.callables.running.RemoteGetConfigurations;
 import hudson.plugins.selenium.callables.running.RemoteGetStatus;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.CustomRCConfiguration;
+import hudson.plugins.selenium.configuration.CustomWDConfiguration;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.browser.selenium.ChromeBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.IEBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
+import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
@@ -507,6 +509,7 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 			LOGGER.fine("There is no matching configurations for that computer. Skipping selenium execution.");
 			return;
 		}
+		
 		String nodehost = c.getHostName();
 		if (nodehost == null) {
 			LOGGER.warning("Unable to determine node's hostname. Skipping");
@@ -703,4 +706,16 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 		return channel;
 	}
 
+
+    public SeleniumConfigurationMatcher getDefaultMatcher() {
+        return new MatchAllMatcher();
+    }
+
+    public SeleniumNodeConfiguration getDefaultConfiguration() {
+    	List<WebDriverBrowser> bs = new ArrayList<WebDriverBrowser>();
+    	bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
+    	bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
+    	bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
+        return new CustomWDConfiguration(4445, null, bs, null);
+    }
 }

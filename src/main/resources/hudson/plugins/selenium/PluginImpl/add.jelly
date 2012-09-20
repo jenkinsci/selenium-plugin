@@ -14,8 +14,8 @@
 				    <f:textbox />
 				</f:entry>
 				
-				<f:descriptorRadioList title="Matcher" varName="matcher" instance="${instance.constructor.default}" descriptors="${it.matcherTypes}" targetType="${hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.class}" />
-				<f:descriptorRadioList title="Type" varName="configuration" instance="${configuration.constructor.default}" descriptors="${it.configTypes}" targetType="${hudson.plugins.selenium.configuration.SeleniumNodeConfiguration.class}" />
+				<f:descriptorRadioList title="Matcher" varName="matcher" instance="${it.defaultMatcher}" descriptors="${it.matcherTypes}" targetType="${hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.class}" />
+				<f:descriptorRadioList title="Type" varName="configuration" instance="${it.defaultConfiguration}" descriptors="${it.configTypes}" targetType="${hudson.plugins.selenium.configuration.SeleniumNodeConfiguration.class}" />
 				
 				<f:block>
 				  <div id="bottom-sticker" >

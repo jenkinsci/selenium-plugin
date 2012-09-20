@@ -1,7 +1,6 @@
 package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
-import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class ChromeBrowser extends WebDriverBrowser {
 	}
 	
 	@Exported
-	public String getServerBinary() {
+	public String getServer_binary() {
 		return server_binary;
 	}
 	

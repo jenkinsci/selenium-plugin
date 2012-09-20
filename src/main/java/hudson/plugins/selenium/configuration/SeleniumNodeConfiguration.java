@@ -1,15 +1,13 @@
 package hudson.plugins.selenium.configuration;
 
-import java.io.Serializable;
-
-import jenkins.model.Jenkins;
-
 import hudson.DescriptorExtensionList;
 import hudson.model.Describable;
 import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.plugins.selenium.SeleniumRunOptions;
+
+import java.io.Serializable;
 
 import org.kohsuke.stapler.export.ExportedBean;
 

@@ -1,7 +1,6 @@
 package hudson.plugins.selenium.configuration.browser.selenium;
 
 import hudson.DescriptorExtensionList;
-import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
@@ -12,6 +11,11 @@ import jenkins.model.Jenkins;
 import org.openqa.grid.common.SeleniumProtocol;
 
 public abstract class SeleniumBrowser extends AbstractSeleniumBrowser<SeleniumBrowser> implements Describable<SeleniumBrowser> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 412877504468641135L;
 
 	protected SeleniumBrowser(int instances, String version, String name) {
 		super(SeleniumProtocol.Selenium, instances, version, name);
@@ -26,7 +30,6 @@ public abstract class SeleniumBrowser extends AbstractSeleniumBrowser<SeleniumBr
         return Hudson.getInstance().<SeleniumBrowser,SeleniumBrowserDescriptor>getDescriptorList(SeleniumBrowser.class);
     }
     
-	@Extension
 	public static class SeleniumBrowserDescriptor extends BrowserDescriptor<SeleniumBrowser> {
 		
 		@Override
