@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <j:set var="instance" value="${instance?:descriptor.default}"/>
-	<f:entry title="${%Prefered port}" field="port">
+	<f:entry title="${%Preferred port}" field="port">
       	<f:textbox />
 	</f:entry>
 	<f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
