@@ -23,7 +23,6 @@ public class CloseSeleniumChannelCallable implements Callable<Void,Exception> {
 		config = conf;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Void call() throws Exception {
 		RemoteRunningStatus st = (RemoteRunningStatus) PropertyUtils.getProperty(SeleniumConstants.PROPERTY_STATUS).get(config);
 		st.getSeleniumChannel().close();

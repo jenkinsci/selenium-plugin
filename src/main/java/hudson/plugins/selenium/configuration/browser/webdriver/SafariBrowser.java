@@ -6,9 +6,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class SafariBrowser extends WebDriverBrowser {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5425432330259522911L;
+
 	@DataBoundConstructor
-	public SafariBrowser(int instances, String version) {
-		super(instances, version, "safari");
+	public SafariBrowser(int maxInstances, String version) {
+		super(maxInstances, version, "safari");
 	}
 	
 	@Extension

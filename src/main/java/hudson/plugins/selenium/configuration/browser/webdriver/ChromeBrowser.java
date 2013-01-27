@@ -16,6 +16,11 @@ import org.kohsuke.stapler.export.Exported;
 
 public class ChromeBrowser extends WebDriverBrowser {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8505665387429684157L;
+
 	transient final protected String PARAM_BINARY_PATH = "webdriver.chrome.driver";
 	
 	private String server_binary;
@@ -50,7 +55,7 @@ public class ChromeBrowser extends WebDriverBrowser {
             return "Chrome";
         }
         
-        public FormValidation doCheckBinary(@QueryParameter String value) throws IOException, ServletException {
+        public FormValidation doCheckServer_binary(@QueryParameter String value) throws IOException, ServletException {
         	if (StringUtils.isBlank(value)) {
         		return FormValidation.warning("Must not be empty unless it is already defined from a previous chrome browser definition");
         	}

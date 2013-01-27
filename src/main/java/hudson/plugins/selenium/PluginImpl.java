@@ -158,6 +158,9 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 			args.add(Boolean.toString(getThrowOnCapabilityNotPresent()));
 		}
 
+		args.add("-host");
+		args.add(getMasterHostName());
+		
 		hubLauncher = channel.callAsync(new HubLauncher(port, args
 				.toArray(new String[0]), logLevel));
 
@@ -621,7 +624,7 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 	}
 	
     /**
-     * Redirects to the add slaves-wizard, also setting usermode to add.
+     * 
      * @param req StaplerRequest
      * @param rsp StaplerResponse to redirect with
      * @throws IOException if redirection goes wrong
@@ -632,7 +635,7 @@ public class PluginImpl extends Plugin implements Action, Serializable,
     }
     
     /**
-     * Redirects to the add slaves-wizard, also setting usermode to add.
+     * 
      * @param req StaplerRequest
      * @param rsp StaplerResponse to redirect with
      * @throws IOException if redirection goes wrong

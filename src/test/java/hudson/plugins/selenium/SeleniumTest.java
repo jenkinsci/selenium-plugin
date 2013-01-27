@@ -15,7 +15,6 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.RetentionStrategy;
 import hudson.tasks.Mailer;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,6 @@ import java.util.List;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;

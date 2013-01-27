@@ -7,6 +7,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class HTMLUnitBrowser extends WebDriverBrowser {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7089526214694718987L;
+
+
 	@DataBoundConstructor
 	public HTMLUnitBrowser(int maxInstances) {
 		super(maxInstances, null, "htmlunit");

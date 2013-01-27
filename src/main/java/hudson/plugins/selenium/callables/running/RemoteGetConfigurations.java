@@ -15,7 +15,7 @@ public class RemoteGetConfigurations implements Callable<Set<String>, Exception>
 	 */
 	private static final long serialVersionUID = 4826936469266107568L;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Set<String> call() throws Exception {
 		Map map = PropertyUtils.getProperty(SeleniumConstants.PROPERTY_STATUS);
 		if (map != null)

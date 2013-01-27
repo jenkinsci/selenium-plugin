@@ -1,8 +1,6 @@
 package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
-import hudson.plugins.selenium.configuration.browser.AbstractSeleniumBrowser;
-import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +10,11 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class OperaBrowser extends WebDriverBrowser {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5094330146488965759L;
+
 	transient final protected String PARAM_BINARY_PATH = "opera.binary";
 
 	private String browser_binary;

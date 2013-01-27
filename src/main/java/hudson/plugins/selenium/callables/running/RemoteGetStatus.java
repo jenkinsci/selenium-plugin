@@ -18,7 +18,6 @@ public class RemoteGetStatus implements Callable<String, Exception> {
 		config = conf;
 	}
 
-	@SuppressWarnings("unchecked")
 	public String call() throws Exception {
 		return ((RemoteRunningStatus) PropertyUtils.getProperty(SeleniumConstants.PROPERTY_STATUS).get(config)).getStatus();
 	}

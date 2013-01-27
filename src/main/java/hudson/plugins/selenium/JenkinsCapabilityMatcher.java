@@ -45,7 +45,6 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         LOGGER.log(Level.INFO, "NODE : " + reqNode + " - " + nodeName);
 
         boolean nodeMatch = false;
-        boolean labelMatch = false;
 
         if (reqNode != null && nodeName != null) {
             LOGGER.log(Level.INFO, "BOTH NOT NULL");

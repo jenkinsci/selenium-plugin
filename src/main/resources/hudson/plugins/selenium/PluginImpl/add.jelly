@@ -9,6 +9,7 @@
 	        </l:tasks>
 	    </l:side-panel>
     	<l:main-panel>
+            <h2>New configuration</h2>
             <f:form method="post" action="create" name="settingsForm">
 				<f:entry title="${%Name of the configuration}" field="name">
 				    <f:textbox />

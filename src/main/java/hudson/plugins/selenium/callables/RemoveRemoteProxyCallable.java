@@ -3,9 +3,7 @@ package hudson.plugins.selenium.callables;
 import hudson.plugins.selenium.RegistryHolder;
 import hudson.remoting.Callable;
 
-import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.RemoteProxy;
-import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
 public class RemoveRemoteProxyCallable implements Callable<String, Exception> {
 

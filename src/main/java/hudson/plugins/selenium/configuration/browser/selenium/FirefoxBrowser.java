@@ -12,6 +12,11 @@ import org.kohsuke.stapler.export.Exported;
 
 public class FirefoxBrowser extends SeleniumBrowser {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1180910636911313608L;
+
 	transient final protected String PARAM_BINARY_PATH = "firefox_binary";
 	
 	private String binary_path;

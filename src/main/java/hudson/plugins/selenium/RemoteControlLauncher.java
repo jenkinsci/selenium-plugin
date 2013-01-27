@@ -3,8 +3,8 @@ package hudson.plugins.selenium;
 import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.remoting.Callable;
-
 import hudson.remoting.Channel;
+
 import org.apache.commons.lang.StringUtils;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;

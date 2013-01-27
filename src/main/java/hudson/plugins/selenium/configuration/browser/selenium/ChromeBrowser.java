@@ -16,6 +16,11 @@ import org.kohsuke.stapler.export.Exported;
 
 public class ChromeBrowser extends SeleniumBrowser {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7028484889764200348L;
+
 	transient final protected String PARAM_BINARY_PATH = "webdriver.chrome.driver";
 		
 	private String binary;

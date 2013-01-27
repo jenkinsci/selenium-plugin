@@ -3,25 +3,12 @@ package hudson.plugins.selenium;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jfree.util.Log;
-import org.json.JSONObject;
-import org.openqa.grid.common.RegistrationRequest;
-import org.openqa.grid.common.exception.GridException;
-import org.openqa.grid.internal.Registry;
-import org.openqa.grid.internal.RemoteProxy;
-import org.openqa.grid.internal.TestSession;
-import org.openqa.grid.internal.TestSlot;
-import org.openqa.grid.internal.utils.CapabilityMatcher;
 import org.openqa.grid.internal.utils.GridHubConfiguration;
-import org.openqa.grid.internal.utils.HtmlRenderer;
 import org.openqa.grid.web.Hub;
-import org.openqa.selenium.remote.internal.HttpClientFactory;
 
 /**
  * Starts the selenium grid server.

@@ -8,7 +8,6 @@ import hudson.plugins.selenium.callables.CloseSeleniumChannelCallable;
 import hudson.plugins.selenium.callables.DeepLevelCallable;
 import hudson.plugins.selenium.callables.GetConfigurations;
 import hudson.plugins.selenium.callables.RemoteStopSelenium;
-import hudson.plugins.selenium.callables.RemoveRemoteProxyCallable;
 import hudson.plugins.selenium.callables.RunningRemoteSetterCallable;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.plugins.selenium.callables.SetRemoteRunningCallable;
@@ -59,7 +58,7 @@ public class ServiceManagementAction implements Action {
 		if (slaveChannel != null) {
 			try {
 				slaveChannel.call(new RunningRemoteSetterCallable(conf, SeleniumConstants.STOPPING));
-				String remoteHost = slaveChannel.call(new DeepLevelCallable<String>(conf, new RemoteStopSelenium(conf)));
+				slaveChannel.call(new DeepLevelCallable<String>(conf, new RemoteStopSelenium(conf)));
 				slaveChannel.call(new RunningRemoteSetterCallable(conf, SeleniumConstants.STOPPED));
 				slaveChannel.call(new SetRemoteRunningCallable(conf, false));
                 slaveChannel.call(new CloseSeleniumChannelCallable(conf));

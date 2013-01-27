@@ -1,12 +1,11 @@
 package hudson.plugins.selenium.callables;
 
+import hudson.remoting.Callable;
+import hudson.remoting.Channel;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import hudson.plugins.selenium.HubLauncher;
-import hudson.remoting.Callable;
-
-import hudson.remoting.Channel;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 

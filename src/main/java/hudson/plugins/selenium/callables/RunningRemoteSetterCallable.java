@@ -27,7 +27,6 @@ public class RunningRemoteSetterCallable implements Callable<Void, Exception> {
 		this.status = status;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Void call() throws Exception {
 		((RemoteRunningStatus) PropertyUtils.getProperty(
 				SeleniumConstants.PROPERTY_STATUS).get(config))

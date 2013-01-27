@@ -1,6 +1,5 @@
 package hudson.plugins.selenium.callables;
 
-import hudson.remoting.Channel;
 import hudson.remoting.ChannelProperty;
 
 import java.util.HashMap;
@@ -27,6 +26,7 @@ public final class PropertyUtils {
 //		}
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T> T getMapProperty(String property, String key) {
 		ChannelProperty<Map> cp = new ChannelProperty<Map>(Map.class, property);
 		Map map = getProperty(cp);
@@ -36,6 +36,7 @@ public final class PropertyUtils {
 		return (T) map.get(key);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void setMapProperty(String property, String key, Object object) {
 		ChannelProperty<Map> cp = new ChannelProperty<Map>(Map.class, property);
 		Map map = getProperty(cp);

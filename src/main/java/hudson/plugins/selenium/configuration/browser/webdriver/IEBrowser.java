@@ -7,6 +7,11 @@ import org.kohsuke.stapler.export.Exported;
 
 public class IEBrowser extends WebDriverBrowser {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -241845413478474187L;
+	
 	private String server_binary;
 	
 	@DataBoundConstructor
