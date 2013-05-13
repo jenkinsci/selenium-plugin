@@ -363,6 +363,23 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 	 * Determines the host name of the Jenkins master.
 	 */
 	public static String getMasterHostName() throws MalformedURLException {
+	    VirtualChannel channel = Hudson.getInstance().getChannel();
+        if(channel != null){ //fixed Jenkins URL may not host of jenkin server(eg:apache  mod_proxy)
+            try {
+                return channel.call(new Callable<String,IOException>(){
+                    public String call() throws IOException {
+                        final String localhostname = java.net.InetAddress.getLocalHost().getHostName();
+                        return localhostname;
+                    }
+                    
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
 		String rootUrl = Hudson.getInstance().getRootUrl();
 		if (rootUrl == null)
 			return "localhost";
