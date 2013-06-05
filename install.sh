@@ -7,7 +7,7 @@ if [ ! -f $standaloneFile ]; then
 fi
 
 # Faking local maven repository for selenium-server-standalone dependency.
-mkdir lib/
+mkdir -p lib/
 mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
     -Dfile=$HOME/Downloads/selenium-server-standalone-${version}.jar \
     -DgroupId=org.seleniumhq.selenium \
