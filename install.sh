@@ -1,7 +1,7 @@
 set -e
 version=2.33.0
 
-standaloneFile=$HOME/Downloads/selenium-server-standalone-${version}.jar
+standaloneFile=/tmp/selenium-server-standalone-${version}.jar
 standaloneUrl=https://selenium.googlecode.com/files/selenium-server-standalone-$version.jar
 
 # download the selenium-server-standalone jar if not available
@@ -12,7 +12,7 @@ fi
 # Faking local maven repository for selenium-server-standalone dependency.
 mkdir -p lib/
 mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
-    -Dfile=$HOME/Downloads/selenium-server-standalone-${version}.jar \
+    -Dfile=$standaloneFile \
     -DgroupId=org.seleniumhq.selenium \
     -DartifactId=selenium-server-standalone \
     -Dversion=$version \
