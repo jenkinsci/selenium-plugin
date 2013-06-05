@@ -1,7 +1,5 @@
 version=2.33.0
-
-standaloneFile=$HOME/Downloads/selenium-server-standalone-${version}.jar
-standaloneUrl=https://selenium.googlecode.com/files/selenium-server-standalone-$version.jar
+ 
 
 # download the selenium-server-standalone jar if not available
 if [ ! -f $standaloneFile ]; then
@@ -15,7 +13,7 @@ mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
     -DgroupId=org.seleniumhq.selenium \
     -DartifactId=selenium-server-standalone \
     -Dversion=$version \
-    -Dpackaging=jar
+    -Dpackaging=jar \
     -DlocalRepositoryPath=lib/
 
 
