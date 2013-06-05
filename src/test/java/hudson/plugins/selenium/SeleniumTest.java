@@ -75,7 +75,7 @@ public class SeleniumTest extends HudsonTestCase {
 
         try {
             wd.get("http://www.google.com/");
-            new WebDriverWait(wd, 5).until(ExpectedConditions.presenceOfElementLocated(By.id("pocs")));
+            new WebDriverWait(wd, 5).until(ExpectedConditions.presenceOfElementLocated(By.tagName("title")));
         } finally {
             wd.quit();
         }
