@@ -1,3 +1,4 @@
+set -e
 version=2.33.0
 
 standaloneFile=$HOME/Downloads/selenium-server-standalone-${version}.jar
