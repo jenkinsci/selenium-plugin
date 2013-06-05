@@ -175,7 +175,7 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </repository>
     <repository>
-      <id>local</id>
+      <id>repo-local</id>
       <url>file://${basedir}/lib/</url>
     </repository>
   </repositories>
