@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.seleniumhq.selenium</groupId>
+  <artifactId>selenium-server-standalone</artifactId>
+  <packaging>pom</packaging>
+  <version>2.35.0</version>
+  <name>Selenium Server Standalone</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <get src="http://selenium.googlecode.com/files/selenium-server-standalone-${project.version}.jar"
+                     dest="${project.build.directory}/selenium-server-standalone-${project.version}.jar"
+                     verbose="on"
+                     usetimestamp="true"
+                />
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.7</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>deploy-file</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/selenium-server-standalone-${project.version}.jar</file>
+              <repositoryId>maven.jenkins-ci.org</repositoryId>
+              <url>http://maven.jenkins-ci.org:8081/content/repositories/releases</url>
+              <generatePom>false</generatePom>
+
+              <version>${project.version}</version>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
