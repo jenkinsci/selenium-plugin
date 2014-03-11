@@ -19,5 +19,4 @@ mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file \
     -Dpackaging=jar \
     -DlocalRepositoryPath=lib/
 
-
 mvn package && echo "Done, packaged plugin to target/selenium.hpi."
