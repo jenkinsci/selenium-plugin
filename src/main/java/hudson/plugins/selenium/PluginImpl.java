@@ -33,23 +33,22 @@ import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Label;
-import hudson.plugins.selenium.callables.SeleniumCallable;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.plugins.selenium.callables.running.RemoteGetConfigurations;
 import hudson.plugins.selenium.callables.running.RemoteGetStatus;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
+import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomRCConfiguration;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
-import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
+import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.ChromeBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.IEBrowser;
-import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
-import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
+import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.remoting.Launcher;
@@ -110,615 +109,565 @@ import org.springframework.util.StringUtils;
  * @author Richard Lavoie
  */
 @ExportedBean
-public class PluginImpl extends Plugin implements Action, Serializable,
-		Describable<PluginImpl> {
+public class PluginImpl extends Plugin implements Action, Serializable, Describable<PluginImpl> {
 
-	private static final String SEPARATOR = ",";
+    private static final String SEPARATOR = ",";
 
-	private static final Logger LOGGER = Logger.getLogger(PluginImpl.class
-			.getName());
+    private static final Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
 
-	private int port = 4444;
-	private String exclusionPatterns;
-	private Integer newSessionWaitTimeout = -1;
-	private boolean throwOnCapabilityNotPresent = false;
-	private String hubLogLevel = "INFO";
-	private boolean rcDebug;
-	private String rcLog;
+    /**
+     * Default port for hub servlet.
+     */
+    private int port = 4444;
 
-	private List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
+    /**
+     * Exclusion pattern for nodes. Nodes matching this pattern will not have a selenium node running on them.
+     */
+    private String exclusionPatterns;
+    private Integer newSessionWaitTimeout = -1;
+    private boolean throwOnCapabilityNotPresent = false;
+    private String hubLogLevel = "INFO";
+    private boolean rcDebug;
+    private String rcLog;
 
-	/**
-	 * Channel to Selenium Grid JVM.
-	 */
-	private transient Channel channel;
+    // Kept only for backward compatibility...
+    private transient String rcFirefoxProfileTemplate;
+    private transient Boolean rcBrowserSessionReuse;
+    private transient Boolean rcTrustAllSSLCerts;
+    private transient Boolean rcBrowserSideLog;
 
-	private transient Future<?> hubLauncher;
+    private List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
 
-	private transient static Set<Computer> launchedComputers = new HashSet<Computer>();
+    /**
+     * Channel to Selenium Grid JVM.
+     */
+    private transient Channel channel;
 
-	@Override
-	public void postInitialize() throws Exception {
-		load();
+    private transient Future<?> hubLauncher;
 
-		StreamTaskListener listener = new StreamTaskListener(getLogFile());
-		File root = Hudson.getInstance().getRootDir();
-		channel = createSeleniumGridVM(root, listener);
-		Level logLevel = Level.parse(getHubLogLevel());
-		System.out.println("Starting Selenium Grid");
+    private transient StreamTaskListener listener;
 
-		List<String> args = new ArrayList<String>();
-		if (getNewSessionWaitTimeout() != null
-				&& getNewSessionWaitTimeout() >= 0) {
-			args.add("-newSessionWaitTimeout");
-			args.add(getNewSessionWaitTimeout().toString());
-		}
-		if (getThrowOnCapabilityNotPresent()) {
-			args.add("-throwOnCapabilityNotPresent");
-			args.add(Boolean.toString(getThrowOnCapabilityNotPresent()));
-		}
+    private transient static Set<Computer> launchedComputers = new HashSet<Computer>();
 
-		args.add("-host");
-		args.add(getMasterHostName());
-		
-		hubLauncher = channel.callAsync(new HubLauncher(port, args
-				.toArray(new String[0]), logLevel));
+    @Override
+    public void postInitialize() throws Exception {
+        load();
 
-		Hudson.getInstance().getActions().add(this);
-	}
+        this.listener = new StreamTaskListener(getLogFile());
+        File root = Hudson.getInstance().getRootDir();
+        channel = createSeleniumGridVM(root, listener);
+        Level logLevel = Level.parse(getHubLogLevel());
+        System.out.println("Starting Selenium Grid");
 
-	public File getLogFile() {
-		return new File(Hudson.getInstance().getRootDir(), "selenium.log");
-	}
+        List<String> args = new ArrayList<String>();
+        if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
+            args.add("-newSessionWaitTimeout");
+            args.add(getNewSessionWaitTimeout().toString());
+        }
+        if (getThrowOnCapabilityNotPresent()) {
+            args.add("-throwOnCapabilityNotPresent");
+            args.add(Boolean.toString(getThrowOnCapabilityNotPresent()));
+        }
 
-	@Override
-	public void configure(StaplerRequest req, JSONObject formData) {
-		port = formData.getInt("port");
-		exclusionPatterns = formData.getString("exclusionPatterns");
-		rcLog = formData.getString("rcLog");
-		rcDebug = formData.getBoolean("rcDebug");
-		newSessionWaitTimeout = formData.getInt("newSessionWaitTimeout");
-		throwOnCapabilityNotPresent = formData
-				.getBoolean("throwOnCapabilityNotPresent");
-		hubLogLevel = formData.getString("hubLogLevel");
-		// rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
-		// rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
-		// rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
-		// rcFirefoxProfileTemplate =
-		// formData.getString("rcFirefoxProfileTemplate");
-		try {
-			save();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        args.add("-host");
+        args.add(getMasterHostName());
 
-	public void waitForHubLaunch() throws ExecutionException,
-			InterruptedException {
-		hubLauncher.get();
-	}
+        hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[0]), logLevel));
 
-	public String getIconFileName() {
-		return "/plugin/selenium/24x24/selenium.png";
-	}
+        Hudson.getInstance().getActions().add(this);
+    }
 
-	public String getDisplayName() {
-		return "Selenium Grid";
-	}
+    public File getLogFile() {
+        return new File(Hudson.getInstance().getRootDir(), "selenium.log");
+    }
 
-	public String getUrlName() {
-		return "/selenium";
-	}
+    @Override
+    public void configure(StaplerRequest req, JSONObject formData) {
+        port = formData.getInt("port");
+        exclusionPatterns = formData.getString("exclusionPatterns");
+        rcLog = formData.getString("rcLog");
+        rcDebug = formData.getBoolean("rcDebug");
+        newSessionWaitTimeout = formData.getInt("newSessionWaitTimeout");
+        throwOnCapabilityNotPresent = formData.getBoolean("throwOnCapabilityNotPresent");
+        hubLogLevel = formData.getString("hubLogLevel");
+        // rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
+        // rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
+        // rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
+        // rcFirefoxProfileTemplate =
+        // formData.getString("rcFirefoxProfileTemplate");
+        try {
+            save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public Api getApi() {
-		return new Api(this);
-	}
+    public void waitForHubLaunch() throws ExecutionException, InterruptedException {
+        hubLauncher.get();
+    }
 
-	@Exported
-	public int getPort() {
-		return port;
-	}
+    public String getIconFileName() {
+        return "/plugin/selenium/24x24/selenium.png";
+    }
 
-	@Exported
-	public String getExclusionPatterns() {
-		return exclusionPatterns;
-	}
+    public String getDisplayName() {
+        return "Selenium Grid";
+    }
 
-	@Exported
-	public Integer getNewSessionWaitTimeout() {
-		return newSessionWaitTimeout;
-	}
+    public String getUrlName() {
+        return "/selenium";
+    }
 
-	@Exported
-	public String getHubLogLevel() {
-		return hubLogLevel != null ? hubLogLevel : "INFO";
-	}
+    public Api getApi() {
+        return new Api(this);
+    }
 
-	@Exported
-	public boolean getRcDebug() {
-		return rcDebug;
-	}
+    @Exported
+    public int getPort() {
+        return port;
+    }
 
-	@Exported
-	public String getRcLog() {
-		return rcLog;
-	}
+    @Exported
+    public String getExclusionPatterns() {
+        return exclusionPatterns;
+    }
 
-	@Exported
-	public boolean getThrowOnCapabilityNotPresent() {
-		return throwOnCapabilityNotPresent;
-	}
+    @Exported
+    public Integer getNewSessionWaitTimeout() {
+        return newSessionWaitTimeout;
+    }
 
-	@Override
-	public void stop() throws Exception {
-		channel.close();
-	}
+    @Exported
+    public String getHubLogLevel() {
+        return hubLogLevel != null ? hubLogLevel : "INFO";
+    }
 
-	@Exported(inline = true)
-	public List<SeleniumTestSlot> getRemoteControls() throws IOException,
-			InterruptedException {
-		if (channel == null)
-			return Collections.emptyList();
+    @Exported
+    public boolean getRcDebug() {
+        return rcDebug;
+    }
 
-		return channel
-				.call(new Callable<List<SeleniumTestSlot>, RuntimeException>() {
-					/**
+    @Exported
+    public String getRcLog() {
+        return rcLog;
+    }
+
+    @Exported
+    public boolean getThrowOnCapabilityNotPresent() {
+        return throwOnCapabilityNotPresent;
+    }
+
+    @Override
+    public void stop() throws Exception {
+        this.listener.closeQuietly();
+        channel.close();
+    }
+
+    @Exported( inline = true )
+    public List<SeleniumTestSlot> getRemoteControls() throws IOException, InterruptedException {
+        if (channel == null)
+            return Collections.emptyList();
+
+        return channel.call(new Callable<List<SeleniumTestSlot>, RuntimeException>() {
+
+            /**
 			 * 
 			 */
-					private static final long serialVersionUID = 1791985298575049757L;
+            private static final long serialVersionUID = 1791985298575049757L;
 
-					public List<SeleniumTestSlot> call()
-							throws RuntimeException {
-						List<SeleniumTestSlot> r = new ArrayList<SeleniumTestSlot>();
+            public List<SeleniumTestSlot> call() throws RuntimeException {
+                List<SeleniumTestSlot> r = new ArrayList<SeleniumTestSlot>();
 
-						Registry registry = RegistryHolder.registry;
-						if (registry != null) {
-							for (RemoteProxy proxy : registry.getAllProxies()) {
-								for (TestSlot slot : proxy.getTestSlots())
-									r.add(new SeleniumTestSlot(slot));
-							}
-						}
+                Registry registry = RegistryHolder.registry;
+                if (registry != null) {
+                    for (RemoteProxy proxy : registry.getAllProxies()) {
+                        for (TestSlot slot : proxy.getTestSlots())
+                            r.add(new SeleniumTestSlot(slot));
+                    }
+                }
 
-						return r;
-					}
-				});
-	}
+                return r;
+            }
+        });
+    }
 
-	/**
-	 * Launches Hub in a separate JVM.
-	 * 
-	 * @param rootDir
-	 *            The slave/master root.
-	 */
-	static/* package */Channel createSeleniumGridVM(File rootDir,
-			TaskListener listener) throws IOException, InterruptedException {
+    /**
+     * Launches Hub in a separate JVM.
+     * 
+     * @param rootDir
+     *            The slave/master root.
+     */
+    static/* package */Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
 
-		JVMBuilder vmb = new JVMBuilder();
-		// vmb.debug(8000);
-		vmb.systemProperties(null);
-		return Channels
-				.newJVM("Selenium Grid", listener, vmb, new FilePath(rootDir),
-						new ClasspathBuilder().add(findStandAloneServerJar()));
-	}
+        JVMBuilder vmb = new JVMBuilder();
+        // vmb.debug(8000);
+        vmb.systemProperties(null);
+        return Channels.newJVM("Selenium Grid", listener, vmb, new FilePath(rootDir), new ClasspathBuilder().add(findStandAloneServerJar()));
+    }
 
-	/**
-	 * Locate the stand-alone server jar from the classpath. Only works on the
-	 * master.
-	 */
-	/* package */static File findStandAloneServerJar() throws IOException {
-		return Which.jarFile(GridLauncher.class);
-	}
+    /**
+     * Locate the stand-alone server jar from the classpath. Only works on the master.
+     */
+    /* package */public static File findStandAloneServerJar() throws IOException {
+        return Which.jarFile(GridLauncher.class);
+    }
 
-	/**
-	 * Launches RC in a separate JVM.
-	 * 
-	 * @param standaloneServerJar
-	 *            The jar file of the grid to launch.
-	 */
-	static public Channel createSeleniumRCVM(File standaloneServerJar,
-			TaskListener listener, Map<String, String> properties,
-			Map<String, String> envVariables) throws IOException,
-			InterruptedException {
-		/*
-		 * return Channels.newJVM("Selenium RC",listener,null, new
-		 * ClasspathBuilder().add(standaloneServerJar), properties);
-		 */
-		String displayName = "Selenium RC";
+    /**
+     * Launches RC in a separate JVM.
+     * 
+     * @param standaloneServerJar
+     *            The jar file of the grid to launch.
+     */
+    static public Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties,
+            Map<String, String> envVariables) throws IOException, InterruptedException {
+        /*
+         * return Channels.newJVM("Selenium RC",listener,null, new ClasspathBuilder().add(standaloneServerJar), properties);
+         */
+        String displayName = "Selenium RC";
 
-		ClasspathBuilder classpath = new ClasspathBuilder()
-				.add(standaloneServerJar);
-		JVMBuilder vmb = new JVMBuilder();
-		vmb.systemProperties(properties);
+        ClasspathBuilder classpath = new ClasspathBuilder().add(standaloneServerJar);
+        JVMBuilder vmb = new JVMBuilder();
+        vmb.systemProperties(properties);
 
-		ServerSocket serverSocket = new ServerSocket();
-		serverSocket.bind(new InetSocketAddress("localhost", 0));
-		serverSocket.setSoTimeout(10000);
+        ServerSocket serverSocket = new ServerSocket();
+        serverSocket.bind(new InetSocketAddress("localhost", 0));
+        serverSocket.setSoTimeout(10000);
 
-		// use -cp + FQCN instead of -jar since remoting.jar can be rebundled
-		// (like in the case of the swarm plugin.)
-		vmb.classpath().addJarOf(Channel.class);
-		vmb.mainClass(Launcher.class);
+        // use -cp + FQCN instead of -jar since remoting.jar can be rebundled
+        // (like in the case of the swarm plugin.)
+        vmb.classpath().addJarOf(Channel.class);
+        vmb.mainClass(Launcher.class);
 
-		if (classpath != null)
-			vmb.args().add("-cp").add(classpath);
-		vmb.args()
-				.add("-connectTo", "localhost:" + serverSocket.getLocalPort());
+        if (classpath != null)
+            vmb.args().add("-cp").add(classpath);
+        vmb.args().add("-connectTo", "localhost:" + serverSocket.getLocalPort());
 
-		listener.getLogger().println("Starting " + displayName);
+        // listener.getLogger().println( "Starting " + displayName );
 
-		// TODO add XVFB options here
-		Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener)
-				.envs(envVariables).start();
+        // TODO add XVFB options here
+        Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener).envs(envVariables).start();
 
-		Socket s = serverSocket.accept();
-		serverSocket.close();
+        Socket s = serverSocket.accept();
+        serverSocket.close();
 
-		return Channels.forProcess("Channel to " + displayName,
-				Computer.threadPoolForRemoting, new BufferedInputStream(
-						new SocketInputStream(s)), new BufferedOutputStream(
-						new SocketOutputStream(s)), null, p);
-	}
+        return Channels.forProcess("Channel to " + displayName, Computer.threadPoolForRemoting, new BufferedInputStream(new SocketInputStream(s)),
+                new BufferedOutputStream(new SocketOutputStream(s)), null, p);
+    }
 
-	/**
-	 * Determines the host name of the Jenkins master.
-	 */
-	public static String getMasterHostName() throws MalformedURLException {
-		String rootUrl = Hudson.getInstance().getRootUrl();
-		if (rootUrl == null)
-			return "localhost";
-		URL url = new URL(rootUrl);
-		return url.getHost();
-	}
+    /**
+     * Determines the host name of the Jenkins master.
+     */
+    public static String getMasterHostName() throws MalformedURLException {
+        String rootUrl = Hudson.getInstance().getRootUrl();
+        if (rootUrl == null)
+            return "localhost";
+        URL url = new URL(rootUrl);
+        return url.getHost();
+    }
 
-	/**
-	 * Handles incremental log.
-	 */
-	public void doProgressiveLog(StaplerRequest req, StaplerResponse rsp)
-			throws IOException {
-		new LargeText(getLogFile(), false).doProgressText(req, rsp);
-	}
+    /**
+     * Handles incremental log.
+     */
+    public void doProgressiveLog(StaplerRequest req, StaplerResponse rsp) throws IOException {
+        new LargeText(getLogFile(), false).doProgressText(req, rsp);
+    }
 
-	@SuppressWarnings("unchecked")
-	public Descriptor<PluginImpl> getDescriptor() {
-		return Hudson.getInstance().getDescriptorOrDie(getClass());
-	}
+    @SuppressWarnings( "unchecked" )
+    public Descriptor<PluginImpl> getDescriptor() {
+        return Hudson.getInstance().getDescriptorOrDie(getClass());
+    }
 
-	@Extension
-	public static class DescriptorImpl extends Descriptor<PluginImpl> {
-		@Override
-		public String getDisplayName() {
-			return "";
-		}
-	}
+    @Extension
+    public static class DescriptorImpl extends Descriptor<PluginImpl> {
 
-	private static final long serialVersionUID = 1L;
+        @Override
+        public String getDisplayName() {
+            return "";
+        }
+    }
 
-	// this part take cares of the migration from 2.0 to 2.1
-	public Object readResolve() {
+    private static final long serialVersionUID = 1L;
 
-		if (rcFirefoxProfileTemplate != null || rcBrowserSessionReuse != null
-				|| rcTrustAllSSLCerts != null || rcBrowserSideLog != null) {
-			String rcFirefoxProfileTemplate_ = getDefaultForNull(
-					rcFirefoxProfileTemplate, "");
-			Boolean rcBrowserSessionReuse_ = getDefaultForNull(
-					rcBrowserSessionReuse, Boolean.FALSE);
-			Boolean rcTrustAllSSLCerts_ = getDefaultForNull(rcTrustAllSSLCerts,
-					Boolean.FALSE);
-			Boolean rcBrowserSideLog_ = getDefaultForNull(rcBrowserSideLog,
-					Boolean.FALSE);
+    // this part take cares of the migration from 2.0 to 2.1
+    public Object readResolve() {
 
-			List<SeleniumBrowser> browsers = new ArrayList<SeleniumBrowser>();
-			browsers.add(new IEBrowser(5, "", ""));
-			browsers.add(new FirefoxBrowser(5, "", ""));
-			browsers.add(new ChromeBrowser(5, "", ""));
+        if (rcFirefoxProfileTemplate != null || rcBrowserSessionReuse != null || rcTrustAllSSLCerts != null || rcBrowserSideLog != null) {
+            String rcFirefoxProfileTemplate_ = getDefaultForNull(rcFirefoxProfileTemplate, "");
+            Boolean rcBrowserSessionReuse_ = getDefaultForNull(rcBrowserSessionReuse, Boolean.FALSE);
+            Boolean rcTrustAllSSLCerts_ = getDefaultForNull(rcTrustAllSSLCerts, Boolean.FALSE);
+            Boolean rcBrowserSideLog_ = getDefaultForNull(rcBrowserSideLog, Boolean.FALSE);
 
-			int port_ = 4445;
-			try {
-				ServerSocket ss = new ServerSocket(0);
-				port_ = ss.getLocalPort();
-				ss.close();
-			} catch (IOException e) {
-			}
+            List<SeleniumBrowser> browsers = new ArrayList<SeleniumBrowser>();
+            browsers.add(new IEBrowser(5, "", ""));
+            browsers.add(new FirefoxBrowser(5, "", ""));
+            browsers.add(new ChromeBrowser(5, "", ""));
 
-			SeleniumNodeConfiguration c = new CustomRCConfiguration(port_,
-					rcBrowserSideLog_, rcDebug, rcTrustAllSSLCerts_,
-					rcBrowserSessionReuse_, -1, rcFirefoxProfileTemplate_,
-					browsers, null);
-
-            synchronized(configurations) {
-                configurations.add(new SeleniumGlobalConfiguration(
-                        "Selenium v2.0 configuration", new MatchAllMatcher(), c));
+            int port_ = 4445;
+            try {
+                ServerSocket ss = new ServerSocket(0);
+                port_ = ss.getLocalPort();
+                ss.close();
+            } catch (IOException e) {
             }
 
-		}
+            SeleniumNodeConfiguration c = new CustomRCConfiguration(port_, rcBrowserSideLog_, rcDebug, rcTrustAllSSLCerts_, rcBrowserSessionReuse_,
+                    -1, rcFirefoxProfileTemplate_, browsers, null);
 
-		return this;
-	}
+            synchronized (configurations) {
+                configurations.add(new SeleniumGlobalConfiguration("Selenium v2.0 configuration", new MatchAllMatcher(), c));
+            }
 
-	private <T> T getDefaultForNull(T object, T defObject) {
-		return object == null ? defObject : object;
-	}
+        }
 
-	// Kept only for backward compatibility...
-	private transient String rcFirefoxProfileTemplate;
-	private transient Boolean rcBrowserSessionReuse;
-	private transient Boolean rcTrustAllSSLCerts;
-	private transient Boolean rcBrowserSideLog;
+        return this;
+    }
 
-	public static void startSeleniumNode(Computer c, TaskListener listener, String conf)
-			throws IOException, InterruptedException {
-		LOGGER.fine("Examining if we need to start Selenium Grid Node");
+    /**
+     * Returns either the object, or the default value is null.
+     * 
+     * @param object
+     *            Object to return
+     * @param defaultObject
+     *            Default value in case object is null
+     * @return Object value
+     */
+    private <T> T getDefaultForNull(T object, T defaultObject) {
+        return object == null ? defaultObject : object;
+    }
 
-		final PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
+    public static void startSeleniumNode(Computer c, TaskListener listener, String conf) throws IOException, InterruptedException {
+        LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
-		final String exclusions = p.getExclusionPatterns();
-		List<String> exclusionPatterns = new ArrayList<String>();
-		if (StringUtils.hasText(exclusions)) {
-			exclusionPatterns = Arrays.asList(exclusions.split(SEPARATOR));
-		}
-		if (exclusionPatterns.size() > 0) {
-			// loop over all the labels and check if we need to exclude a node
-			// based on the exlusionPatterns
-			for (Label l : c.getNode().getAssignedLabels()) {
-				for (String pattern : exclusionPatterns) {
-					if (l.toString().matches(pattern)) {
-						LOGGER.fine("Node "
-								+ c.getNode().getDisplayName()
-								+ " is excluded from Selenium Grid because its label '"
-								+ l + "' matches exclusion pattern '" + pattern
-								+ "'");
-						return;
-					}
-				}
-			}
-		}
+        final PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
 
-		final String masterName = PluginImpl.getMasterHostName();
-		if (masterName == null) {
-			listener.getLogger()
-					.println(
-							"Unable to determine the host name of the master. Skipping Selenium execution. "
-									+ "Please "
-									+ HyperlinkNote.encodeTo("/configure",
-											"configure the Jenkins URL")
-									+ " from the system configuration screen.");
-			return;
-		}
-//		final String hostName = c.getHostName();
-//		if (hostName == null) {
-//			listener.getLogger()
-//					.println(
-//							"Unable to determine the host name. Skipping Selenium execution.");
-//			return;
-//		}
-		// final int masterPort = p.getPort();
-//		final StringBuilder labelList = new StringBuilder();
-//		for (Label l : c.getNode().getAssignedLabels()) {
-//			labelList.append('/');
-//			labelList.append(l);
-//		}
-//		labelList.append('/');
-
-		// make sure that Selenium Hub is started before we start RCs.
-		try {
-			p.waitForHubLaunch();
-		} catch (ExecutionException e) {
-			throw new IOException2(
-					"Failed to wait for the Hub launch to complete", e);
-		}
-
-		List<SeleniumGlobalConfiguration> confs = getPlugin().getGlobalConfigurationForComputer(c);
-		if (confs == null || confs.size() == 0) {
-			LOGGER.fine("There is no matching configurations for that computer. Skipping selenium execution.");
-			return;
-		}
-		
-		String nodehost = c.getHostName();
-		if (nodehost == null) {
-			LOGGER.warning("Unable to determine node's hostname. Skipping");
-			return;
-		}
-
-		listener.getLogger().println("Starting Selenium Grid nodes on " + c.getName());
-
-		final FilePath seleniumJar = new FilePath(
-				PluginImpl.findStandAloneServerJar());
-		final String nodeName = c.getName();
-
-		for (SeleniumGlobalConfiguration config : confs) {
-			try {
-				listener.getLogger().println("Testing " + config);
-				if ((conf != null && config.getName().equals(conf)) || conf == null) {
-					listener.getLogger().println("Starting " + config);
-                    SeleniumRunOptions opts = config.getOptions(c);
-                    if (opts == null) {
-                        LOGGER.fine("The specified configuration returned null, skipping.");
-                    } else {
-                        Future<Object> future = c
-                                .getNode()
-                                .getRootPath()
-                                .actAsync(
-                                        new SeleniumCallable(seleniumJar, nodehost,
-                                                masterName, p.getPort(), nodeName,
-                                                listener, config.getName(), opts));
-                        future.get();
-                        launchedComputers.add(c);
+        final String exclusions = p.getExclusionPatterns();
+        List<String> exclusionPatterns = new ArrayList<String>();
+        if (StringUtils.hasText(exclusions)) {
+            exclusionPatterns = Arrays.asList(exclusions.split(SEPARATOR));
+        }
+        if (exclusionPatterns.size() > 0) {
+            // loop over all the labels and check if we need to exclude a node
+            // based on the exlusionPatterns
+            for (Label label : c.getNode().getAssignedLabels()) {
+                for (String pattern : exclusionPatterns) {
+                    if (label.toString().matches(pattern)) {
+                        LOGGER.fine("Node " + c.getNode().getDisplayName() + " is excluded from Selenium Grid because its label '" + label
+                                + "' matches exclusion pattern '" + pattern + "'");
+                        return;
                     }
-				}
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+                }
+            }
+        }
 
+        final String masterName = PluginImpl.getMasterHostName();
+        if (masterName == null) {
+            listener.getLogger().println(
+                    "Unable to determine the host name of the master. Skipping Selenium execution. " + "Please "
+                            + HyperlinkNote.encodeTo("/configure", "configure the Jenkins URL") + " from the system configuration screen.");
+            return;
+        }
 
-	
-	public static PluginImpl getPlugin() {
-		return Jenkins.getInstance().getPlugin(PluginImpl.class);
-	}
+        // make sure that Selenium Hub is started before we start RCs.
+        try {
+            p.waitForHubLaunch();
+        } catch (ExecutionException e) {
+            throw new IOException2("Failed to wait for the Hub launch to complete", e);
+        }
 
-	@Exported
-	public List<SeleniumGlobalConfiguration> getGlobalConfigurations() {
-		return configurations;
-	}
+        List<SeleniumGlobalConfiguration> confs = getPlugin().getGlobalConfigurationForComputer(c);
+        if (confs == null || confs.size() == 0) {
+            LOGGER.fine("There is no matching configurations for that computer. Skipping selenium execution.");
+            return;
+        }
 
-	/**
-	 * Returns the computer channel only if selenium has been started on this
-	 * node
-	 * 
-	 * @param computer
-	 * @return
-	 */
-	public static VirtualChannel getChannel(Computer computer) {
-		if (launchedComputers.contains(computer)) {
-			return computer.getNode().getChannel();
-		}
+        String nodehost = c.getHostName();
+        if (nodehost == null) {
+            LOGGER.warning("Unable to determine node's hostname. Skipping");
+            return;
+        }
 
-		return null;
-	}
+        listener.getLogger().println("Starting Selenium nodes on " + c.getName());
 
-	public boolean hasGlobalConfiguration(String name) {
-		
-		return getGlobalConfigurationWithName(name) != null;
-	}
+        for (SeleniumGlobalConfiguration config : confs) {
+            if ((conf != null && config.getName().equals(conf)) || conf == null) {
+                try {
+                    config.start(c, listener);
+                } catch (ExecutionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-	public void removeGlobalConfigurations(String name) {
-		Iterator<SeleniumGlobalConfiguration> it = configurations.iterator();
-		while (it.hasNext()) {
-			SeleniumGlobalConfiguration conf = it.next();
-			if (conf.getName().equals(name)) {
-				it.remove();
+    public static PluginImpl getPlugin() {
+        return Jenkins.getInstance().getPlugin(PluginImpl.class);
+    }
 
-				// there should only be one config with that name
-				return;
-			}
-		}
-	}
+    @Exported
+    public List<SeleniumGlobalConfiguration> getGlobalConfigurations() {
+        return configurations;
+    }
 
-	public List<SeleniumGlobalConfiguration> getGlobalConfigurationForComputer(
-			Computer computer) {
-		List<SeleniumGlobalConfiguration> confs = new ArrayList<SeleniumGlobalConfiguration>();
-		for (SeleniumGlobalConfiguration c : PluginImpl.getPlugin()
-				.getGlobalConfigurations()) {
-			if (c.getMatcher().match(computer.getNode())) {
-				confs.add(c);
-			}
-		}
-		return confs;
+    /**
+     * Returns the computer channel only if selenium has been started on this node
+     * 
+     * @param computer
+     * @return
+     */
+    public static VirtualChannel getChannel(Computer computer) {
+        if (launchedComputers.contains(computer)) {
+            return computer.getNode().getChannel();
+        }
 
-	}
+        return null;
+    }
 
-	public SeleniumGlobalConfiguration getGlobalConfigurationWithName(
-			String name) {
-		for (SeleniumGlobalConfiguration c : configurations) {
-			if (name.equals(c.getName())) {
-				return c;
-			}
-		}
-		return null;
-	}
-	
-	public SeleniumGlobalConfiguration getConfiguration(String name) {
-		return getGlobalConfigurationWithName(name);
-	}
-	
+    public boolean hasGlobalConfiguration(String name) {
+
+        return getGlobalConfigurationWithName(name) != null;
+    }
+
+    public void removeGlobalConfigurations(String name) {
+        Iterator<SeleniumGlobalConfiguration> it = configurations.iterator();
+        while (it.hasNext()) {
+            SeleniumGlobalConfiguration conf = it.next();
+            if (conf.getName().equals(name)) {
+                it.remove();
+
+                // there should only be one config with that name
+                return;
+            }
+        }
+    }
+
+    public List<SeleniumGlobalConfiguration> getGlobalConfigurationForComputer(Computer computer) {
+        List<SeleniumGlobalConfiguration> confs = new ArrayList<SeleniumGlobalConfiguration>();
+        for (SeleniumGlobalConfiguration c : PluginImpl.getPlugin().getGlobalConfigurations()) {
+            if (c.getMatcher().match(computer.getNode())) {
+                confs.add(c);
+            }
+        }
+        return confs;
+
+    }
+
+    public SeleniumGlobalConfiguration getGlobalConfigurationWithName(String name) {
+        for (SeleniumGlobalConfiguration c : configurations) {
+            if (name.equals(c.getName())) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public SeleniumGlobalConfiguration getConfiguration(String name) {
+        return getGlobalConfigurationWithName(name);
+    }
+
     /**
      * 
-     * @param req StaplerRequest
-     * @param rsp StaplerResponse to redirect with
-     * @throws IOException if redirection goes wrong
+     * @param req
+     *            StaplerRequest
+     * @param rsp
+     *            StaplerResponse to redirect with
+     * @throws IOException
+     *             if redirection goes wrong
      */
     public void doAddRedirect(StaplerRequest req, StaplerResponse rsp) throws IOException {
         Hudson.getInstance().checkPermission(getRequiredPermission());
         rsp.sendRedirect2("add");
     }
-    
+
     /**
      * 
-     * @param req StaplerRequest
-     * @param rsp StaplerResponse to redirect with
-     * @throws IOException if redirection goes wrong
+     * @param req
+     *            StaplerRequest
+     * @param rsp
+     *            StaplerResponse to redirect with
+     * @throws IOException
+     *             if redirection goes wrong
      */
     public void doCreate(StaplerRequest req, StaplerResponse rsp) throws Exception {
         Hudson.getInstance().checkPermission(getRequiredPermission());
         SeleniumGlobalConfiguration conf = req.bindJSON(SeleniumGlobalConfiguration.class, req.getSubmittedForm());
         if (null == conf.getName() || conf.getName().trim().equals("")) {
-        	throw new Failure("You must specify a name for the configuration");
-        } 
-        
-        if (PluginImpl.getPlugin().hasGlobalConfiguration(conf.getName())) {
-        	throw new Failure("The configuration name you have chosen is already taken, please choose a unique name.");
+            throw new Failure("You must specify a name for the configuration");
         }
-        
+
+        if (PluginImpl.getPlugin().hasGlobalConfiguration(conf.getName())) {
+            throw new Failure("The configuration name you have chosen is already taken, please choose a unique name.");
+        }
+
         PluginImpl.getPlugin().getGlobalConfigurations().add(conf);
         PluginImpl.getPlugin().save();
         rsp.sendRedirect2("configurations");
     }
-    
-	public Permission getRequiredPermission() {
-		return Hudson.ADMINISTER;
-	}
- 
-	public DescriptorExtensionList<SeleniumNodeConfiguration, ConfigurationDescriptor> getConfigTypes() {
-		return SeleniumNodeConfiguration.all();
-	}
 
-	public DescriptorExtensionList<SeleniumConfigurationMatcher, MatcherDescriptor> getMatcherTypes() {
-		return SeleniumConfigurationMatcher.all();
-	}
-	
-	public Map<Computer, List<SeleniumGlobalConfiguration>> getComputers() {
-		Map<Computer, List<SeleniumGlobalConfiguration>> cps = new TreeMap<Computer, List<SeleniumGlobalConfiguration>>(new Comparator<Computer>() {
+    public Permission getRequiredPermission() {
+        return Hudson.ADMINISTER;
+    }
 
-			public int compare(Computer o1, Computer o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		for (Computer c : Jenkins.getInstance().getComputers()) {
-			List<SeleniumGlobalConfiguration> confs = getGlobalConfigurationForComputer(c);
-			if (confs != null && confs.size() > 0) {
-				cps.put(c, confs);
-			}
-		}
-		return cps;
-		
-	}
+    public DescriptorExtensionList<SeleniumNodeConfiguration, ConfigurationDescriptor> getConfigTypes() {
+        return SeleniumNodeConfiguration.all();
+    }
 
-	public static Set<String> getRunningConfigurations(Computer computer) {
-		try {
-			VirtualChannel channel = PluginImpl.getChannel(computer);
-			if (channel == null) return Collections.emptySet();
-			return channel.call(new RemoteGetConfigurations());
-		} catch (Throwable e) {
-			return null;
-		}
-	}
-	
-	public static String getStatus(Computer computer, String conf) {
-		try {
-			VirtualChannel channel = PluginImpl.getChannel(computer);
-			if (channel == null) return SeleniumConstants.STOPPED;
-			return channel.call(new RemoteGetStatus(conf));
-		} catch (Throwable e) {
-			return "An error occured while retrieving the status of the selenium process " + e.getMessage();
-		}
-	}
-	
-	public Channel getHubChannel () {
-		return channel;
-	}
+    public DescriptorExtensionList<SeleniumConfigurationMatcher, MatcherDescriptor> getMatcherTypes() {
+        return SeleniumConfigurationMatcher.all();
+    }
 
+    public Map<Computer, List<SeleniumGlobalConfiguration>> getComputers() {
+        Map<Computer, List<SeleniumGlobalConfiguration>> cps = new TreeMap<Computer, List<SeleniumGlobalConfiguration>>(new Comparator<Computer>() {
+
+            public int compare(Computer o1, Computer o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        for (Computer c : Jenkins.getInstance().getComputers()) {
+            List<SeleniumGlobalConfiguration> confs = getGlobalConfigurationForComputer(c);
+            if (confs != null && confs.size() > 0) {
+                cps.put(c, confs);
+            }
+        }
+        return cps;
+
+    }
+
+    public static Set<String> getRunningConfigurations(Computer computer) {
+        try {
+            VirtualChannel channel = PluginImpl.getChannel(computer);
+            if (channel == null)
+                return Collections.emptySet();
+            return channel.call(new RemoteGetConfigurations());
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    public static String getStatus(Computer computer, String conf) {
+        try {
+            VirtualChannel channel = PluginImpl.getChannel(computer);
+            if (channel == null)
+                return SeleniumConstants.STOPPED;
+            return channel.call(new RemoteGetStatus(conf));
+        } catch (Throwable e) {
+            return "An error occured while retrieving the status of the selenium process " + e.getMessage();
+        }
+    }
+
+    public Channel getHubChannel() {
+        return channel;
+    }
 
     public SeleniumConfigurationMatcher getDefaultMatcher() {
         return new MatchAllMatcher();
     }
 
     public SeleniumNodeConfiguration getDefaultConfiguration() {
-    	List<WebDriverBrowser> bs = new ArrayList<WebDriverBrowser>();
-    	bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
-    	bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
-    	bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
+        List<WebDriverBrowser> bs = new ArrayList<WebDriverBrowser>();
+        bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
+        bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
+        bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
         return new CustomWDConfiguration(4445, null, bs, null);
     }
 }
