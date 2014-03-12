@@ -197,9 +197,10 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 			InterruptedException {
 		hubLauncher.get();
 	}
-
+ 
 	public String getIconFileName() {
-		return "/plugin/selenium/24x24/selenium.png";
+            return Jenkins.getInstance().hasPermission(getRequiredPermission()) ?
+		"/plugin/selenium/24x24/selenium.png" : null;
 	}
 
 	public String getDisplayName() {
@@ -211,7 +212,8 @@ public class PluginImpl extends Plugin implements Action, Serializable,
 	}
 
 	public Api getApi() {
-		return new Api(this);
+	    return Jenkins.getInstance().hasPermission(getRequiredPermission()) ?
+		new Api(this) : null;
 	}
 
 	@Exported
