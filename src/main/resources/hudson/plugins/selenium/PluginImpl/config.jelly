@@ -34,6 +34,11 @@
           <f:entry title="${%Set -log}" field="rcLog">
               <f:textbox />
           </f:entry>
+          <f:entry title="${%Hostname}">
+               <table style="width:100%">
+                    <f:descriptorRadioList title="${%Hostname resolver}" varName="hostnameResolver" instance="${it.hostnameResolver}" descriptors="${it.resolverTypes}"/>
+               </table>
+          </f:entry>
   	  </f:advanced>
     </f:section>
   </j:scope>

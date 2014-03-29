@@ -19,10 +19,7 @@ package hudson.plugins.selenium;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher.LocalLauncher;
 import hudson.Plugin;
-import hudson.Proc;
 import hudson.console.HyperlinkNote;
 import hudson.model.Action;
 import hudson.model.Describable;
@@ -33,9 +30,6 @@ import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Label;
-import hudson.plugins.selenium.callables.SeleniumConstants;
-import hudson.plugins.selenium.callables.running.RemoteGetConfigurations;
-import hudson.plugins.selenium.callables.running.RemoteGetStatus;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomRCConfiguration;
@@ -46,42 +40,33 @@ import hudson.plugins.selenium.configuration.browser.selenium.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.IEBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
+import hudson.plugins.selenium.configuration.global.hostname.HostnameResolver;
+import hudson.plugins.selenium.configuration.global.hostname.HostnameResolverDescriptor;
+import hudson.plugins.selenium.configuration.global.hostname.JenkinsRootHostnameResolver;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
+import hudson.plugins.selenium.process.SeleniumProcessUtils;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
-import hudson.remoting.Launcher;
-import hudson.remoting.SocketInputStream;
-import hudson.remoting.SocketOutputStream;
-import hudson.remoting.VirtualChannel;
-import hudson.remoting.Which;
 import hudson.security.Permission;
-import hudson.slaves.Channels;
-import hudson.util.ClasspathBuilder;
 import hudson.util.IOException2;
-import hudson.util.JVMBuilder;
 import hudson.util.StreamTaskListener;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -89,7 +74,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -99,7 +83,6 @@ import org.kohsuke.stapler.framework.io.LargeText;
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
-import org.openqa.grid.selenium.GridLauncher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -130,6 +113,8 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private boolean rcDebug;
     private String rcLog;
 
+    private HostnameResolver hostnameResolver;
+
     // Kept only for backward compatibility...
     private transient String rcFirefoxProfileTemplate;
     private transient Boolean rcBrowserSessionReuse;
@@ -147,15 +132,14 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     private transient StreamTaskListener listener;
 
-    private transient static Set<Computer> launchedComputers = new HashSet<Computer>();
-
     @Override
     public void postInitialize() throws Exception {
         load();
 
         this.listener = new StreamTaskListener(getLogFile());
-        File root = Hudson.getInstance().getRootDir();
-        channel = createSeleniumGridVM(root, listener);
+
+        channel = SeleniumProcessUtils.createSeleniumGridVM(listener);
+
         Level logLevel = Level.parse(getHubLogLevel());
         System.out.println("Starting Selenium Grid");
 
@@ -181,50 +165,34 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         return new File(Hudson.getInstance().getRootDir(), "selenium.log");
     }
 
-    @Override
-    public void configure(StaplerRequest req, JSONObject formData) {
-        port = formData.getInt("port");
-        exclusionPatterns = formData.getString("exclusionPatterns");
-        rcLog = formData.getString("rcLog");
-        rcDebug = formData.getBoolean("rcDebug");
-        newSessionWaitTimeout = formData.getInt("newSessionWaitTimeout");
-        throwOnCapabilityNotPresent = formData.getBoolean("throwOnCapabilityNotPresent");
-        hubLogLevel = formData.getString("hubLogLevel");
-        // rcBrowserSideLog = formData.getBoolean("rcBrowserSideLog");
-        // rcTrustAllSSLCerts = formData.getBoolean("rcTrustAllSSLCerts");
-        // rcBrowserSessionReuse = formData.getBoolean("rcBrowserSessionReuse");
-        // rcFirefoxProfileTemplate =
-        // formData.getString("rcFirefoxProfileTemplate");
-        try {
-            save();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void waitForHubLaunch() throws ExecutionException, InterruptedException {
         hubLauncher.get();
-    }
-
-    public String getIconFileName() {
-        return "/plugin/selenium/24x24/selenium.png";
     }
 
     public String getDisplayName() {
         return "Selenium Grid";
     }
 
-    public String getUrlName() {
-        return "/selenium";
+    public String getIconFileName() {
+        return Jenkins.getInstance().hasPermission(getRequiredPermission()) ? "/plugin/selenium/24x24/selenium.png" : null;
     }
 
-    public Api getApi() {
-        return new Api(this);
+    public String getUrlName() {
+        return "/selenium";
     }
 
     @Exported
     public int getPort() {
         return port;
+    }
+
+    @Exported
+    public HostnameResolver getHostnameResolver() {
+        return hostnameResolver;
+    }
+
+    public Api getApi() {
+        return Jenkins.getInstance().hasPermission(getRequiredPermission()) ? new Api(this) : null;
     }
 
     @Exported
@@ -259,110 +227,61 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     @Override
     public void stop() throws Exception {
+        for (Computer c : Jenkins.getInstance().getComputers()) {
+            for (SeleniumGlobalConfiguration cfg : configurations) {
+                cfg.stop(c);
+            }
+        }
+
         this.listener.closeQuietly();
         channel.close();
+
     }
 
     @Exported( inline = true )
-    public List<SeleniumTestSlot> getRemoteControls() throws IOException, InterruptedException {
+    public Collection<SeleniumTestSlotGroup> getRemoteControls() throws IOException, InterruptedException {
         if (channel == null)
             return Collections.emptyList();
 
-        return channel.call(new Callable<List<SeleniumTestSlot>, RuntimeException>() {
+        Collection<SeleniumTestSlotGroup> rcs = channel.call(new Callable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
 
             /**
 			 * 
 			 */
             private static final long serialVersionUID = 1791985298575049757L;
 
-            public List<SeleniumTestSlot> call() throws RuntimeException {
-                List<SeleniumTestSlot> r = new ArrayList<SeleniumTestSlot>();
+            public Collection<SeleniumTestSlotGroup> call() throws RuntimeException {
+                Map<URL, SeleniumTestSlotGroup> groups = new HashMap<URL, SeleniumTestSlotGroup>();
 
                 Registry registry = RegistryHolder.registry;
                 if (registry != null) {
                     for (RemoteProxy proxy : registry.getAllProxies()) {
-                        for (TestSlot slot : proxy.getTestSlots())
-                            r.add(new SeleniumTestSlot(slot));
+                        for (TestSlot slot : proxy.getTestSlots()) {
+                            URL host = slot.getProxy().getRemoteHost();
+                            SeleniumTestSlotGroup grp = groups.get(host);
+                            if (grp == null) {
+                                grp = new SeleniumTestSlotGroup(host);
+                                groups.put(host, grp);
+                            }
+                            grp.addTestSlot(new SeleniumTestSlot(slot));
+                        }
+
                     }
                 }
-
-                return r;
+                List<SeleniumTestSlotGroup> values = new ArrayList<SeleniumTestSlotGroup>(groups.values());
+                Collections.sort(values);
+                return values;
             }
         });
-    }
+        return rcs;
 
-    /**
-     * Launches Hub in a separate JVM.
-     * 
-     * @param rootDir
-     *            The slave/master root.
-     */
-    static/* package */Channel createSeleniumGridVM(File rootDir, TaskListener listener) throws IOException, InterruptedException {
-
-        JVMBuilder vmb = new JVMBuilder();
-        // vmb.debug(8000);
-        vmb.systemProperties(null);
-        return Channels.newJVM("Selenium Grid", listener, vmb, new FilePath(rootDir), new ClasspathBuilder().add(findStandAloneServerJar()));
-    }
-
-    /**
-     * Locate the stand-alone server jar from the classpath. Only works on the master.
-     */
-    /* package */public static File findStandAloneServerJar() throws IOException {
-        return Which.jarFile(GridLauncher.class);
-    }
-
-    /**
-     * Launches RC in a separate JVM.
-     * 
-     * @param standaloneServerJar
-     *            The jar file of the grid to launch.
-     */
-    static public Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties,
-            Map<String, String> envVariables) throws IOException, InterruptedException {
-        /*
-         * return Channels.newJVM("Selenium RC",listener,null, new ClasspathBuilder().add(standaloneServerJar), properties);
-         */
-        String displayName = "Selenium RC";
-
-        ClasspathBuilder classpath = new ClasspathBuilder().add(standaloneServerJar);
-        JVMBuilder vmb = new JVMBuilder();
-        vmb.systemProperties(properties);
-
-        ServerSocket serverSocket = new ServerSocket();
-        serverSocket.bind(new InetSocketAddress("localhost", 0));
-        serverSocket.setSoTimeout(10000);
-
-        // use -cp + FQCN instead of -jar since remoting.jar can be rebundled
-        // (like in the case of the swarm plugin.)
-        vmb.classpath().addJarOf(Channel.class);
-        vmb.mainClass(Launcher.class);
-
-        if (classpath != null)
-            vmb.args().add("-cp").add(classpath);
-        vmb.args().add("-connectTo", "localhost:" + serverSocket.getLocalPort());
-
-        // listener.getLogger().println( "Starting " + displayName );
-
-        // TODO add XVFB options here
-        Proc p = vmb.launch(new LocalLauncher(listener)).stdout(listener).envs(envVariables).start();
-
-        Socket s = serverSocket.accept();
-        serverSocket.close();
-
-        return Channels.forProcess("Channel to " + displayName, Computer.threadPoolForRemoting, new BufferedInputStream(new SocketInputStream(s)),
-                new BufferedOutputStream(new SocketOutputStream(s)), null, p);
     }
 
     /**
      * Determines the host name of the Jenkins master.
      */
-    public static String getMasterHostName() throws MalformedURLException {
-        String rootUrl = Hudson.getInstance().getRootUrl();
-        if (rootUrl == null)
-            return "localhost";
-        URL url = new URL(rootUrl);
-        return url.getHost();
+    public static String getMasterHostName() {
+        return getPlugin().hostnameResolver.retrieveHost();
     }
 
     /**
@@ -390,7 +309,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     // this part take cares of the migration from 2.0 to 2.1
     public Object readResolve() {
-
         if (rcFirefoxProfileTemplate != null || rcBrowserSessionReuse != null || rcTrustAllSSLCerts != null || rcBrowserSideLog != null) {
             String rcFirefoxProfileTemplate_ = getDefaultForNull(rcFirefoxProfileTemplate, "");
             Boolean rcBrowserSessionReuse_ = getDefaultForNull(rcBrowserSessionReuse, Boolean.FALSE);
@@ -417,6 +335,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                 configurations.add(new SeleniumGlobalConfiguration("Selenium v2.0 configuration", new MatchAllMatcher(), c));
             }
 
+        }
+
+        // update to 2.3
+        if (hostnameResolver == null) {
+            hostnameResolver = new JenkinsRootHostnameResolver();
         }
 
         return this;
@@ -509,36 +432,12 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         return configurations;
     }
 
-    /**
-     * Returns the computer channel only if selenium has been started on this node
-     * 
-     * @param computer
-     * @return
-     */
-    public static VirtualChannel getChannel(Computer computer) {
-        if (launchedComputers.contains(computer)) {
-            return computer.getNode().getChannel();
-        }
-
-        return null;
-    }
-
     public boolean hasGlobalConfiguration(String name) {
-
-        return getGlobalConfigurationWithName(name) != null;
+        return getConfiguration(name) != null;
     }
 
-    public void removeGlobalConfigurations(String name) {
-        Iterator<SeleniumGlobalConfiguration> it = configurations.iterator();
-        while (it.hasNext()) {
-            SeleniumGlobalConfiguration conf = it.next();
-            if (conf.getName().equals(name)) {
-                it.remove();
-
-                // there should only be one config with that name
-                return;
-            }
-        }
+    public void removeGlobalConfigurations(String name) throws IOException {
+        removeGlobalConfigurations(name, true);
     }
 
     public List<SeleniumGlobalConfiguration> getGlobalConfigurationForComputer(Computer computer) {
@@ -552,17 +451,13 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     }
 
-    public SeleniumGlobalConfiguration getGlobalConfigurationWithName(String name) {
+    public SeleniumGlobalConfiguration getConfiguration(String name) {
         for (SeleniumGlobalConfiguration c : configurations) {
             if (name.equals(c.getName())) {
                 return c;
             }
         }
         return null;
-    }
-
-    public SeleniumGlobalConfiguration getConfiguration(String name) {
-        return getGlobalConfigurationWithName(name);
     }
 
     /**
@@ -616,6 +511,10 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         return SeleniumConfigurationMatcher.all();
     }
 
+    public DescriptorExtensionList<HostnameResolver, HostnameResolverDescriptor> getResolverTypes() {
+        return HostnameResolver.all();
+    }
+
     public Map<Computer, List<SeleniumGlobalConfiguration>> getComputers() {
         Map<Computer, List<SeleniumGlobalConfiguration>> cps = new TreeMap<Computer, List<SeleniumGlobalConfiguration>>(new Comparator<Computer>() {
 
@@ -630,29 +529,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             }
         }
         return cps;
-
-    }
-
-    public static Set<String> getRunningConfigurations(Computer computer) {
-        try {
-            VirtualChannel channel = PluginImpl.getChannel(computer);
-            if (channel == null)
-                return Collections.emptySet();
-            return channel.call(new RemoteGetConfigurations());
-        } catch (Throwable e) {
-            return null;
-        }
-    }
-
-    public static String getStatus(Computer computer, String conf) {
-        try {
-            VirtualChannel channel = PluginImpl.getChannel(computer);
-            if (channel == null)
-                return SeleniumConstants.STOPPED;
-            return channel.call(new RemoteGetStatus(conf));
-        } catch (Throwable e) {
-            return "An error occured while retrieving the status of the selenium process " + e.getMessage();
-        }
     }
 
     public Channel getHubChannel() {
@@ -664,10 +540,42 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     public SeleniumNodeConfiguration getDefaultConfiguration() {
-        List<WebDriverBrowser> bs = new ArrayList<WebDriverBrowser>();
-        bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
-        bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
-        bs.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
-        return new CustomWDConfiguration(4445, null, bs, null);
+        List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
+        browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
+        browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
+        browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
+        return new CustomWDConfiguration(4445, null, browsers, null);
+    }
+
+    /**
+     * @param name
+     * @param conf
+     * @throws IOException
+     */
+    public void replaceGlobalConfigurations(String name, SeleniumGlobalConfiguration conf) throws IOException {
+        removeGlobalConfigurations(name, false);
+        configurations.add(conf);
+        PluginImpl.getPlugin().save();
+    }
+
+    /**
+     * @param name
+     * @param save
+     * @throws IOException
+     */
+    private void removeGlobalConfigurations(String name, boolean save) throws IOException {
+        Iterator<SeleniumGlobalConfiguration> it = configurations.iterator();
+        while (it.hasNext()) {
+            SeleniumGlobalConfiguration conf = it.next();
+            if (conf.getName().equals(name)) {
+                it.remove();
+                if (save) {
+                    save();
+                }
+
+                // there should only be one config with that name
+                return;
+            }
+        }
     }
 }

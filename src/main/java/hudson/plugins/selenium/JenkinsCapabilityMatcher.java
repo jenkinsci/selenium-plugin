@@ -11,16 +11,19 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.openqa.grid.internal.utils.CapabilityMatcher;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import antlr.ANTLRException;
 
 /**
  * {@link CapabilityMatcher} that adds "jenkins.label" support.
- *
+ * 
  * @author Kohsuke Kawaguchi
  */
 public class JenkinsCapabilityMatcher implements CapabilityMatcher {
+
     private final CapabilityMatcher base;
     private final Channel master;
 
@@ -33,14 +36,17 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         LOGGER.log(Level.INFO, "CURRENT : " + currentCapability.toString());
         LOGGER.log(Level.INFO, "REQUEST : " + requestedCapability.toString());
 
-        if (!base.matches(currentCapability,requestedCapability))
+        if (!base.matches(currentCapability, requestedCapability)) {
             return false;
+        }
 
         Object label = requestedCapability.get(LABEL);
         Object reqNode = requestedCapability.get(NODE_NAME);
         String nodeName = (String) currentCapability.get(NODE_NAME);
 
-        if (label == null && reqNode == null)    return true;    // no additional matching required
+        if (label == null && reqNode == null) {
+            return true;
+        }
 
         LOGGER.log(Level.INFO, "NODE : " + reqNode + " - " + nodeName);
 
@@ -78,16 +84,15 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
     }
 
     /**
-     * Can be used as a capability when WebDriver requests a node from Grid.
-     * The value is a boolean expression over labels to select the desired node to run the test.
+     * Can be used as a capability when WebDriver requests a node from Grid. The value is a boolean expression over labels to select the desired node
+     * to run the test.
      */
     public static final String LABEL = "jenkins.label";
     /**
      * RC uses this to register, to designate its origin.
      */
     public static final String NODE_NAME = "jenkins.nodeName";
-    
-    
+
     /**
      * Node name of the master computer
      */
@@ -96,7 +101,8 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
     /**
      * Checks if the given node satisfies the label expression.
      */
-    private static class LabelMatcherCallable implements Callable<Boolean,ANTLRException> {
+    private static class LabelMatcherCallable implements Callable<Boolean, ANTLRException> {
+
         private final String nodeName;
         private final String labelExpr;
 
@@ -106,12 +112,18 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         }
 
         public Boolean call() throws ANTLRException {
-        	Node n = Hudson.getInstance().getNode(nodeName);
-            if (n==null)    return false;
+            Node n = Hudson.getInstance().getNode(nodeName);
+            if (n == null)
+                return false;
             return Label.parseExpression(labelExpr).matches(n);
         }
 
         private static final long serialVersionUID = 1L;
+    }
+
+    public static void enhanceCapabilities(DesiredCapabilities capabilities, String node) {
+        String nodeName = StringUtils.isEmpty(node) ? JenkinsCapabilityMatcher.MASTER_NAME : node;
+        capabilities.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
     }
 
     private static final Logger LOGGER = Logger.getLogger(JenkinsCapabilityMatcher.class.getName());

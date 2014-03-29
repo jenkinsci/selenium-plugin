@@ -2,7 +2,28 @@
   Displays the state of Selenium Grid
 -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+ 
   <l:layout permission="${app.ADMINISTER}" title="Selenium">
+  
+    <script type="text/javascript" src="${rootURL}/plugin/selenium/js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="${rootURL}/plugin/selenium/js/jquery-ui-1.10.4.custom.js"></script>
+    <link type="text/css" href="${rootURL}/plugin/selenium/css/jquery-ui-1.10.4.custom.css" rel="stylesheet" />
+    <link type="text/css" href="${rootURL}/plugin/selenium/css/selenium.css" rel="stylesheet" />
+    
+    <script type="text/javascript">
+   $.noConflict();
+    (function($) {
+       $(document).ready(function() { 
+           $("#proxies").accordion({
+               animate: false,
+               collapsible: true,
+               active: false
+           });
+           $("proxies").tooltip();
+       });
+   })(jQuery);
+    </script>
+
     <st:include page="sidepanel.jelly" />
 
     <l:main-panel>
@@ -29,21 +50,17 @@
 
       <j:set var="rcs" value="${it.remoteControls}" />
       <j:choose>
-        <j:when test="${!empty(rcs)}">
-          <table class="sortable pane bigtable">
-            <tr>
-              <th>${%Host}</th>
-              <th>${%Capabilities}</th>
-              <th>${%Status}</th>
-            </tr>
-            <j:forEach var="rc" items="${rcs}">
-              <tr>
-                <td>${rc.hostAndPort}</td>
-                <td>${rc.capabilities}</td>
-                <td>${rc.status}</td>
-              </tr>
+         <j:when test="${!empty(rcs)}">
+            <div id="proxies">
+             <j:forEach var="rc" items="${rcs}">
+                    <h3>${rc.hostAndPort} (${rc.getSummary()})</h3>
+                    <div><span class="browser-category">
+                    <j:forEach var="test" items="${rc.slots}">
+                         <img class="session-${test.isReserved() ? 'busy' : 'free'}" src="${rootURL}/plugin/selenium/16x16/${test.unifiedBrowserName}.png" height="16" width="16" title="${test.capabilities}" />
+                    </j:forEach>
+                    </span></div>
             </j:forEach>
-          </table>
+          </div>
         </j:when>
         <j:otherwise>
           <p>${%No RCs have checked in yet. Have you started some slaves?}</p>

@@ -2,7 +2,7 @@
     <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly" it="${it ?: d}"/>
 
     <f:advanced>
-		<f:entry title="${%Firefox binary path}" field="binary">
+		<f:entry title="${%Firefox binary path}" field="binaryPath">
 	      	<f:textbox />
 		</f:entry>
 	</f:advanced>

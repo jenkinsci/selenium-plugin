@@ -1,5 +1,5 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly" from="${instance}" it="${instance}"/>
+    <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly" it="${it ?: d}"/>
 
     <f:advanced>
 		<f:entry title="${%Opera binary path}" field="binary">

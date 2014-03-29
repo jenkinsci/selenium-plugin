@@ -4,7 +4,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.FilePath.FileCallable;
 import hudson.model.Computer;
-import hudson.plugins.selenium.SeleniumRunOptions;
+import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.VirtualChannel;
 import hudson.util.IOException2;
 
@@ -18,81 +18,68 @@ import org.kohsuke.stapler.export.Exported;
 
 public class FileConfiguration extends SeleniumNodeConfiguration {
 
-	private String configURL;
-	
-	private String display;
-	
+    private String configURL;
+
     @DataBoundConstructor
     public FileConfiguration(String configURL, String display) {
-    	this.configURL = configURL;
-    	this.display = display;
+        super(display);
+        this.configURL = configURL;
     }
-    
+
     @Exported
     public String getConfigURL() {
-    	return configURL;
+        return configURL;
     }
-    
-    @Exported
-    public String getDisplay() {
-    	return display;
-    }
-    
+
     @Extension
-	public static class DescriptorImpl extends ConfigurationDescriptor {
+    public static class DescriptorImpl extends ConfigurationDescriptor {
 
-		@Override
-		public String getDisplayName() {
-			return "File configuration";
-		}
-	}
+        @Override
+        public String getDisplayName() {
+            return "File configuration";
+        }
+    }
 
-	@Override
-	public SeleniumRunOptions initOptions(Computer c) {
-		SeleniumRunOptions opt = new SeleniumRunOptions();
-		try {
-			final String filename = "selenium-temp-config-" + System.currentTimeMillis() + ".json";
-			
-			String fullPath = c.getNode().getRootPath().act(new FileCallable<String>() {
+    @Override
+    public SeleniumRunOptions initOptions(Computer c) {
+        SeleniumRunOptions opt = super.initOptions(c);
+        try {
+            final String filename = "selenium-temp-config-" + System.currentTimeMillis() + ".json";
 
-				/**
+            String fullPath = c.getNode().getRootPath().act(new FileCallable<String>() {
+
+                /**
 				 * 
 				 */
-				private static final long serialVersionUID = -288688398601004624L;
+                private static final long serialVersionUID = -288688398601004624L;
 
-				public String invoke(File f, VirtualChannel channel) throws IOException {
-					File conf = new File(f, filename);
-					
-					FilePath urlConf = new FilePath(conf);
-					try {
-						urlConf.copyFrom(new URL(configURL));
-					} catch (InterruptedException e) {
-						throw new IOException2("Failed to retrieve configuration from " + configURL, e);
-					}
+                public String invoke(File f, VirtualChannel channel) throws IOException {
+                    File conf = new File(f, filename);
 
-					
-					return conf.getAbsolutePath();
-				}
-			});
+                    FilePath urlConf = new FilePath(conf);
+                    try {
+                        urlConf.copyFrom(new URL(configURL));
+                    } catch (InterruptedException e) {
+                        throw new IOException2("Failed to retrieve configuration from " + configURL, e);
+                    }
 
-			opt.addOptionIfSet("-nodeConfig", fullPath);
-			
-			if (display != null && !display.equals("")) {
-	        	opt.setEnvVar("DISPLAY", display);
-	        }
-			
-			return opt;
-		} catch (Exception e) {
-			LOGGER.fine("Cannot download the specified configuration file on the node. " + e.getMessage());
-			return null;
-		}
-	}
+                    return conf.getAbsolutePath();
+                }
+            });
 
-	private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
+            opt.addOptionIfSet("-nodeConfig", fullPath);
 
-	public String getIcon() {
-		return "/images/24x24/document.png";
-	}
-	
-		
+            return opt;
+        } catch (Exception e) {
+            LOGGER.fine("Cannot download the specified configuration file on the node. " + e.getMessage());
+            return null;
+        }
+    }
+
+    private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
+
+    public String getIcon() {
+        return "/images/24x24/document.png";
+    }
+
 }

@@ -13,21 +13,21 @@ import org.openqa.grid.internal.TestSlot;
 
 /**
  * Selenium Remote Control instance.
- *
+ * 
  * <p>
- * This class is used to expose RC data to the remoting API, as well as
- * using this from index.jelly rendering of {@link PluginImpl}.
- *
+ * This class is used to expose RC data to the remoting API, as well as using this from index.jelly rendering of {@link PluginImpl}.
+ * 
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
 public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializable {
+
     /**
      * is anything running?
      */
     private final boolean isReserved;
     private final URL host;
-    private final Map<String,String> capabilities;
+    private final Map<String, String> capabilities;
 
     public SeleniumTestSlot(TestSlot testSlot) {
         RemoteProxy proxy = testSlot.getProxy();
@@ -36,16 +36,12 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
         isReserved = testSlot.getSession() != null;
     }
 
-    private Map<String,String> toCapabilities(TestSlot testSlot) {
-        Map<String,String> r = new HashMap<String, String>();
+    private Map<String, String> toCapabilities(TestSlot testSlot) {
+        Map<String, String> r = new HashMap<String, String>();
         for (Entry<String, Object> e : testSlot.getCapabilities().entrySet()) {
-            r.put(e.getKey(),e.getValue().toString());
+            r.put(e.getKey(), e.getValue().toString());
         }
         return r;
-    }
-
-    public String getHostAndPort() {
-        return host.toExternalForm();
     }
 
     @Exported
@@ -69,14 +65,36 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
     }
 
     public String getStatus() {
-        if(isReserved)  return "In use";
-        else            return "Idle";
+        if (isReserved)
+            return "In use";
+        else
+            return "Idle";
+    }
+
+    private static final Map<String, String> ENV_MAPPING = new HashMap<String, String>();
+
+    static {
+        ENV_MAPPING.put("*iexplore", "internet explorer");
+        ENV_MAPPING.put("*firefox", "firefox");
+        ENV_MAPPING.put("*googlechrome", "chrome");
+        ENV_MAPPING.put("*opera", "opera");
+    }
+
+    public String getBrowserName() {
+        return getCapabilities().get("browserName");
+    }
+
+    public String getUnifiedBrowserName() {
+        String browser = getCapabilities().get("browserName");
+        String unified = ENV_MAPPING.get(browser);
+        return unified != null ? unified : browser;
     }
 
     public int compareTo(SeleniumTestSlot that) {
         int r = this.getHost().compareTo(that.getHost());
-        if(r!=0)    return r;
-        return this.getPort()-that.getPort();
+        if (r != 0)
+            return r;
+        return this.getPort() - that.getPort();
     }
 
     private static final long serialVersionUID = 1L;

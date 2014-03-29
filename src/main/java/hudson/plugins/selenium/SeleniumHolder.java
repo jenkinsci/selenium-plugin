@@ -4,6 +4,6 @@ import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
 public final class SeleniumHolder {
 
-	public static SelfRegisteringRemote seleniumInstance;
-	
+    public static SelfRegisteringRemote seleniumInstance;
+
 }
