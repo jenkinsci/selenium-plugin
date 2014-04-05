@@ -19,8 +19,8 @@ public class SafariBrowser extends WebDriverBrowser {
     @Extension
     public static class DescriptorImpl extends WebDriverBrowserDescriptor {
 
-        public String getMaxInstances() {
-            return "5";
+        public int getMaxInstances() {
+            return 1;
         }
 
         public String getDisplayName() {

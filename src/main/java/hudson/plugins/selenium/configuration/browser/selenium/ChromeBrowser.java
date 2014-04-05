@@ -43,8 +43,8 @@ public class ChromeBrowser extends SeleniumBrowser {
     @Extension
     public static class DescriptorImpl extends SeleniumBrowserDescriptor {
 
-        public String getMaxInstances() {
-            return "5";
+        public int getMaxInstances() {
+            return 5;
         }
 
         @Override

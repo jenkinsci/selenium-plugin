@@ -34,6 +34,10 @@ public class OperaBrowser extends WebDriverBrowser {
     @Extension
     public static class DescriptorImpl extends WebDriverBrowserDescriptor {
 
+        public int getMaxInstances() {
+            return 1;
+        }
+
         @Override
         public String getDisplayName() {
             return "Opera";

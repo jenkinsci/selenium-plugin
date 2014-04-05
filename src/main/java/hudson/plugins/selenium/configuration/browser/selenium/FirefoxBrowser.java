@@ -41,6 +41,10 @@ public class FirefoxBrowser extends SeleniumBrowser {
     @Extension
     public static class DescriptorImpl extends SeleniumBrowserDescriptor {
 
+        public int getMaxInstances() {
+            return 5;
+        }
+
         @Override
         public String getDisplayName() {
             return "Firefox";

@@ -32,6 +32,8 @@ public abstract class SeleniumBrowser extends AbstractSeleniumBrowser<SeleniumBr
 
     public static abstract class SeleniumBrowserDescriptor extends BrowserDescriptor<SeleniumBrowser> {
 
+        public abstract int getMaxInstances();
+
     }
 
 }

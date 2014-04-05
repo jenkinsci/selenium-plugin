@@ -43,6 +43,10 @@ public class IEBrowser extends SeleniumBrowser {
     @Extension
     public static class DescriptorImpl extends SeleniumBrowserDescriptor {
 
+        public int getMaxInstances() {
+            return 1;
+        }
+
         @Override
         public String getDisplayName() {
             return "Internet Explorer";

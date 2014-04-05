@@ -49,6 +49,10 @@ public class IEBrowser extends ServerRequiredWebDriverBrowser {
     @Extension
     public static class DescriptorImpl extends WebDriverBrowserDescriptor {
 
+        public int getMaxInstances() {
+            return 1;
+        }
+
         @Override
         public String getDisplayName() {
             return "Internet Explorer";

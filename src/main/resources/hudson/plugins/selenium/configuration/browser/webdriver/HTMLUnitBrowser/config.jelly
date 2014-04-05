@@ -1,4 +1,5 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <j:set var="instance" value="${instance?:descriptor}" />
 	<f:entry title="${%Maximum instances}" field="maxInstances">
       	<f:textbox />
 	</f:entry>

@@ -37,8 +37,8 @@ public class ChromeBrowser extends ServerRequiredWebDriverBrowser {
     @Extension
     public static class DescriptorImpl extends WebDriverBrowserDescriptor {
 
-        public String getMaxInstances() {
-            return "5";
+        public int getMaxInstances() {
+            return 5;
         }
 
         @Override

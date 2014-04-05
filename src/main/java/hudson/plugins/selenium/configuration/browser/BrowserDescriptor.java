@@ -16,6 +16,8 @@ public abstract class BrowserDescriptor<T extends AbstractSeleniumBrowser<T> & D
     protected BrowserDescriptor() {
     }
 
+    public abstract int getMaxInstances();
+
     public FormValidation doCheckMaxInstances(@QueryParameter String value) {
         return FormValidation.validatePositiveInteger(value);
     }
