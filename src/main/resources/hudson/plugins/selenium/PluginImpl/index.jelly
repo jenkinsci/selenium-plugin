@@ -3,7 +3,7 @@
 -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
  
-  <l:layout permission="${app.ADMINISTER}" title="Selenium">
+  <l:layout title="Selenium">
   
     <script type="text/javascript" src="${rootURL}/plugin/selenium/js/jquery-1.10.2.js"></script>
     <script type="text/javascript" src="${rootURL}/plugin/selenium/js/jquery-ui-1.10.4.custom.js"></script>
@@ -27,7 +27,13 @@
     <st:include page="sidepanel.jelly" />
 
     <l:main-panel>
-      <h1>${%Registered Remote Controls}</h1>
+    <j:if test="${app.isAdmin()}">
+      <h2>${%Hub management}</h2>
+      <form method="post" action="${prefix}restart">
+          <f:submit value="${%Restart}" />
+      </form> 
+      </j:if>
+      <h2>${%Registered Remote Controls}</h2>
 
       <j:choose>
         <j:when test="${it.masterHostName==null}">

@@ -59,10 +59,8 @@ public class SeleniumCallable implements FileCallable<String> {
 	 */
     private static final long serialVersionUID = 2047557797415325512L;
 
-    // public final static String ALREADY_STARTED = SeleniumCallable.class.getName() + ".seleniumRcAlreadyStarted";
-
     public String invoke(File f, VirtualChannel channel) throws IOException {
-        RemoteRunningStatus status = (RemoteRunningStatus) PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS.displayName, config);
+        RemoteRunningStatus status = (RemoteRunningStatus) PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, config);
 
         if (status != null && status.isRunning()) {
             // listener.getLogger().println("Skipping Selenium RC execution because this slave has already started its RCs");
@@ -85,9 +83,9 @@ public class SeleniumCallable implements FileCallable<String> {
             // listener.getLogger().println("Creating selenium VM");
             Channel jvm = SeleniumProcessUtils.createSeleniumRCVM(localJar, listener, options.getJVMArguments(), options.getEnvironmentVariables());
             status = new RemoteRunningStatus(jvm, options);
+            status.setStatus(SeleniumConstants.STARTING);
 
             List<String> arguments = new ArrayList<String>(options.getSeleniumArguments().size());
-            int i = 0;
             for (ProcessArgument arg : options.getSeleniumArguments()) {
                 arguments.addAll(arg.toArgumentsList());
             }
@@ -104,9 +102,8 @@ public class SeleniumCallable implements FileCallable<String> {
 
             throw new IOException2("Selenium launch interrupted", t);
         }
-        PropertyUtils.setMapProperty(SeleniumConstants.PROPERTY_STATUS.displayName, config, status);
+        PropertyUtils.setMapProperty(SeleniumConstants.PROPERTY_STATUS, config, status);
 
-        // System.setProperty(alreadyStartedPropertyName, Boolean.TRUE.toString());
-        return null;
+        return config;
     }
 }

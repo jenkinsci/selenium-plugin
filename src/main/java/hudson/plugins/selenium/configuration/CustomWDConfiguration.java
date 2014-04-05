@@ -75,9 +75,6 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 
         @Override
         public CustomWDConfiguration newInstance(StaplerRequest req, JSONObject json) {
-
-            // String rcLog = json.getString("rcLog");
-
             return req.bindJSON(CustomWDConfiguration.class, json);
         }
 

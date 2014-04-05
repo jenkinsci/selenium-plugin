@@ -57,7 +57,9 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
     }
 
     public void stop(Computer computer) {
-        configuration.stop(computer, name);
+        if (matcher != null && matcher.match(computer.getNode())) {
+            configuration.stop(computer, name);
+        }
     }
 
     /**
@@ -112,7 +114,7 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
     }
 
     public void doCommitEdit(StaplerRequest req, StaplerResponse rsp) throws Exception {
-        Hudson.getInstance().checkPermission(PluginImpl.getPlugin().getRequiredPermission());
+        PluginImpl.getPlugin().validateAdmin();
         SeleniumGlobalConfiguration conf = req.bindJSON(SeleniumGlobalConfiguration.class, req.getSubmittedForm());
         if (null == conf.getName() || conf.getName().trim().equals("")) {
             throw new Failure("You must specify a name for the configuration");

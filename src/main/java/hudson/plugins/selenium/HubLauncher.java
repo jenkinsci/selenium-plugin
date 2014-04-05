@@ -44,7 +44,7 @@ public class HubLauncher implements Callable<Void, Exception> {
             c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
             Hub hub = new Hub(c);
             hub.start();
-            RegistryHolder.registry = hub.getRegistry();
+            HubHolder.hub = hub;
 
             LOG.fine("Grid Hub started on port " + port);
         } catch (Exception e) {

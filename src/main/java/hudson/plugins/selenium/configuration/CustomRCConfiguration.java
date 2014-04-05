@@ -112,9 +112,6 @@ public class CustomRCConfiguration extends SeleniumNodeConfiguration {
 
         @Override
         public CustomRCConfiguration newInstance(StaplerRequest req, JSONObject json) {
-
-            // String rcLog = json.getString("rcLog");
-
             return req.bindJSON(CustomRCConfiguration.class, json);
         }
 
@@ -168,7 +165,7 @@ public class CustomRCConfiguration extends SeleniumNodeConfiguration {
             opt.addOption("-timeout");
             opt.addOption(getTimeout().toString());
         }
-        // addIfHasText(args, "-firefoxProfileTemplate", getRcFirefoxProfileTemplate());
+
         for (SeleniumBrowser b : browsers) {
             b.initOptions(c, opt);
         }

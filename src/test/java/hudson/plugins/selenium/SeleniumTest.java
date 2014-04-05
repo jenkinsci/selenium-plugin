@@ -10,8 +10,6 @@ import hudson.plugins.selenium.configuration.browser.webdriver.HTMLUnitBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.OperaBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
-import hudson.plugins.selenium.configuration.global.hostname.JenkinsRootHostnameResolver;
-import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.NodeLabelMatcher;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.slaves.NodeProperty;
@@ -19,13 +17,11 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.RetentionStrategy;
 import hudson.tasks.Mailer;
 
-import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -66,7 +62,7 @@ public class SeleniumTest extends HudsonTestCase {
         browsers.add(new HTMLUnitBrowser(10));
 
         CustomWDConfiguration cc = new CustomWDConfiguration(5001, -1, browsers, null);
-        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new MatchAllMatcher(), cc));
+        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new NodeLabelMatcher("foolabel"), cc));
         // HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
         DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foolabel", createComputerLauncher(null),
                 RetentionStrategy.NOOP, new ArrayList<NodeProperty<Node>>());
@@ -80,7 +76,7 @@ public class SeleniumTest extends HudsonTestCase {
 
         try {
             wd.get("http://www.google.com/");
-            new WebDriverWait(wd, 5).until(ExpectedConditions.presenceOfElementLocated(By.id("viewport")));
+            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.tagName("title")));
         } finally {
             wd.quit();
         }
@@ -127,8 +123,10 @@ public class SeleniumTest extends HudsonTestCase {
     }
 
     private void waitForRC() throws Exception {
+        getPlugin().waitForHubLaunch();
         for (int i = 0; i < 100; i++) {
-            if (!getPlugin().getRemoteControls().isEmpty())
+            Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
+            if (!slots.isEmpty())
                 return;
             Thread.sleep(500);
         }
@@ -136,18 +134,7 @@ public class SeleniumTest extends HudsonTestCase {
     }
 
     private PluginImpl getPlugin() {
-        PluginImpl plugin = hudson.getPlugin(PluginImpl.class);
-        try {
-            Field f = plugin.getClass().getField("hostnameResolver");
-            f.setAccessible(true);
-            f.set(plugin, new JenkinsRootHostnameResolver());
-        } catch (Exception e) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            e.printStackTrace(new PrintStream(baos));
-            fail(new String(baos.toByteArray()));
-        }
-
-        return plugin;
+        return hudson.getPlugin(PluginImpl.class);
     }
 
     public void testLabelMatch() throws Exception {

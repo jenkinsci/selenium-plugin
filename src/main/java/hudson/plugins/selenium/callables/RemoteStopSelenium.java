@@ -18,18 +18,15 @@ public class RemoteStopSelenium implements Callable<String, Exception> {
 
     public String call() throws Exception {
         Logger LOG = Logger.getLogger(SelfRegisteringRemote.class.getName());
+
         Logger.getLogger("org").setLevel(Level.ALL);
+
         LOG.fine("instances " + PropertyUtils.getProperty(SeleniumConstants.PROPERTY_INSTANCE));
         SelfRegisteringRemote srr = PropertyUtils.getProperty(SeleniumConstants.PROPERTY_INSTANCE);
         String url = getRemoteURL(srr);
         srr.stopRemoteServer();
 
         Channel.current().setProperty(SeleniumConstants.PROPERTY_LOCK, new Object());
-        // LOG.fine("locks " + PropertyUtils.getProperty(SeleniumConstants.PROPERTY_LOCK));
-        // Object o = PropertyUtils.getProperty(SeleniumConstants.PROPERTY_LOCK);
-        // synchronized (o) {
-        // o.notifyAll();
-        // }
         return url;
     }
 

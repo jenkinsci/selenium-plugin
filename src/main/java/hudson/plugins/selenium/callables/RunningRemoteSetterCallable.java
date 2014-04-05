@@ -28,7 +28,7 @@ public class RunningRemoteSetterCallable implements Callable<Void, Exception> {
     }
 
     public Void call() throws Exception {
-        ((RemoteRunningStatus) PropertyUtils.getProperty(SeleniumConstants.PROPERTY_STATUS).get(config)).setStatus(status);
+        ((RemoteRunningStatus) PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, config)).setStatus(status);
         return null;
     }
 

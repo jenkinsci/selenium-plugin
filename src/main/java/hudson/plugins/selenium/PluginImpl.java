@@ -30,6 +30,7 @@ import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Label;
+import hudson.plugins.selenium.callables.hub.StopHubCallable;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomRCConfiguration;
@@ -50,6 +51,8 @@ import hudson.plugins.selenium.process.SeleniumProcessUtils;
 import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.security.Permission;
+import hudson.security.PermissionGroup;
+import hudson.security.PermissionScope;
 import hudson.util.IOException2;
 import hudson.util.StreamTaskListener;
 
@@ -73,8 +76,12 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletException;
+
 import jenkins.model.Jenkins;
 
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
@@ -98,6 +105,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     private static final Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
 
+    private static final PermissionGroup SELENIUM_GROUP = new PermissionGroup(PluginImpl.class, Messages._PermissionGroup());
+
+    private static final Permission SELENIUM_ADMIN = new Permission(SELENIUM_GROUP, "Admin", Messages._AdminPermission(), Computer.CONFIGURE, true,
+            new PermissionScope[0]);
+
     /**
      * Default port for hub servlet.
      */
@@ -113,7 +125,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private boolean rcDebug;
     private String rcLog;
 
-    private HostnameResolver hostnameResolver;
+    private HostnameResolver hostnameResolver = new JenkinsRootHostnameResolver();
 
     // Kept only for backward compatibility...
     private transient String rcFirefoxProfileTemplate;
@@ -136,12 +148,24 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public void postInitialize() throws Exception {
         load();
 
+        startHub();
+
+        Hudson.getInstance().getActions().add(this);
+    }
+
+    /**
+     * @throws IOException
+     * @throws InterruptedException
+     * 
+     */
+    private void startHub() throws IOException, InterruptedException {
+
         this.listener = new StreamTaskListener(getLogFile());
 
         channel = SeleniumProcessUtils.createSeleniumGridVM(listener);
 
         Level logLevel = Level.parse(getHubLogLevel());
-        System.out.println("Starting Selenium Grid");
+        this.listener.getLogger().println("Starting Selenium Grid");
 
         List<String> args = new ArrayList<String>();
         if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
@@ -158,7 +182,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
         hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[0]), logLevel));
 
-        Hudson.getInstance().getActions().add(this);
     }
 
     public File getLogFile() {
@@ -174,7 +197,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     public String getIconFileName() {
-        return Jenkins.getInstance().hasPermission(getRequiredPermission()) ? "/plugin/selenium/24x24/selenium.png" : null;
+        return "/plugin/selenium/24x24/selenium.png";
     }
 
     public String getUrlName() {
@@ -192,7 +215,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     public Api getApi() {
-        return Jenkins.getInstance().hasPermission(getRequiredPermission()) ? new Api(this) : null;
+        return new Api(this);
     }
 
     @Exported
@@ -253,7 +276,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             public Collection<SeleniumTestSlotGroup> call() throws RuntimeException {
                 Map<URL, SeleniumTestSlotGroup> groups = new HashMap<URL, SeleniumTestSlotGroup>();
 
-                Registry registry = RegistryHolder.registry;
+                if (HubHolder.hub == null) {
+                    return Collections.emptyList();
+                }
+
+                Registry registry = HubHolder.hub.getRegistry();
                 if (registry != null) {
                     for (RemoteProxy proxy : registry.getAllProxies()) {
                         for (TestSlot slot : proxy.getTestSlots()) {
@@ -470,8 +497,24 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      *             if redirection goes wrong
      */
     public void doAddRedirect(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        Hudson.getInstance().checkPermission(getRequiredPermission());
+        validateAdmin();
         rsp.sendRedirect2("add");
+    }
+
+    /**
+     * Validate if the current user is a selenium admin
+     */
+    public void validateAdmin() {
+        Hudson.getInstance().checkPermission(getRequiredPermission());
+    }
+
+    /**
+     * Return true if the user has selenium admin access.
+     * 
+     * @return True if the user is a selenium admin, false otherwise
+     */
+    public boolean isAdmin() {
+        return Hudson.getInstance().hasPermission(getRequiredPermission());
     }
 
     /**
@@ -484,7 +527,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      *             if redirection goes wrong
      */
     public void doCreate(StaplerRequest req, StaplerResponse rsp) throws Exception {
-        Hudson.getInstance().checkPermission(getRequiredPermission());
+        validateAdmin();
         SeleniumGlobalConfiguration conf = req.bindJSON(SeleniumGlobalConfiguration.class, req.getSubmittedForm());
         if (null == conf.getName() || conf.getName().trim().equals("")) {
             throw new Failure("You must specify a name for the configuration");
@@ -500,7 +543,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     public Permission getRequiredPermission() {
-        return Hudson.ADMINISTER;
+        return SELENIUM_ADMIN;
     }
 
     public DescriptorExtensionList<SeleniumNodeConfiguration, ConfigurationDescriptor> getConfigTypes() {
@@ -553,6 +596,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      * @throws IOException
      */
     public void replaceGlobalConfigurations(String name, SeleniumGlobalConfiguration conf) throws IOException {
+        validateAdmin();
         removeGlobalConfigurations(name, false);
         configurations.add(conf);
         PluginImpl.getPlugin().save();
@@ -577,5 +621,22 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                 return;
             }
         }
+    }
+
+    public HttpResponse doRestart() throws IOException, ServletException {
+        validateAdmin();
+        try {
+            channel.call(new StopHubCallable());
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+        channel.close();
+        try {
+            startHub();
+            waitForHubLaunch();
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+        return HttpResponses.forwardToPreviousPage();
     }
 }
