@@ -11,9 +11,9 @@ import java.util.Collections;
 @Extension
 public class SeleniumActions extends TransientComputerActionFactory {
 
-	@Override
-	public Collection<? extends Action> createFor(Computer target) {
-		return Collections.singletonList(new ServiceManagementAction(target));
-	}
+    @Override
+    public Collection<? extends Action> createFor(Computer target) {
+        return Collections.singletonList(new ServiceManagementAction(target));
+    }
 
 }

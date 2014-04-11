@@ -1,6 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
-	<l:layout title="${it.displayName}">
+     
+     <l:layout title="${it.displayName}">
 		<j:set var="from" value="${it.computer}" />
 	    <st:include page="sidepanel.jelly" />
 	    <l:main-panel>
@@ -71,7 +72,7 @@
                         <td width="55" data="${c.name}">
                             <img src="${rootURL}${c.configuration.icon}" width="24" height="24" alt="${c.iconAltText}"/>
                         </td>
-                        <td><a href="${rootURL}/selenium/configuration/${c.name}" class="model-link">${c.name}</a></td>
+                        <td><a href="${rootURL}/selenium/configuration/${c.name}" >${c.name}</a></td>
                         <td>${c.matcherSummary}</td>
                         <td><st:include it="${c.configuration}" page="config_summary.jelly" optional="true"/></td>
                         <td>

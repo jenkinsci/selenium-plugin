@@ -1,0 +1,55 @@
+#proxies {	
+	margin-top: 25px;
+}
+
+.ui-state-active {
+	background: #AAA url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x !important;
+}
+
+#proxies .browser-category {
+	margin: 5px;
+}
+
+#proxies img {
+	padding: 0 2px;
+}
+
+.session-busy {
+	opacity: 0.4;
+	filter:alpha(opacity=40);	
+}
+
+.ui-accordion-header {
+	font-size: 11px !important;
+}
+
+.nobreak {
+	white-space: nowrap;
+}
+
+.binfo {
+	margin: 0 3px;
+}
+
+.actions form {
+	display: inline-block;
+}
+
+.ui-button.ui-state-default {
+	border: #999 solid 1px;
+}
+
+.ui-button-text {
+	background-color: #ddd;
+	
+}
+
+.configuration-info {
+	font-size: 11px;
+}
+
+.options-title {
+	font-size: 14px;
+	font-weight: 600;
+	padding: 5px;
+}
