@@ -18,11 +18,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
 public class CustomRCConfiguration extends SeleniumNodeConfiguration {
@@ -108,11 +105,6 @@ public class CustomRCConfiguration extends SeleniumNodeConfiguration {
 
         public CustomRCConfiguration getDefault() {
             return new CustomRCConfiguration();
-        }
-
-        @Override
-        public CustomRCConfiguration newInstance(StaplerRequest req, JSONObject json) {
-            return req.bindJSON(CustomRCConfiguration.class, json);
         }
 
         public static List<Descriptor<SeleniumBrowser>> getBrowserTypes() {

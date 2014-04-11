@@ -18,17 +18,16 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
 public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 
     private int port = 4444;
+
     private Integer timeout = -1;
+
     private List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
 
     private CustomWDConfiguration() {
@@ -71,11 +70,6 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 
         public CustomWDConfiguration getDefault() {
             return new CustomWDConfiguration();
-        }
-
-        @Override
-        public CustomWDConfiguration newInstance(StaplerRequest req, JSONObject json) {
-            return req.bindJSON(CustomWDConfiguration.class, json);
         }
 
         public static List<Descriptor<WebDriverBrowser>> getBrowserTypes() {

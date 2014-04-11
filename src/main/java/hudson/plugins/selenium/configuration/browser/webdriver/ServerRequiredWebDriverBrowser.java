@@ -41,7 +41,7 @@ public abstract class ServerRequiredWebDriverBrowser extends WebDriverBrowser {
     }
 
     @Exported
-    protected String getServerBinary() {
+    public String getServer_binary() {
         return server_binary;
     }
 }

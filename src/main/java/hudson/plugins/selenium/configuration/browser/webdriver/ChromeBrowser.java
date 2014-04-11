@@ -30,7 +30,7 @@ public class ChromeBrowser extends ServerRequiredWebDriverBrowser {
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, PARAM_BINARY_PATH, getServerBinary());
+        combine(args, PARAM_BINARY_PATH, getServer_binary());
         return args;
     }
 
