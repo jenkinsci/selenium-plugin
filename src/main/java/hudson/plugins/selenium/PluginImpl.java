@@ -436,7 +436,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             return;
         }
 
-        listener.getLogger().println("Starting Selenium nodes on " + c.getName());
+        listener.getLogger().println("Starting Selenium nodes on " + ("".equals(c.getName()) ? "(master)" : c.getName()));
 
         for (SeleniumGlobalConfiguration config : confs) {
             if ((conf != null && config.getName().equals(conf)) || conf == null) {

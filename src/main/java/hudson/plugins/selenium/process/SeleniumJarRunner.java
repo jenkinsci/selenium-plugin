@@ -40,9 +40,9 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
         String nodehost = computer.getHostName();
 
         SeleniumRunOptions opts = initOptions(computer);
-        opts.addOptionIfSet("-host", computer.getHostName());
 
         if (opts != null) {
+            opts.addOptionIfSet("-host", nodehost);
             computer.getNode().getRootPath()
                     .act(new SeleniumCallable(seleniumJar, nodehost, masterName, p.getPort(), nodeName, listener, name, opts));
         }

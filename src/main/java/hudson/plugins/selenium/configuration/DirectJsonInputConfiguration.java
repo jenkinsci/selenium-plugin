@@ -15,8 +15,13 @@ import hudson.util.IOException2;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -56,11 +61,23 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
         } else {
             this.config = config;
         }
+        this.jvmArgs = jvmArgs;
+        this.seleniumArgs = seleniumArgs;
     }
 
     @Exported
     public String getConfig() {
         return config;
+    }
+
+    @Exported
+    public String getJvmArgs() {
+        return jvmArgs;
+    }
+
+    @Exported
+    public String getSeleniumArgs() {
+        return seleniumArgs;
     }
 
     @Extension
@@ -91,9 +108,26 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
         SeleniumRunOptions opt = super.initOptions(computer);
         try {
 
-            String nodehost = computer.getHostName();
-
             final String filename = "selenium-temp-config-" + System.currentTimeMillis() + ".json";
+
+            if (jvmArgs != null) {
+                Properties p = new Properties();
+                p.load(new StringReader(jvmArgs.replace("\\", "\\\\")));
+                for (Entry<Object, Object> e : p.entrySet()) {
+                    opt.getJVMArguments().put(e.getKey().toString(), e.getValue().toString());
+                }
+            }
+
+            if (seleniumArgs != null) {
+                for (Object l : IOUtils.readLines(new StringReader(seleniumArgs))) {
+                    String line = (String) l;
+                    if (line.contains(" ")) {
+                        StringUtils.split(line, " ", 2);
+                    } else {
+                        opt.addOption(line);
+                    }
+                }
+            }
 
             String fullPath = computer.getNode().getRootPath().act(new FileCallable<String>() {
 
