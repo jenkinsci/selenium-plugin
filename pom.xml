@@ -12,7 +12,7 @@
           <selenium.version>${selenium.short.version}.0</selenium.version>
      </properties>
      <artifactId>selenium</artifactId>
-     <version>2.4-SNAPSHOT</version>
+     <version>2.4</version>
      <packaging>hpi</packaging>
      <name>Jenkins Selenium Plugin</name>
      <url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
