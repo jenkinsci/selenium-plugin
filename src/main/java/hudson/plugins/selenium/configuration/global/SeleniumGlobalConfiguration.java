@@ -63,6 +63,13 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
     }
 
     /**
+     * @param computer
+     */
+    public void remove(Computer computer) {
+        configuration.remove(computer, name);
+    }
+
+    /**
      * Returns the name of the configuration
      * 
      * @return
