@@ -8,12 +8,12 @@ import hudson.model.TaskListener;
 import hudson.model.Computer;
 import hudson.plugins.selenium.HubHolder;
 import hudson.plugins.selenium.PluginImpl;
+import hudson.plugins.selenium.callables.RemoveSeleniumServer;
 import hudson.plugins.selenium.callables.RunningRemoteSetterCallable;
 import hudson.plugins.selenium.callables.SeleniumCallable;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.plugins.selenium.callables.StopSeleniumServer;
 import hudson.remoting.Callable;
-import hudson.remoting.VirtualChannel;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -48,6 +48,19 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
         }
     }
 
+    /**
+     * @param computer
+     * @param name
+     */
+    public void remove(Computer computer, String name) {
+        stop(computer, name);
+        try {
+            computer.getNode().getRootPath().act(new RemoveSeleniumServer(name));
+        } catch (Exception e) {
+
+        }
+    }
+
     /*
      * (non-Javadoc)
      * @see hudson.plugins.selenium.configuration.SeleniumRunner#stop(hudson.model.Computer)
@@ -55,9 +68,8 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
     public void stop(Computer computer, String name) {
         FilePath path = computer.getNode().getRootPath();
         if (path != null) {
-            VirtualChannel slaveChannel = path.getChannel();
             try {
-                final String url = slaveChannel.call(new StopSeleniumServer(name));
+                final String url = computer.getNode().getRootPath().act(new StopSeleniumServer(name));
                 PluginImpl.getPlugin().getHubChannel().call(new Callable<Void, Exception>() {
 
                     /**
@@ -82,11 +94,9 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
 
                 });
             } catch (Exception e) {
-                e.printStackTrace();
                 try {
-                    slaveChannel.call(new RunningRemoteSetterCallable(name, SeleniumConstants.ERROR));
+                    computer.getNode().getRootPath().act(new RunningRemoteSetterCallable(name, SeleniumConstants.ERROR));
                 } catch (Exception e1) {
-                    e1.printStackTrace();
                 }
             }
         }

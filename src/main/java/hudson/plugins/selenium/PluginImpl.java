@@ -613,6 +613,9 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             SeleniumGlobalConfiguration conf = it.next();
             if (conf.getName().equals(name)) {
                 it.remove();
+                for (Computer c : Jenkins.getInstance().getComputers()) {
+                    conf.remove(c);
+                }
                 if (save) {
                     save();
                 }
