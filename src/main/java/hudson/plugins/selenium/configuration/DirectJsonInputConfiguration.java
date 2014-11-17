@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package hudson.plugins.selenium.configuration;
 
@@ -29,12 +29,12 @@ import org.kohsuke.stapler.export.Exported;
 
 /**
  * @author Richard Lavoie
- * 
+ *
  */
 public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 4521592447812296365L;
 
@@ -121,8 +121,10 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
             if (seleniumArgs != null) {
                 for (Object l : IOUtils.readLines(new StringReader(seleniumArgs))) {
                     String line = (String) l;
+                    line = line.trim();
                     if (line.contains(" ")) {
-                        StringUtils.split(line, " ", 2);
+                        String[] keyValue = StringUtils.split(line, " ", 2);
+                        opt.addOptionIfSet(keyValue[0], keyValue[1]);
                     } else {
                         opt.addOption(line);
                     }
@@ -132,7 +134,7 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
             String fullPath = computer.getNode().getRootPath().act(new FileCallable<String>() {
 
                 /**
-                 * 
+                 *
                  */
                 private static final long serialVersionUID = -288688398601004624L;
 
