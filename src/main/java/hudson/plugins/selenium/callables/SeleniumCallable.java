@@ -15,6 +15,7 @@ import hudson.util.IOException2;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,8 +27,6 @@ public class SeleniumCallable implements FileCallable<String> {
     private static final String ROLE_PARAM = "-role";
 
     private static final String ROLE_NODE_VALUE = "node";
-
-    private static final String HOST_PARAM = "-host";
 
     private static final String HUB_PARAM = "-hub";
 
@@ -50,12 +49,13 @@ public class SeleniumCallable implements FileCallable<String> {
         this.options = options;
         this.listener = listener;
         config = confName;
-        defaultArgs = new String[] { ROLE_PARAM, ROLE_NODE_VALUE, HOST_PARAM, nodehost, HUB_PARAM,
-                "http://" + masterName + ":" + masterPort + "/wd/hub" };
+        defaultArgs = new String[] {
+                ROLE_PARAM, ROLE_NODE_VALUE,
+                HUB_PARAM, "http://" + masterName + ":" + masterPort + "/wd/hub" };
     }
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = 2047557797415325512L;
 
@@ -80,7 +80,7 @@ public class SeleniumCallable implements FileCallable<String> {
 
         try {
 
-            // listener.getLogger().println("Creating selenium VM");
+            listener.getLogger().println("Creating selenium node VM");
             Channel jvm = SeleniumProcessUtils.createSeleniumRCVM(localJar, listener, options.getJVMArguments(), options.getEnvironmentVariables());
             status = new RemoteRunningStatus(jvm, options);
             status.setStatus(SeleniumConstants.STARTING);
@@ -90,17 +90,19 @@ public class SeleniumCallable implements FileCallable<String> {
                 arguments.addAll(arg.toArgumentsList());
             }
 
-            // listener.getLogger().println("Starting the selenium process");
-            jvm.callAsync(new RemoteControlLauncher(nodeName, (String[]) ArrayUtils.addAll(defaultArgs, arguments.toArray(new String[0]))));
+            Object[] allArgs = ArrayUtils.addAll(defaultArgs, arguments.toArray(new String[arguments.size()]));
+
+            listener.getLogger().println("Starting the selenium node process. Args: " + Arrays.toString(allArgs));
+            jvm.callAsync(new RemoteControlLauncher(nodeName, (String[])allArgs));
             status.setStatus(SeleniumConstants.STARTED);
             status.setRunning(true);
         } catch (Exception t) {
             status.setRunning(false);
             status.setStatus(SeleniumConstants.ERROR);
-            LOGGER.log(Level.WARNING, "Selenium launch failed", t);
-            // listener.getLogger().println( "Selenium launch failed" + t.getMessage());
+            LOGGER.log(Level.WARNING, "Selenium node launch failed", t);
+            listener.getLogger().println( "Selenium node launch failed" + t.getMessage());
 
-            throw new IOException2("Selenium launch interrupted", t);
+            throw new IOException2("Selenium node launch interrupted", t);
         }
         PropertyUtils.setMapProperty(SeleniumConstants.PROPERTY_STATUS, config, status);
 
