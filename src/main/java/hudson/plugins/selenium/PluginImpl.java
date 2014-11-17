@@ -44,7 +44,6 @@ import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.hostname.HostnameResolver;
 import hudson.plugins.selenium.configuration.global.hostname.HostnameResolverDescriptor;
 import hudson.plugins.selenium.configuration.global.hostname.JenkinsRootHostnameResolver;
-import hudson.plugins.selenium.configuration.global.hostname.StaticHostnameResolver;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
@@ -82,7 +81,6 @@ import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
 
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
@@ -137,10 +135,10 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private transient Boolean rcBrowserSessionReuse;
     private transient Boolean rcTrustAllSSLCerts;
     private transient Boolean rcBrowserSideLog;
-	private transient boolean rcDebug;
-	private transient String rcLog;
+    private transient boolean rcDebug;
+    private transient String rcLog;
 
-    private List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
+    private final List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
 
     /**
      * Channel to Selenium Grid JVM.
@@ -159,31 +157,30 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         Hudson.getInstance().getActions().add(this);
     }
 
-	@Override
-	public void start() throws Exception {
-		load();
-	}
+    @Override
+    public void start() throws Exception {
+        load();
+    }
 
-	@Override
-	public void configure(StaplerRequest req, JSONObject formData)
-			throws IOException, ServletException, Descriptor.FormException {
-		super.configure(req, formData);
+    @Override
+    public void configure(StaplerRequest req, JSONObject formData)
+            throws IOException, ServletException, Descriptor.FormException {
+        super.configure(req, formData);
 
-		LOGGER.warning(formData.toString());
-		port = formData.optInt("port", 4444);
-		exclusionPatterns = formData.getString("exclusionPatterns");
-		hubLogLevel = formData.getString("hubLogLevel");
-		newSessionWaitTimeout = formData.optInt("newSessionWaitTimeout", -1);
-		timeout = formData.optInt("timeout", 300000);
-		browserTimeout = formData.optInt("browserTimeout", 0);
-		throwOnCapabilityNotPresent = formData.getBoolean("throwOnCapabilityNotPresent");
+        port = formData.optInt("port", 4444);
+        exclusionPatterns = formData.getString("exclusionPatterns");
+        hubLogLevel = formData.getString("hubLogLevel");
+        newSessionWaitTimeout = formData.optInt("newSessionWaitTimeout", -1);
+        timeout = formData.optInt("timeout", 300000);
+        browserTimeout = formData.optInt("browserTimeout", 0);
+        throwOnCapabilityNotPresent = formData.getBoolean("throwOnCapabilityNotPresent");
 
-		LOGGER.warning(formData.getJSONObject("hostnameResolver").toString());
+        hostnameResolver = req.bindJSON(HostnameResolver.class, formData.optJSONObject("hostnameResolver"));
+        if (hostnameResolver == null)
+            hostnameResolver = new JenkinsRootHostnameResolver();
 
-		hostnameResolver = req.bindJSON(HostnameResolver.class, formData.getJSONObject("hostnameResolver"));
-
-		save();
-	}
+        save();
+    }
 
     /**
      * @throws IOException
@@ -220,7 +217,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         args.add("-host");
         args.add(getMasterHostName());
 
-        hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[0]), logLevel));
+        hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[args.size()]), logLevel));
 
     }
 
@@ -284,14 +281,37 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     @Exported
-    public boolean getRcDebug() {
-        return rcDebug;
+    public boolean getConfigurationChanged() {
+        HubParams activeHubParams = getCurrentHubParams();
+        return activeHubParams.isActive
+               && !(port == activeHubParams.port
+                    && activeHubParams.host.equalsIgnoreCase(getMasterHostName()));
+    }
+    @Exported
+    public Integer getActivePort() {
+        return getCurrentHubParams().port;
     }
 
+
     @Exported
-    public String getRcLog() {
-        return rcLog;
+    public String getActiveHost() {
+        return getCurrentHubParams().host;
     }
+
+
+    public HubParams getCurrentHubParams() {
+        HubParams result = new HubParams();
+        if (channel == null) return result;
+
+        try {
+            return channel.call(new HubParamsCallable());
+        } catch (Throwable e) {
+            LOGGER.log(Level.SEVERE, "Unable to communicate with hub", e);
+        }
+
+        return result;
+    }
+
 
     @Exported
     public boolean getThrowOnCapabilityNotPresent() {
@@ -319,8 +339,8 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         Collection<SeleniumTestSlotGroup> rcs = channel.call(new Callable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
 
             /**
-			 *
-			 */
+             *
+             */
             private static final long serialVersionUID = 1791985298575049757L;
 
             public Collection<SeleniumTestSlotGroup> call() throws RuntimeException {

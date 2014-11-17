@@ -4,6 +4,9 @@
     <j:set var="descriptor" value="${it.descriptor}"/>
     <j:set var="configurationType" value="${ct}"/>
     <f:section title="Selenium">
+      <f:entry>
+        ${%You need to restart hub and than all configurations/nodes in order to apply settings for Selenium Hub.}
+      </f:entry>
       <f:entry title="${%Selenium Hub Port}" field="port">
   	    <f:textbox />
   	  </f:entry>

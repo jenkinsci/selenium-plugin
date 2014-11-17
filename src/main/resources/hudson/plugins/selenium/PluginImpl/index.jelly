@@ -2,18 +2,18 @@
   Displays the state of Selenium Grid
 -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
- 
+
   <l:layout title="Selenium">
-  
+
     <script type="text/javascript" src="${rootURL}/plugin/selenium/js/jquery-1.10.2.js"></script>
     <script type="text/javascript" src="${rootURL}/plugin/selenium/js/jquery-ui-1.10.4.custom.js"></script>
     <link type="text/css" href="${rootURL}/plugin/selenium/css/jquery-ui-1.10.4.custom.css" rel="stylesheet" />
     <link type="text/css" href="${rootURL}/plugin/selenium/css/selenium.css" rel="stylesheet" />
-    
+
     <script type="text/javascript">
    $.noConflict();
     (function($) {
-       $(document).ready(function() { 
+       $(document).ready(function() {
            $("#proxies").accordion({
                animate: false,
                collapsible: true,
@@ -31,46 +31,84 @@
       <h2>${%Hub management}</h2>
       <form method="post" action="${prefix}restart">
           <f:submit value="${%Restart}" />
-      </form> 
+      </form>
       </j:if>
-      <h2>${%Registered Remote Controls}</h2>
 
-      <j:choose>
-        <j:when test="${it.masterHostName==null}">
-          <div class="warning">
-            ${%MissingMasterUrlConfiguration(rootURL)}
-          </div>
-        </j:when>
+      <h2>${%Configuration}</h2>
+        <j:choose>
+          <j:when test="${it.masterHostName==null}">
+            <div class="warning">
+                ${%MissingMasterUrlConfiguration(rootURL)}
+            </div>
+          </j:when>
         <j:otherwise>
-          <div>
-            ${%RunningAt(it.masterHostName,it.port)}
-            ${%ConnectFrom1}
-          </div>
-          <pre style="margin:1em">Selenium selenium = new DefaultSelenium("${it.masterHostName}", ${it.port}, "*firefox", "http://jenkins-ci.org/");</pre>
-          <div>
-            ${%ConnectFrom2}
-          </div>
-          <pre style="margin:1em">WebDriver driver = new RemoteWebDriver(new URL("http://${it.masterHostName}:${it.port}/wd/hub"), capability);</pre>
+          <p><b><i>Host: </i></b>${it.masterHostName}</p>
         </j:otherwise>
-      </j:choose>
+        </j:choose>
+        <p><b><i>Port: </i></b>${it.port}</p>
 
-      <j:set var="rcs" value="${it.remoteControls}" />
+        <j:if test="${it.configurationChanged}">
+            <div class="warning">
+                ${%Hub port and/or host was changed. Restart hub and node configurations to apply changes.}
+            </div>
+        </j:if>
+
+      <h2>${%Status}</h2>
+
       <j:choose>
-         <j:when test="${!empty(rcs)}">
-            <div id="proxies">
-             <j:forEach var="rc" items="${rcs}">
-                    <h3>${rc.hostAndPort} (${rc.getSummary()})</h3>
-                    <div><span class="browser-category">
+        <j:when test="${it.getCurrentHubParams().isActive}">
+          <p><font color="green"><b><i>Online</i></b></font></p>
+
+          <p>
+            ${%RunningAt(it.activeHost,it.activePort)}
+          </p>
+          <p>
+            See
+            <a href="console">Console Output</a> and
+            <a href="http://${it.activeHost}:${it.activePort}/grid/console" target="'_blank">Grid Web Console</a>
+            for detailed status and configuration
+          </p>
+
+          <p>
+            ${%ConnectFrom1}
+          </p>
+          <pre style="margin:1em">Selenium selenium = new DefaultSelenium("${it.activeHost}", ${it.activePort}, "*firefox", "http://my.test.site.org/");</pre>
+
+          <p>
+            ${%ConnectFrom2}
+          </p>
+          <pre style="margin:1em">WebDriver driver = new RemoteWebDriver(new URL("http://${it.activeHost}:${it.activePort}/wd/hub"), capability);</pre>
+        </j:when>
+
+        <j:otherwise>
+          <p><font color="red"><b><i>Offline</i></b></font></p>
+          <p>
+            See <a href="console">Console Output</a> for details.
+          </p>
+
+
+          <h2>${%Registered Remote Controls}</h2>
+
+          <j:set var="rcs" value="${it.remoteControls}" />
+          <j:choose>
+            <j:when test="${!empty(rcs)}">
+              <div id="proxies">
+                <j:forEach var="rc" items="${rcs}">
+                   <h3>${rc.hostAndPort} (${rc.getSummary()})</h3>
+                   <div><span class="browser-category">
                     <j:forEach var="test" items="${rc.slots}">
-                         <img class="session-${test.isReserved() ? 'busy' : 'free'}" src="${rootURL}/plugin/selenium/16x16/${test.unifiedBrowserName}.png" height="16" width="16" title="${test.capabilities}" />
+                        <img class="session-${test.isReserved() ? 'busy' : 'free'}" src="${rootURL}/plugin/selenium/16x16/${test.unifiedBrowserName}.png" height="16" width="16" title="${test.capabilities}" />
                     </j:forEach>
                     </span></div>
-            </j:forEach>
-          </div>
-        </j:when>
-        <j:otherwise>
-          <p>${%No RCs have checked in yet. Have you started some slaves?}</p>
+                </j:forEach>
+              </div>
+            </j:when>
+            <j:otherwise>
+              <p>${%No RCs have checked in yet. Have you started some slaves?}</p>
+            </j:otherwise>
+          </j:choose>
         </j:otherwise>
+
       </j:choose>
     </l:main-panel>
   </l:layout>
