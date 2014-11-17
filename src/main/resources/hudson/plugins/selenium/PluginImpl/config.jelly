@@ -4,7 +4,7 @@
     <j:set var="descriptor" value="${it.descriptor}"/>
     <j:set var="configurationType" value="${ct}"/>
     <f:section title="Selenium">
-      <f:entry title="${%Selenium Grid Port}" field="port">
+      <f:entry title="${%Selenium Hub Port}" field="port">
   	    <f:textbox />
   	  </f:entry>
   	  <f:advanced>
@@ -24,15 +24,11 @@
           <f:entry title="${%Set -timeout}" field="timeout">
               <f:textbox />
           </f:entry>
+          <f:entry title="${%Set -browserTimeout}" field="browserTimeout">
+              <f:textbox />
+          </f:entry>
           <f:entry title="${%Enable -throwOnCapabilityNotPresent}" field="throwOnCapabilityNotPresent">
               <f:checkbox />
-          </f:entry>
-          
-          <f:entry title="${%Enable -debug}" field="rcDebug">
-              <f:checkbox />
-          </f:entry>
-          <f:entry title="${%Set -log}" field="rcLog">
-              <f:textbox />
           </f:entry>
           <f:entry title="${%Hostname}">
                <table style="width:100%">

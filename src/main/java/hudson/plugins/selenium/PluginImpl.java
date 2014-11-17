@@ -44,6 +44,7 @@ import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.hostname.HostnameResolver;
 import hudson.plugins.selenium.configuration.global.hostname.HostnameResolverDescriptor;
 import hudson.plugins.selenium.configuration.global.hostname.JenkinsRootHostnameResolver;
+import hudson.plugins.selenium.configuration.global.hostname.StaticHostnameResolver;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
@@ -80,6 +81,8 @@ import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
 
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
@@ -90,13 +93,15 @@ import org.kohsuke.stapler.framework.io.LargeText;
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
+import org.openqa.selenium.WebDriver;
 import org.springframework.util.StringUtils;
 
 /**
  * Starts Selenium Grid server in another JVM.
- * 
+ *
  * @author Kohsuke Kawaguchi
  * @author Richard Lavoie
+ * @author Ryan Thomas Correia Ortega
  */
 @ExportedBean
 public class PluginImpl extends Plugin implements Action, Serializable, Describable<PluginImpl> {
@@ -119,11 +124,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      * Exclusion pattern for nodes. Nodes matching this pattern will not have a selenium node running on them.
      */
     private String exclusionPatterns;
-    private Integer newSessionWaitTimeout = -1;
+    private Integer newSessionWaitTimeout = -1; //ms or -1
+    private Integer timeout = 300;      //sec               // default value as defined in WebDriver
+    private Integer browserTimeout = 0; //sec               // default value as defined in WebDriver
     private boolean throwOnCapabilityNotPresent = false;
     private String hubLogLevel = "INFO";
-    private boolean rcDebug;
-    private String rcLog;
 
     private HostnameResolver hostnameResolver = new JenkinsRootHostnameResolver();
 
@@ -132,6 +137,8 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private transient Boolean rcBrowserSessionReuse;
     private transient Boolean rcTrustAllSSLCerts;
     private transient Boolean rcBrowserSideLog;
+	private transient boolean rcDebug;
+	private transient String rcLog;
 
     private List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
 
@@ -146,17 +153,42 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     @Override
     public void postInitialize() throws Exception {
-        load();
 
         startHub();
 
         Hudson.getInstance().getActions().add(this);
     }
 
+	@Override
+	public void start() throws Exception {
+		load();
+	}
+
+	@Override
+	public void configure(StaplerRequest req, JSONObject formData)
+			throws IOException, ServletException, Descriptor.FormException {
+		super.configure(req, formData);
+
+		LOGGER.warning(formData.toString());
+		port = formData.optInt("port", 4444);
+		exclusionPatterns = formData.getString("exclusionPatterns");
+		hubLogLevel = formData.getString("hubLogLevel");
+		newSessionWaitTimeout = formData.optInt("newSessionWaitTimeout", -1);
+		timeout = formData.optInt("timeout", 300000);
+		browserTimeout = formData.optInt("browserTimeout", 0);
+		throwOnCapabilityNotPresent = formData.getBoolean("throwOnCapabilityNotPresent");
+
+		LOGGER.warning(formData.getJSONObject("hostnameResolver").toString());
+
+		hostnameResolver = req.bindJSON(HostnameResolver.class, formData.getJSONObject("hostnameResolver"));
+
+		save();
+	}
+
     /**
      * @throws IOException
      * @throws InterruptedException
-     * 
+     *
      */
     private void startHub() throws IOException, InterruptedException {
 
@@ -171,6 +203,14 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
             args.add("-newSessionWaitTimeout");
             args.add(getNewSessionWaitTimeout().toString());
+        }
+        if (getTimeout() != null) {
+            args.add("-timeout");
+            args.add(getTimeout().toString());
+        }
+        if (getBrowserTimeout() != null) {
+            args.add("-browserTimeout");
+            args.add(getBrowserTimeout().toString());
         }
         if (getThrowOnCapabilityNotPresent()) {
             args.add("-throwOnCapabilityNotPresent");
@@ -229,6 +269,16 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     @Exported
+    public Integer getTimeout() {
+        return timeout;
+    }
+
+    @Exported
+    public Integer getBrowserTimeout() {
+        return browserTimeout;
+    }
+
+    @Exported
     public String getHubLogLevel() {
         return hubLogLevel != null ? hubLogLevel : "INFO";
     }
@@ -269,7 +319,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         Collection<SeleniumTestSlotGroup> rcs = channel.call(new Callable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
 
             /**
-			 * 
+			 *
 			 */
             private static final long serialVersionUID = 1791985298575049757L;
 
@@ -374,7 +424,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     /**
      * Returns either the object, or the default value is null.
-     * 
+     *
      * @param object
      *            Object to return
      * @param defaultObject
@@ -430,12 +480,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             return;
         }
 
-        String nodehost = c.getHostName();
-        if (nodehost == null) {
-            LOGGER.warning("Unable to determine node's hostname. Skipping");
-            return;
-        }
-
         listener.getLogger().println("Starting Selenium nodes on " + ("".equals(c.getName()) ? "(master)" : c.getName()));
 
         for (SeleniumGlobalConfiguration config : confs) {
@@ -488,7 +532,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     /**
-     * 
+     *
      * @param req
      *            StaplerRequest
      * @param rsp
@@ -510,7 +554,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     /**
      * Return true if the user has selenium admin access.
-     * 
+     *
      * @return True if the user is a selenium admin, false otherwise
      */
     public boolean isAdmin() {
@@ -518,7 +562,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     /**
-     * 
+     *
      * @param req
      *            StaplerRequest
      * @param rsp
