@@ -78,13 +78,6 @@
             ${%ConnectFrom2}
           </p>
           <pre style="margin:1em">WebDriver driver = new RemoteWebDriver(new URL("http://${it.activeHost}:${it.activePort}/wd/hub"), capability);</pre>
-        </j:when>
-
-        <j:otherwise>
-          <p><font color="red"><b><i>Offline</i></b></font></p>
-          <p>
-            See <a href="console">Console Output</a> for details.
-          </p>
 
 
           <h2>${%Registered Remote Controls}</h2>
@@ -107,6 +100,13 @@
               <p>${%No RCs have checked in yet. Have you started some slaves?}</p>
             </j:otherwise>
           </j:choose>
+        </j:when>
+
+        <j:otherwise>
+           <p><font color="red"><b><i>Offline</i></b></font></p>
+           <p>
+              See <a href="console">Console Output</a> for details.
+           </p>
         </j:otherwise>
 
       </j:choose>
