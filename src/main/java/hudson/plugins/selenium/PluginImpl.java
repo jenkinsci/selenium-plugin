@@ -97,6 +97,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author Kohsuke Kawaguchi
  * @author Richard Lavoie
+ * @author Ryan Thomas Correia Ortega
  */
 @ExportedBean
 public class PluginImpl extends Plugin implements Action, Serializable, Describable<PluginImpl> {
@@ -120,6 +121,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      */
     private String exclusionPatterns;
     private Integer newSessionWaitTimeout = -1;
+    private Integer timeout = 30;
     private boolean throwOnCapabilityNotPresent = false;
     private String hubLogLevel = "INFO";
     private boolean rcDebug;
@@ -171,6 +173,10 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
             args.add("-newSessionWaitTimeout");
             args.add(getNewSessionWaitTimeout().toString());
+        }
+        if (getTimeout() != null) {
+            args.add("-timeout");
+            args.add(getTimeout().toString());
         }
         if (getThrowOnCapabilityNotPresent()) {
             args.add("-throwOnCapabilityNotPresent");
@@ -226,6 +232,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     @Exported
     public Integer getNewSessionWaitTimeout() {
         return newSessionWaitTimeout;
+    }
+
+    @Exported
+    public Integer getTimeout() {
+        return timeout;
     }
 
     @Exported
