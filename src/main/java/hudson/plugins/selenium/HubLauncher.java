@@ -1,10 +1,11 @@
 package hudson.plugins.selenium;
 
+import hudson.remoting.Callable;
+import hudson.remoting.Channel;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import hudson.remoting.Callable;
-import hudson.remoting.Channel;
 import org.jfree.util.Log;
 import org.openqa.grid.internal.utils.GridHubConfiguration;
 import org.openqa.grid.web.Hub;
