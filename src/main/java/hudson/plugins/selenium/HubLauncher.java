@@ -12,15 +12,15 @@ import org.openqa.grid.web.Hub;
 
 /**
  * Starts the selenium grid server.
- * 
+ *
  * This callable blocks until the server is shut down and thus generally never returns.
- * 
+ *
  * @author Kohsuke Kawaguchi
  */
 public class HubLauncher implements Callable<Void, Exception> {
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = 5658971914841423874L;
 
@@ -38,7 +38,7 @@ public class HubLauncher implements Callable<Void, Exception> {
         try {
             Logger LOG = Logger.getLogger(HubLauncher.class.getName());
             configureLoggers();
-            LOG.fine("Grid Hub preparing to start on port " + port);
+            LOG.info("Grid Hub preparing to start on port " + port);
             GridHubConfiguration c = GridHubConfiguration.build(args);
             c.setPort(port);
             c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
@@ -46,9 +46,13 @@ public class HubLauncher implements Callable<Void, Exception> {
             hub.start();
             HubHolder.hub = hub;
 
-            LOG.fine("Grid Hub started on port " + port);
+            StringBuilder arguments = new StringBuilder();
+            for (String arg : args) {
+                arguments.append(" ").append(arg);
+            }
+            LOG.info("Grid Hub started on port " + port + " with args:" + arguments.toString());
         } catch (Exception e) {
-            Log.error("An error occured while starting the hub", e);
+            Log.error("An error occurred while starting the hub", e);
         }
 
         return null;
