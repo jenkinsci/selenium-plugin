@@ -10,10 +10,6 @@
 	margin: 5px;
 }
 
-#proxies img {
-	padding: 0 2px;
-}
-
 .session-busy {
 	opacity: 0.4;
 	filter:alpha(opacity=40);	
