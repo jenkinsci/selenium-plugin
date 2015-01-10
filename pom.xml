@@ -8,7 +8,7 @@
      </parent>
      <properties>
           <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-          <selenium.short.version>2.41</selenium.short.version>
+          <selenium.short.version>2.44</selenium.short.version>
           <selenium.version>${selenium.short.version}.0</selenium.version>
      </properties>
      <artifactId>selenium</artifactId>
