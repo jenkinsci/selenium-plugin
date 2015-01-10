@@ -283,19 +283,17 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     @Exported
     public boolean getConfigurationChanged() {
         HubParams activeHubParams = getCurrentHubParams();
-        return activeHubParams.isActive
-               && !(port == activeHubParams.port
-                    && activeHubParams.host.equalsIgnoreCase(getMasterHostName()));
+        return !activeHubParams.isNotActiveOn(getMasterHostName(), port);
     }
     @Exported
     public Integer getActivePort() {
-        return getCurrentHubParams().port;
+        return getCurrentHubParams().getPort();
     }
 
 
     @Exported
     public String getActiveHost() {
-        return getCurrentHubParams().host;
+        return getCurrentHubParams().getHost();
     }
 
 
