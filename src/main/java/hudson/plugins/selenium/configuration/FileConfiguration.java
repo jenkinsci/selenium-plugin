@@ -18,7 +18,12 @@ import org.kohsuke.stapler.export.Exported;
 
 public class FileConfiguration extends SeleniumNodeConfiguration {
 
-    private String configURL;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5068212020001695128L;
+	
+	private String configURL;
 
     @DataBoundConstructor
     public FileConfiguration(String configURL, String display) {

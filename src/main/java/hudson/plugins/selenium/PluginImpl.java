@@ -91,7 +91,6 @@ import org.kohsuke.stapler.framework.io.LargeText;
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
-import org.openqa.selenium.WebDriver;
 import org.springframework.util.StringUtils;
 
 /**

@@ -24,7 +24,12 @@ import org.kohsuke.stapler.export.Exported;
 
 public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 
-    private int port = 4444;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1357952133882786829L;
+
+	private int port = 4444;
 
     private Integer timeout = -1;
 

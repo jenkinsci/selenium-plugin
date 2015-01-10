@@ -14,6 +14,11 @@ import hudson.remoting.Callable;
  */
 public class StopHubCallable implements Callable<Void, Exception> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8923286239409381397L;
+	
 	private static final Logger LOGGER = Logger.getLogger(StopHubCallable.class.getName());
     /*
      * (non-Javadoc)

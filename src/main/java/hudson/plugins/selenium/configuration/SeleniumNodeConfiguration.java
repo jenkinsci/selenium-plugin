@@ -16,7 +16,12 @@ import org.kohsuke.stapler.export.ExportedBean;
 @ExportedBean
 public abstract class SeleniumNodeConfiguration extends SeleniumJarRunner implements Describable<SeleniumNodeConfiguration>, Serializable {
 
-    private String displayName = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6869016011243891909L;
+
+	private String displayName = null;
 
     private String display;
 

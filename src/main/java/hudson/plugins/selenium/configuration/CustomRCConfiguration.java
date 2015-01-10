@@ -24,7 +24,12 @@ import org.kohsuke.stapler.export.Exported;
 
 public class CustomRCConfiguration extends SeleniumNodeConfiguration {
 
-    private int port = 4444;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 140690678989633328L;
+	
+	private int port = 4444;
     private boolean rcBrowserSideLog;
     private boolean rcDebug;
     private boolean rcTrustAllSSLCerts;
