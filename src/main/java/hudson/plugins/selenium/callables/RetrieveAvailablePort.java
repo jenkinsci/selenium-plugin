@@ -4,7 +4,9 @@ import hudson.remoting.Callable;
 
 import java.net.ServerSocket;
 
-public class RetrieveAvailablePort implements Callable<Integer, Exception> {
+import jenkins.security.MasterToSlaveCallable;
+
+public class RetrieveAvailablePort extends MasterToSlaveCallable<Integer, Exception> {
 
     /**
 	 * 

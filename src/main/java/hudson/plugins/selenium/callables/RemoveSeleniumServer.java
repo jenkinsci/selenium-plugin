@@ -7,11 +7,13 @@ import hudson.remoting.Callable;
 
 import java.util.Map;
 
+import jenkins.security.MasterToSlaveCallable;
+
 /**
  * @author Richard Lavoie
  * 
  */
-public class RemoveSeleniumServer implements Callable<Void, Exception> {
+public class RemoveSeleniumServer extends MasterToSlaveCallable<Void, Exception> {
 
     /**
      * 

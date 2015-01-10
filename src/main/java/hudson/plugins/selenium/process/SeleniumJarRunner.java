@@ -13,11 +13,12 @@ import hudson.plugins.selenium.callables.RunningRemoteSetterCallable;
 import hudson.plugins.selenium.callables.SeleniumCallable;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.plugins.selenium.callables.StopSeleniumServer;
-import hudson.remoting.Callable;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
+
+import jenkins.security.MasterToSlaveCallable;
 
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
@@ -70,7 +71,7 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
         if (path != null) {
             try {
                 final String url = computer.getNode().getRootPath().act(new StopSeleniumServer(name));
-                PluginImpl.getPlugin().getHubChannel().call(new Callable<Void, Exception>() {
+                PluginImpl.getPlugin().getHubChannel().call(new MasterToSlaveCallable<Void, Exception>() {
 
                     /**
                      * 

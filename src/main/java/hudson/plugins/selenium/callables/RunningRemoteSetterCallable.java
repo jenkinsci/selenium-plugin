@@ -1,5 +1,6 @@
 package hudson.plugins.selenium.callables;
 
+import jenkins.security.MasterToSlaveCallable;
 import hudson.plugins.selenium.RemoteRunningStatus;
 import hudson.remoting.Callable;
 
@@ -11,7 +12,7 @@ import hudson.remoting.Callable;
  * @param <T>
  * @param <E>
  */
-public class RunningRemoteSetterCallable implements Callable<Void, Exception> {
+public class RunningRemoteSetterCallable extends MasterToSlaveCallable<Void, Exception> {
 
     /**
 	 * 

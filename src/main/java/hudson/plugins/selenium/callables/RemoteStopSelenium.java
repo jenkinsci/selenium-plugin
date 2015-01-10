@@ -6,10 +6,12 @@ import hudson.remoting.Channel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jenkins.security.MasterToSlaveCallable;
+
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
-public class RemoteStopSelenium implements Callable<String, Exception> {
+public class RemoteStopSelenium extends MasterToSlaveCallable<String, Exception> {
 
     /**
 	 * 

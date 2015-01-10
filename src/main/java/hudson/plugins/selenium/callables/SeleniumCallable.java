@@ -1,7 +1,6 @@
 package hudson.plugins.selenium.callables;
 
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
 import hudson.model.TaskListener;
 import hudson.plugins.selenium.RemoteControlLauncher;
 import hudson.plugins.selenium.RemoteRunningStatus;
@@ -20,9 +19,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jenkins.MasterToSlaveFileCallable;
+
 import org.apache.commons.lang.ArrayUtils;
 
-public class SeleniumCallable implements FileCallable<String> {
+public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
 
     private static final String ROLE_PARAM = "-role";
 

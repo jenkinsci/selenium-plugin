@@ -3,13 +3,14 @@ package hudson.plugins.selenium;
 import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.model.Node;
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import jenkins.security.MasterToSlaveCallable;
 
 import org.apache.commons.lang.StringUtils;
 import org.openqa.grid.internal.utils.CapabilityMatcher;
@@ -101,7 +102,7 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
     /**
      * Checks if the given node satisfies the label expression.
      */
-    private static class LabelMatcherCallable implements Callable<Boolean, ANTLRException> {
+    private static class LabelMatcherCallable extends MasterToSlaveCallable<Boolean, ANTLRException> {
 
         private final String nodeName;
         private final String labelExpr;

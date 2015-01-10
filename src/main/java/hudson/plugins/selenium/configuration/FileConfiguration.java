@@ -2,7 +2,6 @@ package hudson.plugins.selenium.configuration;
 
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
 import hudson.model.Computer;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.VirtualChannel;
@@ -12,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Logger;
+
+import jenkins.MasterToSlaveFileCallable;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
@@ -51,7 +52,7 @@ public class FileConfiguration extends SeleniumNodeConfiguration {
         try {
             final String filename = "selenium-temp-config-" + System.currentTimeMillis() + ".json";
 
-            String fullPath = c.getNode().getRootPath().act(new FileCallable<String>() {
+            String fullPath = c.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
 
                 /**
 				 * 

@@ -56,7 +56,7 @@
       <h2>${%Status}</h2>
 
       <j:choose>
-        <j:when test="${it.getCurrentHubParams().isActive}">
+        <j:when test="${it.getCurrentHubParams().isActive()}">
           <p><font color="green"><b><i>Online</i></b></font></p>
 
           <p>

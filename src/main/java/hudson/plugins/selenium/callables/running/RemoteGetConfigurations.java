@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-public class RemoteGetConfigurations implements Callable<Set<String>, Exception> {
+import jenkins.security.MasterToSlaveCallable;
+
+public class RemoteGetConfigurations extends MasterToSlaveCallable<Set<String>, Exception> {
 
     /**
 	 * 

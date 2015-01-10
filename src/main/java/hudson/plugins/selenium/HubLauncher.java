@@ -1,10 +1,11 @@
 package hudson.plugins.selenium;
 
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import jenkins.security.MasterToSlaveCallable;
 
 import org.jfree.util.Log;
 import org.openqa.grid.internal.utils.GridHubConfiguration;
@@ -17,7 +18,7 @@ import org.openqa.grid.web.Hub;
  *
  * @author Kohsuke Kawaguchi
  */
-public class HubLauncher implements Callable<Void, Exception> {
+public class HubLauncher extends MasterToSlaveCallable<Void, Exception> {
 
     /**
 	 *

@@ -48,7 +48,6 @@ import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfiguratio
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
 import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.plugins.selenium.process.SeleniumProcessUtils;
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
@@ -79,8 +78,9 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
-
+import jenkins.security.MasterToSlaveCallable;
 import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
@@ -282,7 +282,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     @Exported
     public boolean getConfigurationChanged() {
         HubParams activeHubParams = getCurrentHubParams();
-        return !activeHubParams.isNotActiveOn(getMasterHostName(), port);
+        return activeHubParams.isNotActiveOn(getMasterHostName(), port);
     }
     @Exported
     public Integer getActivePort() {
@@ -333,7 +333,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         if (channel == null)
             return Collections.emptyList();
 
-        Collection<SeleniumTestSlotGroup> rcs = channel.call(new Callable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
+        Collection<SeleniumTestSlotGroup> rcs = channel.call(new MasterToSlaveCallable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
 
             /**
              *

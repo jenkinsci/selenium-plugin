@@ -1,9 +1,8 @@
 package hudson.plugins.selenium;
 
-import hudson.remoting.Callable;
+import jenkins.security.MasterToSlaveCallable;
 
-class HubParamsCallable implements Callable<HubParams, Throwable> {
-
+class HubParamsCallable extends MasterToSlaveCallable<HubParams, Throwable> {
 
 	/**
 	 * 

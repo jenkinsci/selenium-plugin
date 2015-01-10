@@ -5,7 +5,6 @@ package hudson.plugins.selenium.configuration;
 
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
 import hudson.model.Computer;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.VirtualChannel;
@@ -19,6 +18,8 @@ import java.io.StringReader;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import jenkins.MasterToSlaveFileCallable;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -131,7 +132,7 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
                 }
             }
 
-            String fullPath = computer.getNode().getRootPath().act(new FileCallable<String>() {
+            String fullPath = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
 
                 /**
                  *

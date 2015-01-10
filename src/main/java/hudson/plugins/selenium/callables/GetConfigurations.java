@@ -1,11 +1,12 @@
 package hudson.plugins.selenium.callables;
 
 import hudson.plugins.selenium.process.SeleniumRunOptions;
-import hudson.remoting.Callable;
 
 import java.util.Map;
 
-public class GetConfigurations implements Callable<Map<String, SeleniumRunOptions>, Exception> {
+import jenkins.security.MasterToSlaveCallable;
+
+public class GetConfigurations extends MasterToSlaveCallable<Map<String, SeleniumRunOptions>, Exception> {
 
     /**
 	 * 

@@ -19,6 +19,10 @@ public class HubParams implements Serializable {
 		this.isActive = isActive;
 	}
 	
+	public boolean isActive() {
+		return isActive;
+	}
+	
 	public boolean isNotActiveOn(String masterHostName, int masterPort) {
 		return isActive && !(port == masterPort && host.equalsIgnoreCase(masterHostName));
 	}

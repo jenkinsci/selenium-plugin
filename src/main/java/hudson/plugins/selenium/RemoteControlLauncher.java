@@ -2,8 +2,8 @@ package hudson.plugins.selenium;
 
 import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.SeleniumConstants;
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
+import jenkins.security.MasterToSlaveCallable;
 
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
@@ -18,7 +18,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  * @author Kohsuke Kawaguchi
  * @author Richard Lavoie
  */
-public class RemoteControlLauncher implements Callable<Void, Exception> {
+public class RemoteControlLauncher extends MasterToSlaveCallable<Void, Exception> {
 
     /**
 	 * 

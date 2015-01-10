@@ -5,6 +5,7 @@ package hudson.plugins.selenium.callables.hub;
 
 import java.util.logging.Logger;
 
+import jenkins.security.MasterToSlaveCallable;
 import hudson.plugins.selenium.HubHolder;
 import hudson.remoting.Callable;
 
@@ -12,7 +13,7 @@ import hudson.remoting.Callable;
  * @author Richard Lavoie
  *
  */
-public class StopHubCallable implements Callable<Void, Exception> {
+public class StopHubCallable extends MasterToSlaveCallable<Void, Exception> {
 
 	/**
 	 * 

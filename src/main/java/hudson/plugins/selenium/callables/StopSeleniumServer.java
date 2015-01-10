@@ -3,6 +3,7 @@
  */
 package hudson.plugins.selenium.callables;
 
+import jenkins.security.MasterToSlaveCallable;
 import hudson.plugins.selenium.RemoteRunningStatus;
 import hudson.remoting.Callable;
 
@@ -10,7 +11,7 @@ import hudson.remoting.Callable;
  * @author Richard Lavoie
  * 
  */
-public class StopSeleniumServer implements Callable<String, Exception> {
+public class StopSeleniumServer extends MasterToSlaveCallable<String, Exception> {
 
     /**
      * 

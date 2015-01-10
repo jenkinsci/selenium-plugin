@@ -3,7 +3,6 @@
  */
 package hudson.plugins.selenium.configuration.browser;
 
-import hudson.FilePath.FileCallable;
 import hudson.Functions;
 import hudson.model.Computer;
 import hudson.remoting.RemoteInputStream;
@@ -14,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import jenkins.MasterToSlaveFileCallable;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +28,7 @@ public final class SeleniumBrowserServerUtils {
         String server_path = null;
         if (StringUtils.isBlank(server_binary)) {
             try {
-                Boolean isWin64bit = computer.getNode().getRootPath().act(new FileCallable<Boolean>() {
+                Boolean isWin64bit = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<Boolean>() {
 
                     private static final long serialVersionUID = -726600253548951419L;
 
@@ -45,7 +46,7 @@ public final class SeleniumBrowserServerUtils {
                 if (isWin64bit != null) {
                     URL url = SeleniumBrowserServerUtils.class.getClassLoader().getResource("IEDriverServer_" + (isWin64bit ? "64" : "32") + ".exe");
                     final InputStream is = new RemoteInputStream(url.openStream());
-                    server_path = computer.getNode().getRootPath().act(new FileCallable<String>() {
+                    server_path = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
 
                         private static final long serialVersionUID = 4508849758404950847L;
 
