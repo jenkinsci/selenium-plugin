@@ -1,8 +1,8 @@
 package hudson.plugins.selenium;
 
-import hudson.model.Hudson;
-import hudson.model.Node;
-import hudson.model.Node.Mode;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
 import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser;
@@ -10,19 +10,17 @@ import hudson.plugins.selenium.configuration.browser.webdriver.HTMLUnitBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.OperaBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
+import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.NodeLabelMatcher;
-import hudson.plugins.selenium.process.SeleniumRunOptions;
-import hudson.slaves.NodeProperty;
-import hudson.slaves.DumbSlave;
-import hudson.slaves.RetentionStrategy;
-import hudson.tasks.Mailer;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.jvnet.hudson.test.HudsonTestCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -34,15 +32,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author Kohsuke Kawaguchi
  * @author Richard Lavoie
  */
-public class SeleniumTest extends HudsonTestCase {
+public class SeleniumTest {
 
-    @Override
-    protected Hudson newHudson() throws Exception {
-        Hudson h = super.newHudson();
-        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
-        return h;
-    }
+	private static final String WEB_SITE_URL = "http://jenkins-ci.org/";
+	
+	@Rule
+	public JenkinsRule j = new JenkinsRule();
 
+    @Test
     public void testWDConfiguration() throws Exception {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(1));
@@ -51,68 +48,83 @@ public class SeleniumTest extends HudsonTestCase {
         browsers.add(new OperaBrowser(1, "", ""));
 
         CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);
-        SeleniumRunOptions opt = cc.initOptions(null);
+        addConfiguration("customWD", new NodeLabelMatcher("label-node"), cc);
+        j.createSlave("foo", "label-node", null);
+        
+        waitForRC();
+        
+        Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
+        assertEquals(1, slots.size());
+        List<SeleniumTestSlot> testSlots = slots.iterator().next().getSlots();
+        assertEquals(4, testSlots.size());
+        assertHasBrowser(true, testSlots, DesiredCapabilities.firefox().getBrowserName());
+        assertHasBrowser(true, testSlots, DesiredCapabilities.htmlUnit().getBrowserName());
+        assertHasBrowser(true, testSlots, DesiredCapabilities.internetExplorer().getBrowserName());
+        assertHasBrowser(true, testSlots, DesiredCapabilities.opera().getBrowserName());
+    }
+    
+    private static void assertHasBrowser(boolean validationValue, List<SeleniumTestSlot> slots, String browser) {
+    	boolean contains = false;
+    	if (slots != null) {
+	    	for (SeleniumTestSlot slot : slots) {
+	    		if (slot.getBrowserName().equals(browser)) {
+	    			contains = true; 
+	    			break;
+	    		}
+	    	}
+    	}
+    	assertEquals(validationValue, contains);
     }
 
+    @Test
     public void testSelenium1() throws Exception {
-
-        // system config to set the root URL
-
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(10));
 
         CustomWDConfiguration cc = new CustomWDConfiguration(5001, -1, browsers, null);
-        getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new NodeLabelMatcher("foolabel"), cc));
-        // HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foolabel", createComputerLauncher(null),
-                RetentionStrategy.NOOP, new ArrayList<NodeProperty<Node>>());
-        hudson.addNode(slave);
+        addConfiguration("test", new NodeLabelMatcher("foolabel"), cc);
+        j.createSlave("foo", "foolabel", null);
 
         waitForRC();
-
+        
         DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
-        dc.setCapability("jenkins.label", "foo");
-        WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
 
+        // No label requested should find the node
+        WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         try {
-            wd.get("http://www.google.com/");
-            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.tagName("title")));
+            wd.get(WEB_SITE_URL);
+            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("logo")));
         } finally {
             wd.quit();
         }
 
         dc = DesiredCapabilities.htmlUnit();
-        System.out.println("jenkins.label=foolabel");
         dc.setCapability("jenkins.label", "foolabel");
+        WebDriver dr = null;
         try {
-            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
-            dr.quit();
+            dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         } catch (Exception e) {
             fail(e.getMessage()); // should have passed
+        } finally {
+        	if (dr != null) {
+        		dr.quit();
+        	}
         }
 
-        System.out.println("jenkins.nodeName=foo");
         dc = DesiredCapabilities.htmlUnit();
         dc.setCapability("jenkins.nodeName", "foo");
         try {
-            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
-            dr.quit();
+            dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         } catch (Exception e) {
             fail(e.getMessage()); // should have passed
-        }
-
-        dc.setCapability("jenkins.label", "foolabel");
-        System.out.println("jenkins.label=foolabel & jenkins.nodeName=foo");
-        try {
-            WebDriver dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
-            dr.quit();
-        } catch (Exception e) {
-            fail(e.getMessage()); // should have passed
+        } finally {
+        	if (dr != null) {
+        		dr.quit();
+        	}
         }
 
         dc = DesiredCapabilities.htmlUnit();
         dc.setCapability("jenkins.label", "bar");
-        System.out.println("jenkins.label=bar");
         try {
             new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
             fail("jenkins.label=bar should not return a valid session"); // should have failed
@@ -122,21 +134,29 @@ public class SeleniumTest extends HudsonTestCase {
 
     }
 
-    private void waitForRC() throws Exception {
+    private void addConfiguration(String name, SeleniumConfigurationMatcher matcher, SeleniumNodeConfiguration configuration) {
+    	getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration(name, matcher, configuration));
+		
+	}
+
+	private void waitForRC() throws Exception {
         getPlugin().waitForHubLaunch();
         for (int i = 0; i < 100; i++) {
             Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
-            if (!slots.isEmpty())
+            if (!slots.isEmpty()) {
+            	//Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[] { Which.classFileUrl(Hub.class) }, ClassLoader.getSystemClassLoader()));
                 return;
-            Thread.sleep(500);
+            }
+            Thread.sleep(2000);
         }
         throw new AssertionError("No RC had checked in");
     }
 
     private PluginImpl getPlugin() {
-        return hudson.getPlugin(PluginImpl.class);
+        return j.jenkins.getPlugin(PluginImpl.class);
     }
 
+    @Test 
     public void testLabelMatch() throws Exception {
 
         // system config to set the root URL
@@ -147,13 +167,7 @@ public class SeleniumTest extends HudsonTestCase {
         CustomWDConfiguration cc = new CustomWDConfiguration(5002, -1, browsers, null);
 
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new NodeLabelMatcher("foolabel"), cc));
-        Mailer.descriptor().setHudsonUrl(getURL().toExternalForm());
-
-        // HtmlPage newSlave = submit(new WebClient().goTo("configure").getFormByName("config"));
-        DumbSlave slave = new DumbSlave("foo", "dummy", createTmpDir().getPath(), "1", Mode.NORMAL, "foolabel", createComputerLauncher(null),
-                RetentionStrategy.NOOP, new ArrayList<NodeProperty<Node>>());
-
-        hudson.addNode(slave);
+        j.createSlave("foo", "foolabel", null);
 
         waitForRC();
 

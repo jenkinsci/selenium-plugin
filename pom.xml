@@ -134,6 +134,20 @@
      </developers>
      <dependencies>
           <dependency>
+               <!-- Ditto with httpcore -->
+               <groupId>org.apache.httpcomponents</groupId>
+               <artifactId>httpcore</artifactId>
+               <version>4.3.2</version>
+               <scope>test</scope>
+          </dependency>
+          <dependency>
+               <!-- Ditto with httpclient -->
+               <groupId>org.apache.httpcomponents</groupId>
+               <artifactId>httpclient</artifactId>
+               <version>4.3.2</version>
+               <scope>test</scope>
+          </dependency>
+          <dependency>
                <!-- selenium contains its own Jetty, and unless we declare this dependency first, its Jetty will show up in front of the jetty in the test 
                     harness -->
                <groupId>org.jenkins-ci.main</groupId>
@@ -150,12 +164,7 @@
           </dependency>
           <dependency>
                <groupId>org.seleniumhq.selenium</groupId>
-               <artifactId>selenium-server-standalone</artifactId>
-               <version>${selenium.version}</version>
-          </dependency>
-          <dependency>
-               <groupId>org.seleniumhq.selenium</groupId>
-               <artifactId>selenium-java</artifactId>
+               <artifactId>selenium-remote-driver</artifactId>
                <version>${selenium.version}</version>
                <scope>test</scope>
           </dependency>
@@ -163,6 +172,11 @@
                <groupId>org.json</groupId>
                <artifactId>json</artifactId>
                <version>20080701</version>
+          </dependency>
+          <dependency>
+               <groupId>org.seleniumhq.selenium</groupId>
+               <artifactId>selenium-server-standalone</artifactId>
+               <version>${selenium.version}</version>
           </dependency>
      </dependencies>
      <repositories>
