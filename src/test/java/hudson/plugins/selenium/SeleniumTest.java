@@ -49,7 +49,7 @@ public class SeleniumTest {
 
         CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);
         addConfiguration("customWD", new NodeLabelMatcher("label-node"), cc);
-        j.createSlave("foo", "label-node", null);
+        j.createSlave("label-node", "label-node", null);
         
         waitForRC();
         
