@@ -20,23 +20,23 @@ public class ChromeBrowser extends SeleniumBrowser {
 
     transient final protected String PARAM_BINARY_PATH = "webdriver.chrome.driver";
 
-    private String server_binary;
+    private String binary;
 
     @DataBoundConstructor
-    public ChromeBrowser(int maxInstances, String version, String server_binary) {
+    public ChromeBrowser(int maxInstances, String version, String binary) {
         super(maxInstances, version, "*googlechrome");
-        this.server_binary = server_binary;
+        this.binary = binary;
     }
 
     @Exported
     public String getBinary() {
-        return server_binary;
+        return binary;
     }
 
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, PARAM_BINARY_PATH, server_binary);
+        combine(args, PARAM_BINARY_PATH, binary);
         return args;
     }
 
