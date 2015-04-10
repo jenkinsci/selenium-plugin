@@ -6,8 +6,7 @@
   <groupId>org.seleniumhq.selenium</groupId>
   <artifactId>selenium-server-standalone</artifactId>
   <packaging>pom</packaging>
-  <version>2.45.0</version>
-  <major-version>2.45</major-version>
+  <version>2.44.0</version>
   <name>Selenium Server Standalone</name>
 
   <properties>
@@ -28,7 +27,7 @@
             </goals>
             <configuration>
               <target>
-                <get src="http://selenium-release.storage.googleapis.com/${project.major-version}/selenium-server-standalone-${project.version}.jar"
+                <get src="http://selenium.googlecode.com/files/selenium-server-standalone-${project.version}.jar"
                      dest="${project.build.directory}/selenium-server-standalone-${project.version}.jar"
                      verbose="on"
                      usetimestamp="true"
