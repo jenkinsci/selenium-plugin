@@ -212,9 +212,9 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             args.add("-throwOnCapabilityNotPresent");
             args.add(Boolean.toString(getThrowOnCapabilityNotPresent()));
         }
-
-        args.add("-host");
-        args.add(getMasterHostName());
+//remove "-host" for bind on all ip (0.0.0.0)
+//        args.add("-host");
+//        args.add(getMasterHostName());
 
         hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[args.size()]), logLevel));
 
