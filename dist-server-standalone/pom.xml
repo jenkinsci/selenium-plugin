@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.seleniumhq.selenium</groupId>
-  <artifactId>selenium-server-standalone</artifactId>
+  <artifactId>selenium-server</artifactId>
   <packaging>pom</packaging>
   <version>2.53.0</version>
   <name>Selenium Server Standalone</name>
