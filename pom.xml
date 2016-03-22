@@ -183,7 +183,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-java</artifactId>
+			<artifactId>selenium-server-standalone</artifactId>
 			<version>${selenium.version}</version>
 		</dependency>
 	</dependencies>
