@@ -1,23 +1,11 @@
 package hudson.plugins.selenium;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
-import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.HTMLUnitBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.OperaBrowser;
+import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
+import hudson.plugins.selenium.configuration.browser.webdriver.*;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
-import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.NodeLabelMatcher;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -28,6 +16,14 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 /**
  * @author Kohsuke Kawaguchi
  * @author Richard Lavoie
@@ -35,7 +31,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class SeleniumTest {
 
 	private static final String WEB_SITE_URL = "http://jenkins-ci.org/";
-	
+
 	@Rule
 	public JenkinsRule j = new JenkinsRule();
 
@@ -50,9 +46,9 @@ public class SeleniumTest {
         CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);
         addConfiguration("customWD", new NodeLabelMatcher("label-node"), cc);
         j.createSlave("label-node", "label-node", null);
-        
+
         waitForRC();
-        
+
         Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
         assertEquals(1, slots.size());
         List<SeleniumTestSlot> testSlots = slots.iterator().next().getSlots();
@@ -62,13 +58,13 @@ public class SeleniumTest {
         assertHasBrowser(true, testSlots, DesiredCapabilities.internetExplorer().getBrowserName());
         assertHasBrowser(true, testSlots, DesiredCapabilities.opera().getBrowserName());
     }
-    
+
     private static void assertHasBrowser(boolean validationValue, List<SeleniumTestSlot> slots, String browser) {
     	boolean contains = false;
     	if (slots != null) {
 	    	for (SeleniumTestSlot slot : slots) {
 	    		if (slot.getBrowserName().equals(browser)) {
-	    			contains = true; 
+	    			contains = true;
 	    			break;
 	    		}
 	    	}
@@ -86,7 +82,7 @@ public class SeleniumTest {
         j.createSlave("foo", "foolabel", null);
 
         waitForRC();
-        
+
         DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
 
         // No label requested should find the node
@@ -136,7 +132,7 @@ public class SeleniumTest {
 
     private void addConfiguration(String name, SeleniumConfigurationMatcher matcher, SeleniumNodeConfiguration configuration) {
     	getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration(name, matcher, configuration));
-		
+
 	}
 
 	private void waitForRC() throws Exception {
@@ -147,7 +143,13 @@ public class SeleniumTest {
             	//Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[] { Which.classFileUrl(Hub.class) }, ClassLoader.getSystemClassLoader()));
                 return;
             }
-            Thread.sleep(2000);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                System.err.println("Selenium hub test threw interrupted exception");
+                e.printStackTrace();
+                throw e;
+            }
         }
         throw new AssertionError("No RC had checked in");
     }
@@ -156,7 +158,7 @@ public class SeleniumTest {
         return j.jenkins.getPlugin(PluginImpl.class);
     }
 
-    @Test 
+    @Test
     public void testLabelMatch() throws Exception {
 
         // system config to set the root URL
