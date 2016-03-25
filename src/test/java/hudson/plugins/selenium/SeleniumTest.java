@@ -141,7 +141,7 @@ public class SeleniumTest {
 
 	private void waitForRC() throws Exception {
         getPlugin().waitForHubLaunch();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 50; i++) {
             Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
             if (!slots.isEmpty()) {
             	//Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[] { Which.classFileUrl(Hub.class) }, ClassLoader.getSystemClassLoader()));
