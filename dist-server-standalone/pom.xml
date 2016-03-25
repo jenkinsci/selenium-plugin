@@ -6,10 +6,13 @@
   <groupId>org.seleniumhq.selenium</groupId>
   <artifactId>selenium-server-standalone</artifactId>
   <packaging>pom</packaging>
-  <version>2.35.0</version>
+  <version>${selenium.version}</version>
+
   <name>Selenium Server Standalone</name>
 
   <properties>
+      <selenium.short.version>2.53</selenium.short.version>
+      <selenium.version>${selenium.short.version}.0</selenium.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -27,8 +30,8 @@
             </goals>
             <configuration>
               <target>
-                <get src="http://selenium.googlecode.com/files/selenium-server-standalone-${project.version}.jar"
-                     dest="${project.build.directory}/selenium-server-standalone-${project.version}.jar"
+                <get src="http://selenium-release.storage.googleapis.com/${selenium.short.version}/selenium-server-standalone-${selenium.version}.jar"
+                     dest="${project.build.directory}/selenium-server-standalone-${selenium.version}.jar"
                      verbose="on"
                      usetimestamp="true"
                 />
