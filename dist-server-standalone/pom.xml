@@ -11,8 +11,8 @@
   <name>Selenium Server Standalone</name>
 
   <properties>
-      <selenium.short.version>2.47</selenium.short.version>
-      <selenium.version>${selenium.short.version}.1</selenium.version>
+      <selenium.short.version>2.53</selenium.short.version>
+      <selenium.version>${selenium.short.version}.0</selenium.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
