@@ -24,7 +24,7 @@
         <version>1.7</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>install</phase>
             <goals>
               <goal>run</goal>
             </goals>
@@ -41,27 +41,26 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.7</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>deploy-file</goal>
-            </goals>
-            <configuration>
-              <file>${project.build.directory}/selenium-server-standalone-${project.version}.jar</file>
-              <repositoryId>maven.jenkins-ci.org</repositoryId>
-              <url>http://maven.jenkins-ci.org:8081/content/repositories/releases</url>
-              <generatePom>false</generatePom>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.1</version>
+          <executions>
+              <execution>
+                  <phase>install</phase>
+                  <goals>
+                      <goal>install-file</goal>
+                  </goals>
+                  <configuration>
+                      <file>${project.build.directory}/selenium-server-standalone-${selenium.version}.jar</file>
+                      <groupId>org.seleniumhq.selenium</groupId>
+                      <artifactId>selenium-server-standalone</artifactId>
+                      <version>${selenium.version}</version>
+                      <packaging>jar</packaging>
 
-              <version>${project.version}</version>
-              <groupId>${project.groupId}</groupId>
-              <artifactId>${project.artifactId}</artifactId>
-            </configuration>
-          </execution>
-        </executions>
+                      <localRepositoryPath>local_m2</localRepositoryPath>
+                  </configuration>
+              </execution>
+          </executions>
       </plugin>
     </plugins>
   </build>

@@ -199,6 +199,10 @@
 	</dependencies>
 	<repositories>
 		<repository>
+			<id>Local repository for selenium standalone server</id>
+			<url>file://${basedir}/dist-server-standalone/local_m2</url>
+		</repository>
+		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</repository>
