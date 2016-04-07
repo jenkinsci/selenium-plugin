@@ -35,7 +35,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class SeleniumTest {
 
 	private static final String WEB_SITE_URL = "http://jenkins-ci.org/";
-	
+
 	@Rule
 	public JenkinsRule j = new JenkinsRule();
 
@@ -50,9 +50,9 @@ public class SeleniumTest {
         CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);
         addConfiguration("customWD", new NodeLabelMatcher("label-node"), cc);
         j.createSlave("label-node", "label-node", null);
-        
+
         waitForRC();
-        
+
         Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
         assertEquals(1, slots.size());
         List<SeleniumTestSlot> testSlots = slots.iterator().next().getSlots();
@@ -62,13 +62,13 @@ public class SeleniumTest {
         assertHasBrowser(true, testSlots, DesiredCapabilities.internetExplorer().getBrowserName());
         assertHasBrowser(true, testSlots, DesiredCapabilities.opera().getBrowserName());
     }
-    
+
     private static void assertHasBrowser(boolean validationValue, List<SeleniumTestSlot> slots, String browser) {
     	boolean contains = false;
     	if (slots != null) {
 	    	for (SeleniumTestSlot slot : slots) {
 	    		if (slot.getBrowserName().equals(browser)) {
-	    			contains = true; 
+	    			contains = true;
 	    			break;
 	    		}
 	    	}
@@ -76,7 +76,10 @@ public class SeleniumTest {
     	assertEquals(validationValue, contains);
     }
 
-    @Test
+    /* @Test Disable test because htmlunit is no longer provided with selenium server, and
+     *          a way needs to be found to get the htmlunit browser dependency on the jenkins slaves
+     *          and selenium nodes so the test can once again run.
+     */
     public void testSelenium1() throws Exception {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(10));
@@ -86,7 +89,7 @@ public class SeleniumTest {
         j.createSlave("foo", "foolabel", null);
 
         waitForRC();
-        
+
         DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
 
         // No label requested should find the node
@@ -136,7 +139,7 @@ public class SeleniumTest {
 
     private void addConfiguration(String name, SeleniumConfigurationMatcher matcher, SeleniumNodeConfiguration configuration) {
     	getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration(name, matcher, configuration));
-		
+
 	}
 
 	private void waitForRC() throws Exception {
@@ -156,7 +159,7 @@ public class SeleniumTest {
         return j.jenkins.getPlugin(PluginImpl.class);
     }
 
-    @Test 
+    @Test
     public void testLabelMatch() throws Exception {
 
         // system config to set the root URL
