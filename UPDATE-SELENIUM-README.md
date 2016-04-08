@@ -1,4 +1,4 @@
-Updating selenium standalone server is done in four steps:
+Updating selenium standalone server is done in these steps:
 
 1. Bump selenium server standalone version number in dist-server-standalone/pom.xml
 2. Remove folder dist-server-standalone/local_m2
