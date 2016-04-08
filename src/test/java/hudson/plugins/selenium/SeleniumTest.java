@@ -1,23 +1,11 @@
 package hudson.plugins.selenium;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
-import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.HTMLUnitBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.OperaBrowser;
+import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
+import hudson.plugins.selenium.configuration.browser.webdriver.*;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
-import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.NodeLabelMatcher;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -27,6 +15,14 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -38,6 +34,8 @@ public class SeleniumTest {
 
 	@Rule
 	public JenkinsRule j = new JenkinsRule();
+
+    private int timeout = j.timeout;
 
     @Test
     public void testWDConfiguration() throws Exception {
@@ -78,6 +76,10 @@ public class SeleniumTest {
 
     @Test
     public void testSelenium1() throws Exception {
+
+        //Set jenkins rule timeout to never
+        j.timeout = 0;
+
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(10));
 
@@ -143,7 +145,8 @@ public class SeleniumTest {
 
 	private void waitForRC() throws Exception {
         getPlugin().waitForHubLaunch();
-        for (int i = 0; i < 50; i++) {
+        //Try for a maximum less than default test timeout of 180 seconds
+        for (long i = System.currentTimeMillis() + (timeout * 1000); System.currentTimeMillis() < i;) {
             Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
             if (!slots.isEmpty()) {
             	//Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[] { Which.classFileUrl(Hub.class) }, ClassLoader.getSystemClassLoader()));
