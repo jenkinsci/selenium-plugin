@@ -146,7 +146,7 @@ public class SeleniumTest {
 	private void waitForRC() throws Exception {
         getPlugin().waitForHubLaunch();
         //Try for a maximum less than default test timeout of 180 seconds
-        for (long i = System.currentTimeMillis() + (timeout * 1000); System.currentTimeMillis() < i;) {
+        for (long i = System.currentTimeMillis() + (timeout * 900); System.currentTimeMillis() < i;) {
             Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
             if (!slots.isEmpty()) {
             	//Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[] { Which.classFileUrl(Hub.class) }, ClassLoader.getSystemClassLoader()));
@@ -154,7 +154,7 @@ public class SeleniumTest {
             }
             Thread.sleep(2000);
         }
-        throw new AssertionError("No RC had checked in");
+        throw new AssertionError("No RC had checked in after " + (timeout * 0.9) + " seconds");
     }
 
     private PluginImpl getPlugin() {
