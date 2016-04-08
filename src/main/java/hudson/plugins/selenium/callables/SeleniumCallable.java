@@ -10,6 +10,8 @@ import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.Channel;
 import hudson.remoting.VirtualChannel;
 import hudson.util.IOException2;
+import jenkins.MasterToSlaveFileCallable;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jenkins.MasterToSlaveFileCallable;
-
-import org.apache.commons.lang.ArrayUtils;
 
 public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
 
@@ -34,7 +32,9 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
     private static final Logger LOGGER = Logger.getLogger(SeleniumCallable.class.getName());
 
     private FilePath seleniumJar;
-    private long jarTimestamp;
+    private FilePath htmlUnitDriverJar;
+    private long seleniumJarTimestamp;
+    private long htmlUnitDriverJarTimestamp;
     private String nodeName;
     private SeleniumRunOptions options;
     private String config;
@@ -42,10 +42,12 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
 
     private String[] defaultArgs;
 
-    public SeleniumCallable(FilePath jar, String nodehost, String masterName, int masterPort, String nodeName, TaskListener listener,
+    public SeleniumCallable(FilePath seleniumJar, FilePath htmlUnitDriverJar, String nodehost, String masterName, int masterPort, String nodeName, TaskListener listener,
             String confName, SeleniumRunOptions options) throws InterruptedException, IOException {
-        seleniumJar = jar;
-        jarTimestamp = jar.lastModified();
+        this.seleniumJar = seleniumJar;
+        seleniumJarTimestamp = seleniumJar.lastModified();
+        this.htmlUnitDriverJar = htmlUnitDriverJar;
+        htmlUnitDriverJarTimestamp = htmlUnitDriverJar.lastModified();
         this.nodeName = nodeName;
         this.options = options;
         this.listener = listener;
@@ -69,20 +71,29 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
         }
 
         // listener.getLogger().println("Copy grid jar");
-        File localJar = new File(f, seleniumJar.getName());
-        if (localJar.lastModified() != jarTimestamp) {
+        File localSeleniumJar = new File(f, seleniumJar.getName());
+        File localHtmlUnitDriverJar = new File(f, htmlUnitDriverJar.getName());
+        if (localSeleniumJar.lastModified() != seleniumJarTimestamp) {
             try {
-                seleniumJar.copyTo(new FilePath(localJar));
-                localJar.setLastModified(jarTimestamp);
+                seleniumJar.copyTo(new FilePath(localSeleniumJar));
+                localSeleniumJar.setLastModified(seleniumJarTimestamp);
             } catch (InterruptedException e) {
                 throw new IOException2("Failed to copy grid jar", e);
+            }
+        }
+        if (localHtmlUnitDriverJar.lastModified() != htmlUnitDriverJarTimestamp) {
+            try {
+                htmlUnitDriverJar.copyTo(new FilePath(localHtmlUnitDriverJar));
+                localHtmlUnitDriverJar.setLastModified(htmlUnitDriverJarTimestamp);
+            } catch (InterruptedException e) {
+                throw new IOException2("Failed to copy htmlunit driver jar", e);
             }
         }
 
         try {
 
             listener.getLogger().println("Creating selenium node VM");
-            Channel jvm = SeleniumProcessUtils.createSeleniumRCVM(localJar, listener, options.getJVMArguments(), options.getEnvironmentVariables());
+            Channel jvm = SeleniumProcessUtils.createSeleniumRCVM(localSeleniumJar, localHtmlUnitDriverJar, listener, options.getJVMArguments(), options.getEnvironmentVariables());
             status = new RemoteRunningStatus(jvm, options);
             status.setStatus(SeleniumConstants.STARTING);
 

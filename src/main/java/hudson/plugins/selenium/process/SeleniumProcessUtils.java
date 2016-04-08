@@ -17,6 +17,7 @@ import hudson.remoting.Which;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
 import hudson.util.JVMBuilder;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -53,30 +54,38 @@ public final class SeleniumProcessUtils {
     }
 
     /**
+     * Locate the htmlunit driver jar from the classpath. Only works on the master.
+     */
+    public static File findHtmlUnitDriverJar() throws IOException {
+        return Which.jarFile(HtmlUnitDriver.class);
+    }
+
+    /**
      * Launches Hub in a separate JVM.
-     * 
-     * @param rootDir
-     *            The slave/master root.
+     *
      */
     public static Channel createSeleniumGridVM(TaskListener listener) throws IOException, InterruptedException {
         JVMBuilder vmb = new JVMBuilder();
         vmb.systemProperties(null);
         return Channels.newJVM("Selenium Grid", listener, vmb, new FilePath(Jenkins.getInstance().getRootDir()),
-                new ClasspathBuilder().add(findStandAloneServerJar()));
+                new ClasspathBuilder().add(findStandAloneServerJar()).add(findHtmlUnitDriverJar()));
     }
 
     /**
      * Launches RC in a separate JVM.
-     * 
+     *
      * @param standaloneServerJar
      *            The jar file of the grid to launch.
      */
-    static public Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties,
+    static public Channel createSeleniumRCVM(File standaloneServerJar, File htmlUnitDriverJar, TaskListener listener, Map<String, String> properties,
             Map<String, String> envVariables) throws IOException, InterruptedException {
 
         String displayName = "Selenium RC";
 
         ClasspathBuilder classpath = new ClasspathBuilder().add(standaloneServerJar);
+        // add htmlunit to classpath
+        classpath.add(htmlUnitDriverJar);
+
         JVMBuilder vmb = new JVMBuilder();
         vmb.systemProperties(properties);
 
