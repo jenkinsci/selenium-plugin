@@ -75,7 +75,7 @@ public class SeleniumTest {
     }
 
     @Test
-    public void testSelenium1() throws Exception {
+    public void testHtmlUnitDriver() throws Exception {
 
         //Set jenkins rule timeout to never
         j.timeout = 0;
