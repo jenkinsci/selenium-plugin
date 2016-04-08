@@ -34,7 +34,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class SeleniumTest {
 
-	private static final String WEB_SITE_URL = "http://jenkins-ci.org/";
+	private static final String WEB_SITE_URL = "http://jenkins.io/";
 
 	@Rule
 	public JenkinsRule j = new JenkinsRule();
@@ -76,10 +76,7 @@ public class SeleniumTest {
     	assertEquals(validationValue, contains);
     }
 
-    /* @Test Disable test because htmlunit is no longer provided with selenium server, and
-     *          a way needs to be found to get the htmlunit browser dependency on the jenkins slaves
-     *          and selenium nodes so the test can once again run.
-     */
+    @Test
     public void testSelenium1() throws Exception {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(10));
@@ -96,7 +93,7 @@ public class SeleniumTest {
         WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         try {
             wd.get(WEB_SITE_URL);
-            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("logo")));
+            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("ji-home-carousel")));
         } finally {
             wd.quit();
         }
@@ -136,6 +133,8 @@ public class SeleniumTest {
         }
 
     }
+
+
 
     private void addConfiguration(String name, SeleniumConfigurationMatcher matcher, SeleniumNodeConfiguration configuration) {
     	getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration(name, matcher, configuration));
