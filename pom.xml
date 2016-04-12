@@ -12,8 +12,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jenkins.version>1.580.1</jenkins.version>
-        <!--<java.level>1.7</java.level>-->
-        <!--<java.level.test>1.7</java.level.test>-->
+        <findbugs.failOnError>false</findbugs.failOnError>
 
 		<selenium.short.version>2.53</selenium.short.version>
 		<selenium.version>${selenium.short.version}.0</selenium.version>
