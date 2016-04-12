@@ -1,23 +1,22 @@
 package hudson.plugins.selenium.configuration;
 
 import hudson.DescriptorExtensionList;
-import hudson.model.Describable;
 import hudson.model.Computer;
+import hudson.model.Describable;
 import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.plugins.selenium.process.SeleniumJarRunner;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
-
-import java.io.Serializable;
-
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import java.io.Serializable;
 
 @ExportedBean
 public abstract class SeleniumNodeConfiguration extends SeleniumJarRunner implements Describable<SeleniumNodeConfiguration>, Serializable {
 
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6869016011243891909L;
 
@@ -26,7 +25,6 @@ public abstract class SeleniumNodeConfiguration extends SeleniumJarRunner implem
     private String display;
 
     /**
-     * @param display
      */
     public SeleniumNodeConfiguration(String display) {
         this.display = display;

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package hudson.plugins.selenium.process;
 
@@ -9,12 +9,12 @@ import java.util.Collections;
 
 /**
  * @author Richard Lavoie
- * 
+ *
  */
 public class ProcessArgument implements Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 176693180466734322L;
     private String value;
@@ -33,7 +33,6 @@ public class ProcessArgument implements Serializable {
     }
 
     /**
-     * @return
      */
     public Collection<String> toArgumentsList() {
         return Collections.singletonList(value);

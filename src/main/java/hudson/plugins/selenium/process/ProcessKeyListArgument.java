@@ -1,29 +1,28 @@
 /**
- * 
+ *
  */
 package hudson.plugins.selenium.process;
+
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * @author Richard Lavoie
- * 
+ *
  */
 public class ProcessKeyListArgument extends ProcessArgument {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -138813439927716198L;
 
     private List<String> values;
 
     /**
-     * @param argumentValue
      */
     public ProcessKeyListArgument(String keyArgument, String... values) {
         super(keyArgument);

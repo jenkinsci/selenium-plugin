@@ -45,8 +45,6 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
     }
 
     /**
-     * @param computer
-     * @param name
      */
     public void remove(Computer computer, String name) {
         stop(computer, name);

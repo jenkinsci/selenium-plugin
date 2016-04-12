@@ -1,27 +1,14 @@
 package hudson.plugins.selenium.configuration.global;
 
 import hudson.DescriptorExtensionList;
-import hudson.model.Describable;
-import hudson.model.Failure;
-import hudson.model.TaskListener;
-import hudson.model.Computer;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
+import hudson.model.*;
 import hudson.plugins.selenium.PluginImpl;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
 import hudson.util.FormValidation;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.concurrent.ExecutionException;
-
-import javax.servlet.ServletException;
-
 import jenkins.model.Jenkins;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -29,11 +16,16 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.concurrent.ExecutionException;
+
 @ExportedBean
 public class SeleniumGlobalConfiguration implements Serializable, Describable<SeleniumGlobalConfiguration> {
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = -8366478398033252973L;
 
@@ -63,7 +55,6 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
     }
 
     /**
-     * @param computer
      */
     public void remove(Computer computer) {
         configuration.remove(computer, name);
@@ -71,8 +62,7 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
 
     /**
      * Returns the name of the configuration
-     * 
-     * @return
+     *
      */
     @Exported
     public String getName() {
