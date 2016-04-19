@@ -53,6 +53,16 @@
 			</roles>
 			<timezone>-5</timezone>
 		</developer>
+		<developer>
+			<id>mobrockers</id>
+			<name>Rouke Broersma</name>
+			<email>mobrockers@gmail.com</email>
+			<url>https://github.com/Mobrockers/</url>
+			<roles>
+				<role>maintainer</role>
+			</roles>
+			<timezone>CET</timezone>
+		</developer>
 	</developers>
 	<dependencies>
         <dependency>
