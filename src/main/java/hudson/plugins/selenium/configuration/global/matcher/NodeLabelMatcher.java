@@ -1,5 +1,6 @@
 package hudson.plugins.selenium.configuration.global.matcher;
 
+import antlr.ANTLRException;
 import hudson.Extension;
 import hudson.model.AutoCompletionCandidates;
 import hudson.model.Hudson;
@@ -7,23 +8,19 @@ import hudson.model.Label;
 import hudson.model.Node;
 import hudson.model.labels.LabelAtom;
 import hudson.util.FormValidation;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 
-import antlr.ANTLRException;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.List;
 
 @Extension
 public class NodeLabelMatcher extends SeleniumConfigurationMatcher {
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = -7254869163456438031L;
 
@@ -67,9 +64,7 @@ public class NodeLabelMatcher extends SeleniumConfigurationMatcher {
 
         /**
          * Returns a list of auto completion candidates.
-         * 
-         * @param value
-         *            to search for
+         *
          * @return candidates
          */
         public AutoCompletionCandidates doAutoCompleteLabel() {

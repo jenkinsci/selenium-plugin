@@ -21,32 +21,24 @@ import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.Plugin;
 import hudson.console.HyperlinkNote;
-import hudson.model.Action;
-import hudson.model.Describable;
-import hudson.model.Failure;
-import hudson.model.TaskListener;
-import hudson.model.Api;
-import hudson.model.Computer;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.model.Label;
+import hudson.model.*;
 import hudson.plugins.selenium.callables.hub.StopHubCallable;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
-import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomRCConfiguration;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
-import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
+import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.browser.selenium.ChromeBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.IEBrowser;
+import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.hostname.HostnameResolver;
 import hudson.plugins.selenium.configuration.global.hostname.HostnameResolverDescriptor;
 import hudson.plugins.selenium.configuration.global.hostname.JenkinsRootHostnameResolver;
+import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.MatcherDescriptor;
-import hudson.plugins.selenium.configuration.global.matcher.MatchAllMatcher;
 import hudson.plugins.selenium.process.SeleniumProcessUtils;
 import hudson.remoting.Channel;
 import hudson.security.Permission;
@@ -54,33 +46,9 @@ import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
 import hudson.util.IOException2;
 import hudson.util.StreamTaskListener;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.ServerSocket;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-
 import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
@@ -92,6 +60,18 @@ import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.ServletException;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Starts Selenium Grid server in another JVM.
@@ -652,9 +632,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     /**
-     * @param name
-     * @param conf
-     * @throws IOException
      */
     public void replaceGlobalConfigurations(String name, SeleniumGlobalConfiguration conf) throws IOException {
         validateAdmin();
@@ -664,9 +641,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     /**
-     * @param name
-     * @param save
-     * @throws IOException
      */
     private void removeGlobalConfigurations(String name, boolean save) throws IOException {
         Iterator<SeleniumGlobalConfiguration> it = configurations.iterator();

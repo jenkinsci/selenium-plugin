@@ -1,23 +1,11 @@
 package hudson.plugins.selenium;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
-import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.HTMLUnitBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.OperaBrowser;
+import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
+import hudson.plugins.selenium.configuration.browser.webdriver.*;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
-import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.NodeLabelMatcher;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -28,16 +16,26 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 /**
  * @author Kohsuke Kawaguchi
  * @author Richard Lavoie
  */
 public class SeleniumTest {
 
-	private static final String WEB_SITE_URL = "http://jenkins-ci.org/";
-	
+	private static final String WEB_SITE_URL = "http://jenkins.io/";
+
 	@Rule
 	public JenkinsRule j = new JenkinsRule();
+
+    private int timeout = j.timeout;
 
     @Test
     public void testWDConfiguration() throws Exception {
@@ -50,9 +48,9 @@ public class SeleniumTest {
         CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null);
         addConfiguration("customWD", new NodeLabelMatcher("label-node"), cc);
         j.createSlave("label-node", "label-node", null);
-        
+
         waitForRC();
-        
+
         Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
         assertEquals(1, slots.size());
         List<SeleniumTestSlot> testSlots = slots.iterator().next().getSlots();
@@ -62,13 +60,13 @@ public class SeleniumTest {
         assertHasBrowser(true, testSlots, DesiredCapabilities.internetExplorer().getBrowserName());
         assertHasBrowser(true, testSlots, DesiredCapabilities.opera().getBrowserName());
     }
-    
+
     private static void assertHasBrowser(boolean validationValue, List<SeleniumTestSlot> slots, String browser) {
     	boolean contains = false;
     	if (slots != null) {
 	    	for (SeleniumTestSlot slot : slots) {
 	    		if (slot.getBrowserName().equals(browser)) {
-	    			contains = true; 
+	    			contains = true;
 	    			break;
 	    		}
 	    	}
@@ -77,7 +75,11 @@ public class SeleniumTest {
     }
 
     @Test
-    public void testSelenium1() throws Exception {
+    public void testHtmlUnitDriver() throws Exception {
+
+        //Set jenkins rule timeout to never
+        j.timeout = 0;
+
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(10));
 
@@ -86,14 +88,14 @@ public class SeleniumTest {
         j.createSlave("foo", "foolabel", null);
 
         waitForRC();
-        
+
         DesiredCapabilities dc = DesiredCapabilities.htmlUnit();
 
         // No label requested should find the node
         WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         try {
             wd.get(WEB_SITE_URL);
-            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("logo")));
+            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("ji-home-carousel")));
         } finally {
             wd.quit();
         }
@@ -134,14 +136,17 @@ public class SeleniumTest {
 
     }
 
+
+
     private void addConfiguration(String name, SeleniumConfigurationMatcher matcher, SeleniumNodeConfiguration configuration) {
     	getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration(name, matcher, configuration));
-		
+
 	}
 
 	private void waitForRC() throws Exception {
         getPlugin().waitForHubLaunch();
-        for (int i = 0; i < 100; i++) {
+        //Try for a maximum less than default test timeout of 180 seconds
+        for (long i = System.currentTimeMillis() + (timeout * 900); System.currentTimeMillis() < i;) {
             Collection<SeleniumTestSlotGroup> slots = getPlugin().getRemoteControls();
             if (!slots.isEmpty()) {
             	//Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[] { Which.classFileUrl(Hub.class) }, ClassLoader.getSystemClassLoader()));
@@ -149,14 +154,14 @@ public class SeleniumTest {
             }
             Thread.sleep(2000);
         }
-        throw new AssertionError("No RC had checked in");
+        throw new AssertionError("No RC had checked in after " + (timeout * 0.9) + " seconds");
     }
 
     private PluginImpl getPlugin() {
         return j.jenkins.getPlugin(PluginImpl.class);
     }
 
-    @Test 
+    @Test
     public void testLabelMatch() throws Exception {
 
         // system config to set the root URL

@@ -1,31 +1,25 @@
 /**
- * 
+ *
  */
 package hudson.plugins.selenium.process;
 
 import hudson.FilePath;
-import hudson.model.TaskListener;
 import hudson.model.Computer;
+import hudson.model.TaskListener;
 import hudson.plugins.selenium.HubHolder;
 import hudson.plugins.selenium.PluginImpl;
-import hudson.plugins.selenium.callables.RemoveSeleniumServer;
-import hudson.plugins.selenium.callables.RunningRemoteSetterCallable;
-import hudson.plugins.selenium.callables.SeleniumCallable;
-import hudson.plugins.selenium.callables.SeleniumConstants;
-import hudson.plugins.selenium.callables.StopSeleniumServer;
+import hudson.plugins.selenium.callables.*;
+import jenkins.security.MasterToSlaveCallable;
+import org.openqa.grid.internal.Registry;
+import org.openqa.grid.internal.RemoteProxy;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 
-import jenkins.security.MasterToSlaveCallable;
-
-import org.openqa.grid.internal.Registry;
-import org.openqa.grid.internal.RemoteProxy;
-
 /**
  * @author Richard Lavoie
- * 
+ *
  */
 public abstract class SeleniumJarRunner implements SeleniumProcess {
 
@@ -35,6 +29,7 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
         PluginImpl p = PluginImpl.getPlugin();
 
         final FilePath seleniumJar = new FilePath(SeleniumProcessUtils.findStandAloneServerJar());
+        final FilePath htmlUnitDriverJar = new FilePath(SeleniumProcessUtils.findHtmlUnitDriverJar());
         final String nodeName = computer.getName();
         final String masterName = PluginImpl.getMasterHostName();
 
@@ -45,13 +40,11 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
         if (opts != null) {
             opts.addOptionIfSet("-host", nodehost);
             computer.getNode().getRootPath()
-                    .act(new SeleniumCallable(seleniumJar, nodehost, masterName, p.getPort(), nodeName, listener, name, opts));
+                    .act(new SeleniumCallable(seleniumJar, htmlUnitDriverJar, nodehost, masterName, p.getPort(), nodeName, listener, name, opts));
         }
     }
 
     /**
-     * @param computer
-     * @param name
      */
     public void remove(Computer computer, String name) {
         stop(computer, name);
@@ -74,7 +67,7 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
                 PluginImpl.getPlugin().getHubChannel().call(new MasterToSlaveCallable<Void, Exception>() {
 
                     /**
-                     * 
+                     *
                      */
                     private static final long serialVersionUID = -5805313572457450300L;
                     private String remoteUrl = url;

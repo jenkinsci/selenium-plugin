@@ -5,12 +5,18 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.580.1</version>
+		<version>2.6</version>
 	</parent>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<selenium.short.version>2.46</selenium.short.version>
+
+        <jenkins.version>1.580.1</jenkins.version>
+        <findbugs.failOnError>false</findbugs.failOnError>
+
+		<selenium.short.version>2.53</selenium.short.version>
 		<selenium.version>${selenium.short.version}.0</selenium.version>
+        <htmlunit.version>2.20</htmlunit.version>
 	</properties>
 	<artifactId>selenium</artifactId>
 	<version>2.4.2-SNAPSHOT</version>
@@ -18,108 +24,16 @@
 	<name>Jenkins Selenium Plugin</name>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<configuration>
-						<forkMode>never</forkMode>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-enforcer-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>display-info</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.gmaven</groupId>
-										<artifactId>gmaven-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>generateTestStubs</goal>
-											<goal>testCompile</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.jenkins-ci.tools</groupId>
-										<artifactId>maven-hpi-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>insert-test</goal>
-											<goal>resolve-test</goal>
-											<goal>test-hpl</goal>
-											<goal>validate</goal>
-											<goal>resolve-test-dependencies</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.jvnet.localizer</groupId>
-										<artifactId>maven-localizer-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>generate</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.kohsuke</groupId>
-										<artifactId>access-modifier-checker</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>enforce</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkCount>0</forkCount>
+                    <reuseForks>false</reuseForks>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 	<scm>
 		<connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
@@ -141,33 +55,33 @@
 		</developer>
 	</developers>
 	<dependencies>
+        <dependency>
+            <!-- selenium contains its own Jetty, and unless we declare this dependency
+                first, its Jetty will show up in front of the jetty in the test harness -->
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>jenkins-test-harness</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<!-- Ditto with httpcore -->
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.3.2</version>
+			<version>4.4.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<!-- Ditto with httpclient -->
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<!-- selenium contains its own Jetty, and unless we declare this dependency 
-				first, its Jetty will show up in front of the jetty in the test harness -->
-			<groupId>org.jenkins-ci.main</groupId>
-			<artifactId>jenkins-test-harness</artifactId>
-			<version>${project.parent.version}</version>
+			<version>4.5.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<!-- Ditto with commons-codec -->
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.4</version>
+			<version>1.10</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -186,8 +100,22 @@
 			<artifactId>selenium-server-standalone</artifactId>
 			<version>${selenium.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>htmlunit-driver-standalone</artifactId>
+			<version>${htmlunit.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
 	</dependencies>
 	<repositories>
+		<repository>
+			<id>Local repository for selenium standalone server</id>
+			<url>file://${basedir}/dist-server-standalone/local_m2</url>
+		</repository>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>

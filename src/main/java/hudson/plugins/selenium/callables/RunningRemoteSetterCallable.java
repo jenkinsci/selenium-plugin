@@ -1,21 +1,17 @@
 package hudson.plugins.selenium.callables;
 
-import jenkins.security.MasterToSlaveCallable;
 import hudson.plugins.selenium.RemoteRunningStatus;
-import hudson.remoting.Callable;
+import jenkins.security.MasterToSlaveCallable;
 
 /**
  * Callable that returns a property set on the channel
- * 
+ *
  * @author Richard Lavoie
- * 
- * @param <T>
- * @param <E>
  */
 public class RunningRemoteSetterCallable extends MasterToSlaveCallable<Void, Exception> {
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = -3519905249359789575L;
 

@@ -1,30 +1,22 @@
 /**
- * 
+ *
  */
 package hudson.plugins.selenium.process;
 
 import hudson.FilePath;
 import hudson.Launcher.LocalLauncher;
 import hudson.Proc;
-import hudson.model.TaskListener;
 import hudson.model.Computer;
-import hudson.remoting.Channel;
-import hudson.remoting.ChannelBuilder;
-import hudson.remoting.CommandTransport;
-import hudson.remoting.Launcher;
-import hudson.remoting.SocketChannelStream;
-import hudson.remoting.Which;
+import hudson.model.TaskListener;
+import hudson.remoting.*;
 import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
 import hudson.util.JVMBuilder;
+import jenkins.model.Jenkins;
+import org.openqa.grid.selenium.GridLauncher;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOError;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,18 +25,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jenkins.model.Jenkins;
-
-import org.openqa.grid.selenium.GridLauncher;
-
 /**
  * @author Richard Lavoie
- * 
+ *
  */
 public final class SeleniumProcessUtils {
 
 	private static final Logger LOGGER = Logger.getLogger(SeleniumProcessUtils.class.getName());
-	
+
     /**
      * Locate the stand-alone server jar from the classpath. Only works on the master.
      */
@@ -53,30 +41,38 @@ public final class SeleniumProcessUtils {
     }
 
     /**
+     * Locate the htmlunit driver jar from the classpath. Only works on the master.
+     */
+    public static File findHtmlUnitDriverJar() throws IOException {
+        return Which.jarFile(HtmlUnitDriver.class);
+    }
+
+    /**
      * Launches Hub in a separate JVM.
-     * 
-     * @param rootDir
-     *            The slave/master root.
+     *
      */
     public static Channel createSeleniumGridVM(TaskListener listener) throws IOException, InterruptedException {
         JVMBuilder vmb = new JVMBuilder();
         vmb.systemProperties(null);
         return Channels.newJVM("Selenium Grid", listener, vmb, new FilePath(Jenkins.getInstance().getRootDir()),
-                new ClasspathBuilder().add(findStandAloneServerJar()));
+                new ClasspathBuilder().add(findStandAloneServerJar()).add(findHtmlUnitDriverJar()));
     }
 
     /**
      * Launches RC in a separate JVM.
-     * 
+     *
      * @param standaloneServerJar
      *            The jar file of the grid to launch.
      */
-    static public Channel createSeleniumRCVM(File standaloneServerJar, TaskListener listener, Map<String, String> properties,
+    static public Channel createSeleniumRCVM(File standaloneServerJar, File htmlUnitDriverJar, TaskListener listener, Map<String, String> properties,
             Map<String, String> envVariables) throws IOException, InterruptedException {
 
         String displayName = "Selenium RC";
 
         ClasspathBuilder classpath = new ClasspathBuilder().add(standaloneServerJar);
+        // add htmlunit to classpath
+        classpath.add(htmlUnitDriverJar);
+
         JVMBuilder vmb = new JVMBuilder();
         vmb.systemProperties(properties);
 
@@ -102,10 +98,10 @@ public final class SeleniumProcessUtils {
         return createChannel("Channel to " + displayName, Computer.threadPoolForRemoting, new BufferedInputStream(SocketChannelStream.in(s)),
                 new BufferedOutputStream(SocketChannelStream.out(s)), null, p);
     }
-    
+
     /**
-     * This is a copy of Channels.forProcess without the plugin augmenters for the channel. This is the culprit cause 
-     * of slaves failing because when we create the selenium process into a 3rd level of slave, it didn't have access to 
+     * This is a copy of Channels.forProcess without the plugin augmenters for the channel. This is the culprit cause
+     * of slaves failing because when we create the selenium process into a 3rd level of slave, it didn't have access to
      * Jenkins object graph.
      *
      * @param name Channel name
@@ -114,7 +110,6 @@ public final class SeleniumProcessUtils {
      * @param out Output stream to redirect
      * @param header channel headers
      * @param proc Proc that handled the connection
-     * @return
      * @throws IOException
      */
     private static Channel createChannel(String name, ExecutorService execService, InputStream in, OutputStream out, OutputStream header, final Proc proc) throws IOException {

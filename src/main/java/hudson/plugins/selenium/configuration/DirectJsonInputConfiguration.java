@@ -10,6 +10,13 @@ import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.VirtualChannel;
 import hudson.util.FormValidation;
 import hudson.util.IOException2;
+import jenkins.MasterToSlaveFileCallable;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.export.Exported;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -18,15 +25,6 @@ import java.io.StringReader;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import jenkins.MasterToSlaveFileCallable;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.export.Exported;
 
 /**
  * @author Richard Lavoie
@@ -52,7 +50,6 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
     private String seleniumArgs;
 
     /**
-     * @param display
      */
     @DataBoundConstructor
     public DirectJsonInputConfiguration(String display, String config, String jvmArgs, String seleniumArgs) {

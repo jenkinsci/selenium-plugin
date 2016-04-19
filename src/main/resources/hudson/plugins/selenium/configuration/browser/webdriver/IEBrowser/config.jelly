@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
     <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly" it="${it ?: d}"/>
     <f:entry title="${%Server binary path}" field="server_binary">

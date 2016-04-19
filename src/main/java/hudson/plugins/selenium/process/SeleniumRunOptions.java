@@ -1,23 +1,23 @@
 package hudson.plugins.selenium.process;
 
+import org.springframework.util.StringUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.StringUtils;
-
 /**
  * This is only a bean that contains the JVM settings and the selenium arguments to start
- * 
+ *
  * @author Richard Lavoie
- * 
+ *
  */
 public final class SeleniumRunOptions implements Serializable {
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = -5571585840451096944L;
 
@@ -35,7 +35,7 @@ public final class SeleniumRunOptions implements Serializable {
 
     /**
      * Returns the selenium process arguments
-     * 
+     *
      * @return List of arguments
      */
     public List<ProcessArgument> getSeleniumArguments() {
@@ -44,7 +44,7 @@ public final class SeleniumRunOptions implements Serializable {
 
     /**
      * Returns the jvm arguments that needs to be given to the RcVM class (-D options mostly)
-     * 
+     *
      * @return Map of key/value options to be given to the jvm starting selenium
      */
     public Map<String, String> getJVMArguments() {
@@ -53,7 +53,7 @@ public final class SeleniumRunOptions implements Serializable {
 
     /**
      * Add an option to the selenium process' command line arguments list
-     * 
+     *
      * @param option
      *            Option to add
      */
@@ -62,12 +62,10 @@ public final class SeleniumRunOptions implements Serializable {
     }
 
     /**
-     * Add an option only if the value is set : not null and length > 0
-     * 
-     * @param option
-     *            Option to set
-     * @param value
-     *            Value of the option
+     * Add an option only if the value is set : not null and length not zero
+     *
+     * @param option Option to set
+     * @param value Value of the option
      */
     public void addOptionIfSet(String option, Object value) {
         if (value != null && StringUtils.hasText(value.toString())) {
@@ -81,7 +79,7 @@ public final class SeleniumRunOptions implements Serializable {
 
     /**
      * Sets the environment variables to the specified value. If the value is null, the environment variable is removed.
-     * 
+     *
      * @param key
      *            Variable name
      * @param value

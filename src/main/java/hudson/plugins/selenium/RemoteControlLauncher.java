@@ -8,20 +8,21 @@ import jenkins.security.MasterToSlaveCallable;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.server.SeleniumServer;
 
 /**
  * Launches Selenium RC.
- * 
+ *
  * <p>
  * This callable is run on the JVM dedicated to selenium RC.
- * 
+ *
  * @author Kohsuke Kawaguchi
  * @author Richard Lavoie
  */
 public class RemoteControlLauncher extends MasterToSlaveCallable<Void, Exception> {
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = -6502768962889139192L;
 
@@ -42,6 +43,7 @@ public class RemoteControlLauncher extends MasterToSlaveCallable<Void, Exception
                 JenkinsCapabilityMatcher.enhanceCapabilities(dc, nodeName);
             }
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);
+            remote.setRemoteServer(new SeleniumServer(c.getConfiguration()));
             PropertyUtils.setProperty(SeleniumConstants.PROPERTY_INSTANCE, remote);
             remote.startRemoteServer();
             remote.startRegistrationProcess();
