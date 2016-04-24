@@ -4,12 +4,11 @@ import hudson.Extension;
 import hudson.model.Computer;
 import hudson.plugins.selenium.configuration.browser.SeleniumBrowserServerUtils;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
+import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 public class IEBrowser extends ServerRequiredWebDriverBrowser {
 
@@ -28,10 +27,6 @@ public class IEBrowser extends ServerRequiredWebDriverBrowser {
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-
-        if (StringUtils.isBlank(getServer_binary())) {
-
-        }
 
         combine(args, PARAM_BINARY_PATH, getServer_binary());
         return args;

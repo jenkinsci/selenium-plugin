@@ -25,7 +25,7 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
 
     public abstract SeleniumRunOptions initOptions(Computer c);
 
-    public void start(Computer computer, TaskListener listener, String name) throws IOException, InterruptedException, ExecutionException {
+    public void start(Computer computer, TaskListener listener, String name) throws IOException, InterruptedException {
         PluginImpl p = PluginImpl.getPlugin();
 
         final FilePath seleniumJar = new FilePath(SeleniumProcessUtils.findStandAloneServerJar());

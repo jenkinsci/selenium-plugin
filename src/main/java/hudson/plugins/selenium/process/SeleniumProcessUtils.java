@@ -51,7 +51,7 @@ public final class SeleniumProcessUtils {
      * Launches Hub in a separate JVM.
      *
      */
-    public static Channel createSeleniumGridVM(TaskListener listener) throws IOException, InterruptedException {
+    public static Channel createSeleniumGridVM(TaskListener listener) throws IOException {
         JVMBuilder vmb = new JVMBuilder();
         vmb.systemProperties(null);
         return Channels.newJVM("Selenium Grid", listener, vmb, new FilePath(Jenkins.getInstance().getRootDir()),

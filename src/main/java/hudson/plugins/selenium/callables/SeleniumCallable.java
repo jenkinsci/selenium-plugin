@@ -9,7 +9,6 @@ import hudson.plugins.selenium.process.SeleniumProcessUtils;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.Channel;
 import hudson.remoting.VirtualChannel;
-import hudson.util.IOException2;
 import jenkins.MasterToSlaveFileCallable;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -63,7 +62,7 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
     private static final long serialVersionUID = 2047557797415325512L;
 
     public String invoke(File f, VirtualChannel channel) throws IOException {
-        RemoteRunningStatus status = (RemoteRunningStatus) PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, config);
+        RemoteRunningStatus status = PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, config);
 
         if (status != null && status.isRunning()) {
             // listener.getLogger().println("Skipping Selenium RC execution because this slave has already started its RCs");
@@ -78,7 +77,7 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
                 seleniumJar.copyTo(new FilePath(localSeleniumJar));
                 localSeleniumJar.setLastModified(seleniumJarTimestamp);
             } catch (InterruptedException e) {
-                throw new IOException2("Failed to copy grid jar", e);
+                throw new IOException("Failed to copy grid jar", e);
             }
         }
         if (localHtmlUnitDriverJar.lastModified() != htmlUnitDriverJarTimestamp) {
@@ -86,7 +85,7 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
                 htmlUnitDriverJar.copyTo(new FilePath(localHtmlUnitDriverJar));
                 localHtmlUnitDriverJar.setLastModified(htmlUnitDriverJarTimestamp);
             } catch (InterruptedException e) {
-                throw new IOException2("Failed to copy htmlunit driver jar", e);
+                throw new IOException("Failed to copy htmlunit driver jar", e);
             }
         }
 
@@ -114,7 +113,7 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
             LOGGER.log(Level.WARNING, "Selenium node launch failed", t);
             listener.getLogger().println( "Selenium node launch failed" + t.getMessage());
 
-            throw new IOException2("Selenium node launch interrupted", t);
+            throw new IOException("Selenium node launch interrupted", t);
         }
         PropertyUtils.setMapProperty(SeleniumConstants.PROPERTY_STATUS, config, status);
 

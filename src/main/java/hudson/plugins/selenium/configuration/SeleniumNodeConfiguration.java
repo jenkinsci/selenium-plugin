@@ -3,10 +3,10 @@ package hudson.plugins.selenium.configuration;
 import hudson.DescriptorExtensionList;
 import hudson.model.Computer;
 import hudson.model.Describable;
-import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.plugins.selenium.process.SeleniumJarRunner;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -31,15 +31,15 @@ public abstract class SeleniumNodeConfiguration extends SeleniumJarRunner implem
     }
 
     public ConfigurationDescriptor getDescriptor() {
-        return (ConfigurationDescriptor) Hudson.getInstance().getDescriptor(getClass());
+        return (ConfigurationDescriptor) Jenkins.getInstance().getDescriptor(getClass());
     }
 
     public static DescriptorExtensionList<SeleniumNodeConfiguration, ConfigurationDescriptor> all() {
-        return Hudson.getInstance().<SeleniumNodeConfiguration, ConfigurationDescriptor> getDescriptorList(SeleniumNodeConfiguration.class);
+        return Jenkins.getInstance().getDescriptorList(SeleniumNodeConfiguration.class);
     }
 
     public static DescriptorExtensionList<SeleniumNodeConfiguration, ConfigurationDescriptor> allExcept(Node current) {
-        return Hudson.getInstance().<SeleniumNodeConfiguration, ConfigurationDescriptor> getDescriptorList(SeleniumNodeConfiguration.class);
+        return Jenkins.getInstance().getDescriptorList(SeleniumNodeConfiguration.class);
     }
 
     public SeleniumRunOptions initOptions(Computer c) {

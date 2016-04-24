@@ -4,23 +4,19 @@ import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.plugins.selenium.callables.RetrieveAvailablePort;
-import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
-import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser.WebDriverBrowserDescriptor;
 import hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser;
+import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser;
+import hudson.plugins.selenium.configuration.browser.webdriver.WebDriverBrowser.WebDriverBrowserDescriptor;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.util.FormValidation;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 
@@ -85,7 +81,7 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
             return lst;
         }
 
-        public FormValidation doCheckTimeout(@QueryParameter String value) throws IOException, ServletException {
+        public FormValidation doCheckTimeout(@QueryParameter String value) {
             try {
                 Integer i = Integer.parseInt(value);
                 if (i >= -1) {

@@ -4,23 +4,19 @@ import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.plugins.selenium.callables.RetrieveAvailablePort;
-import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
-import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser.SeleniumBrowserDescriptor;
 import hudson.plugins.selenium.configuration.browser.selenium.ChromeBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.FirefoxBrowser;
 import hudson.plugins.selenium.configuration.browser.selenium.IEBrowser;
+import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser;
+import hudson.plugins.selenium.configuration.browser.selenium.SeleniumBrowser.SeleniumBrowserDescriptor;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.util.FormValidation;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomRCConfiguration extends SeleniumNodeConfiguration {
 
@@ -120,7 +116,7 @@ public class CustomRCConfiguration extends SeleniumNodeConfiguration {
             return lst;
         }
 
-        public FormValidation doCheckTimeout(@QueryParameter String value) throws IOException, ServletException {
+        public FormValidation doCheckTimeout(@QueryParameter String value) {
             try {
                 Integer i = Integer.parseInt(value);
                 if (i >= -1) {

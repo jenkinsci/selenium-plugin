@@ -1,10 +1,8 @@
 package hudson.plugins.selenium.callables;
 
-import hudson.remoting.Callable;
+import jenkins.security.MasterToSlaveCallable;
 
 import java.net.ServerSocket;
-
-import jenkins.security.MasterToSlaveCallable;
 
 public class RetrieveAvailablePort extends MasterToSlaveCallable<Integer, Exception> {
 

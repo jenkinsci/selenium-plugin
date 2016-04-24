@@ -4,12 +4,10 @@ import hudson.DescriptorExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.model.Node;
+import jenkins.model.Jenkins;
 
 import java.io.Serializable;
-
-import jenkins.model.Jenkins;
 
 public abstract class SeleniumConfigurationMatcher implements ExtensionPoint, Describable<SeleniumConfigurationMatcher>, Serializable {
 
@@ -21,7 +19,7 @@ public abstract class SeleniumConfigurationMatcher implements ExtensionPoint, De
     public abstract boolean match(Node node);
 
     public static DescriptorExtensionList<SeleniumConfigurationMatcher, MatcherDescriptor> all() {
-        return Hudson.getInstance().<SeleniumConfigurationMatcher, MatcherDescriptor> getDescriptorList(SeleniumConfigurationMatcher.class);
+        return Jenkins.getInstance().getDescriptorList(SeleniumConfigurationMatcher.class);
     }
 
     public abstract static class MatcherDescriptor extends Descriptor<SeleniumConfigurationMatcher> {

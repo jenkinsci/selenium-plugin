@@ -3,11 +3,10 @@
  */
 package hudson.plugins.selenium.callables.hub;
 
-import java.util.logging.Logger;
-
-import jenkins.security.MasterToSlaveCallable;
 import hudson.plugins.selenium.HubHolder;
-import hudson.remoting.Callable;
+import jenkins.security.MasterToSlaveCallable;
+
+import java.util.logging.Logger;
 
 /**
  * @author Richard Lavoie

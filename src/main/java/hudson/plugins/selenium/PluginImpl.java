@@ -21,7 +21,14 @@ import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.Plugin;
 import hudson.console.HyperlinkNote;
-import hudson.model.*;
+import hudson.model.Action;
+import hudson.model.Api;
+import hudson.model.Computer;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.model.Failure;
+import hudson.model.Label;
+import hudson.model.TaskListener;
 import hudson.plugins.selenium.callables.hub.StopHubCallable;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.CustomRCConfiguration;
@@ -44,7 +51,6 @@ import hudson.remoting.Channel;
 import hudson.security.Permission;
 import hudson.security.PermissionGroup;
 import hudson.security.PermissionScope;
-import hudson.util.IOException2;
 import hudson.util.StreamTaskListener;
 import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
@@ -133,7 +139,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
         startHub();
 
-        Hudson.getInstance().getActions().add(this);
+        Jenkins.getInstance().getActions().add(this);
     }
 
     @Override
@@ -201,7 +207,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     public File getLogFile() {
-        return new File(Hudson.getInstance().getRootDir(), "selenium.log");
+        return new File(Jenkins.getInstance().getRootDir(), "selenium.log");
     }
 
     public void waitForHubLaunch() throws ExecutionException, InterruptedException {
@@ -367,7 +373,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     @SuppressWarnings( "unchecked" )
     public Descriptor<PluginImpl> getDescriptor() {
-        return Hudson.getInstance().getDescriptorOrDie(getClass());
+        return Jenkins.getInstance().getDescriptorOrDie(getClass());
     }
 
     @Extension
@@ -435,7 +441,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public static void startSeleniumNode(Computer c, TaskListener listener, String conf) throws IOException, InterruptedException {
         LOGGER.fine("Examining if we need to start Selenium Grid Node");
 
-        final PluginImpl p = Hudson.getInstance().getPlugin(PluginImpl.class);
+        final PluginImpl p = Jenkins.getInstance().getPlugin(PluginImpl.class);
 
         final String exclusions = p.getExclusionPatterns();
         List<String> exclusionPatterns = new ArrayList<String>();
@@ -468,7 +474,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         try {
             p.waitForHubLaunch();
         } catch (ExecutionException e) {
-            throw new IOException2("Failed to wait for the Hub launch to complete", e);
+            throw new IOException("Failed to wait for the Hub launch to complete", e);
         }
 
         List<SeleniumGlobalConfiguration> confs = getPlugin().getGlobalConfigurationForComputer(c);
@@ -546,7 +552,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      * Validate if the current user is a selenium admin
      */
     public void validateAdmin() {
-        Hudson.getInstance().checkPermission(getRequiredPermission());
+        Jenkins.getInstance().checkPermission(getRequiredPermission());
     }
 
     /**
@@ -555,7 +561,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      * @return True if the user is a selenium admin, false otherwise
      */
     public boolean isAdmin() {
-        return Hudson.getInstance().hasPermission(getRequiredPermission());
+        return Jenkins.getInstance().hasPermission(getRequiredPermission());
     }
 
     /**
@@ -661,7 +667,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         }
     }
 
-    public HttpResponse doRestart() throws IOException, ServletException {
+    public HttpResponse doRestart() throws IOException {
         validateAdmin();
         try {
             channel.call(new StopHubCallable());

@@ -1,6 +1,5 @@
 package hudson.plugins.selenium.callables;
 
-import hudson.remoting.Callable;
 import hudson.remoting.Channel;
 
 import java.util.logging.Level;

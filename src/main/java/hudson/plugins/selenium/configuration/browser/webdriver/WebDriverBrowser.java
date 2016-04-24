@@ -26,7 +26,7 @@ public abstract class WebDriverBrowser extends AbstractSeleniumBrowser<WebDriver
     }
 
     public static DescriptorExtensionList<WebDriverBrowser, WebDriverBrowserDescriptor> all() {
-        return Jenkins.getInstance().<WebDriverBrowser, WebDriverBrowserDescriptor> getDescriptorList(WebDriverBrowser.class);
+        return Jenkins.getInstance().getDescriptorList(WebDriverBrowser.class);
     }
 
     public static abstract class WebDriverBrowserDescriptor extends BrowserDescriptor<WebDriverBrowser> {
