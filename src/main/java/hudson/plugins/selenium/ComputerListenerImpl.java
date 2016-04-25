@@ -5,7 +5,9 @@ import hudson.model.TaskListener;
 import hudson.model.Computer;
 import hudson.plugins.selenium.actions.ServiceManagementAction;
 import hudson.slaves.ComputerListener;
+import hudson.slaves.OfflineCause;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -27,7 +29,7 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
     }
 
     @Override
-    public void onOffline(Computer c) {
+    public void onOffline(@Nonnull Computer c, OfflineCause cause) {
         try {
             new ServiceManagementAction(c).doStop(null);
         } catch (Throwable e) {
