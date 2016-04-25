@@ -8,15 +8,13 @@ import hudson.model.Computer;
 import hudson.remoting.RemoteInputStream;
 import hudson.remoting.VirtualChannel;
 import hudson.util.IOUtils;
+import jenkins.MasterToSlaveFileCallable;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import jenkins.MasterToSlaveFileCallable;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Richard Lavoie
@@ -45,7 +43,7 @@ public final class SeleniumBrowserServerUtils {
 
                 if (isWin64bit != null) {
                     URL url = SeleniumBrowserServerUtils.class.getClassLoader().getResource("IEDriverServer_" + (isWin64bit ? "64" : "32") + ".exe");
-                    final InputStream is = new RemoteInputStream(url.openStream());
+                    final InputStream is = new RemoteInputStream(url.openStream(), RemoteInputStream.Flag.GREEDY);
                     server_path = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
 
                         private static final long serialVersionUID = 4508849758404950847L;
