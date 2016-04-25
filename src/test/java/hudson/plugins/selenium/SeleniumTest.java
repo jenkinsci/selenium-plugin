@@ -58,7 +58,7 @@ public class SeleniumTest {
         assertHasBrowser(true, testSlots, DesiredCapabilities.firefox().getBrowserName());
         assertHasBrowser(true, testSlots, DesiredCapabilities.htmlUnit().getBrowserName());
         assertHasBrowser(true, testSlots, DesiredCapabilities.internetExplorer().getBrowserName());
-        assertHasBrowser(true, testSlots, DesiredCapabilities.opera().getBrowserName());
+        assertHasBrowser(true, testSlots, DesiredCapabilities.operaBlink().getBrowserName());
     }
 
     private static void assertHasBrowser(boolean validationValue, List<SeleniumTestSlot> slots, String browser) {
