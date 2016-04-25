@@ -4,7 +4,7 @@
 package hudson.plugins.selenium.configuration.global.hostname;
 
 import hudson.Extension;
-import hudson.model.Hudson;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.net.MalformedURLException;
@@ -27,7 +27,7 @@ public class JenkinsRootHostnameResolver extends HostnameResolver {
 
 
 	public String retrieveHost() {
-        String rootUrl = Hudson.getInstance().getRootUrl();
+        String rootUrl = Jenkins.getInstance().getRootUrl();
         if (rootUrl == null)
             return "localhost";
         URL url;

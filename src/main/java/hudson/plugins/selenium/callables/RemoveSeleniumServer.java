@@ -3,11 +3,9 @@
  */
 package hudson.plugins.selenium.callables;
 
-import hudson.remoting.Callable;
+import jenkins.security.MasterToSlaveCallable;
 
 import java.util.Map;
-
-import jenkins.security.MasterToSlaveCallable;
 
 /**
  * @author Richard Lavoie

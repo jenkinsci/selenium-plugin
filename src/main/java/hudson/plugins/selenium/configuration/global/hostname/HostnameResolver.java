@@ -35,7 +35,7 @@ public abstract class HostnameResolver implements Describable<HostnameResolver>,
     }
 
     public static DescriptorExtensionList<HostnameResolver, HostnameResolverDescriptor> all() {
-        return Jenkins.getInstance().<HostnameResolver, HostnameResolverDescriptor> getDescriptorList(HostnameResolver.class);
+        return Jenkins.getInstance().getDescriptorList(HostnameResolver.class);
     }
 
 }

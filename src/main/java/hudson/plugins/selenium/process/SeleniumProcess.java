@@ -3,11 +3,10 @@
  */
 package hudson.plugins.selenium.process;
 
-import hudson.model.TaskListener;
 import hudson.model.Computer;
+import hudson.model.TaskListener;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This interface specifies the operation necessary for a selenium process to run on a given computer
@@ -17,8 +16,8 @@ import java.util.concurrent.ExecutionException;
  */
 public interface SeleniumProcess {
 
-    public void start(Computer computer, TaskListener listener, String configName) throws IOException, InterruptedException, ExecutionException;
+    void start(Computer computer, TaskListener listener, String configName) throws IOException, InterruptedException;
 
-    public void stop(Computer computer, String name);
+    void stop(Computer computer, String name);
 
 }

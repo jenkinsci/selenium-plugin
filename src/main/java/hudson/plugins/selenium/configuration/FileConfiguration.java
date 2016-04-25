@@ -5,17 +5,14 @@ import hudson.FilePath;
 import hudson.model.Computer;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.VirtualChannel;
-import hudson.util.IOException2;
+import jenkins.MasterToSlaveFileCallable;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.export.Exported;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Logger;
-
-import jenkins.MasterToSlaveFileCallable;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.export.Exported;
 
 public class FileConfiguration extends SeleniumNodeConfiguration {
 
@@ -66,7 +63,7 @@ public class FileConfiguration extends SeleniumNodeConfiguration {
                     try {
                         urlConf.copyFrom(new URL(configURL));
                     } catch (InterruptedException e) {
-                        throw new IOException2("Failed to retrieve configuration from " + configURL, e);
+                        throw new IOException("Failed to retrieve configuration from " + configURL, e);
                     }
 
                     return conf.getAbsolutePath();

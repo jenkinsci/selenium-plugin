@@ -14,12 +14,12 @@ public final class PropertyUtils {
         return property.type.cast(properties.get(property.displayName));
     }
 
-    public static void setProperty(ChannelProperty<? extends Object> property, Object object) {
+    public static void setProperty(ChannelProperty<?> property, Object object) {
         properties.put(property.displayName, object);
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
-    public static <T> T getMapProperty(ChannelProperty<? extends Object> property, String key) {
+    public static <T> T getMapProperty(ChannelProperty<?> property, String key) {
         ChannelProperty<Map> cp = new ChannelProperty<Map>(Map.class, property.displayName);
         Map map = getProperty(cp);
         if (map == null) {
@@ -29,7 +29,7 @@ public final class PropertyUtils {
     }
 
     @SuppressWarnings( { "rawtypes", "unchecked" } )
-    public static void setMapProperty(ChannelProperty<? extends Object> property, String key, Object object) {
+    public static void setMapProperty(ChannelProperty<?> property, String key, Object object) {
         ChannelProperty<Map> cp = new ChannelProperty<Map>(Map.class, property.displayName);
         Map map = getProperty(cp);
         if (map == null) {

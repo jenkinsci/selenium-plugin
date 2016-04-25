@@ -3,11 +3,9 @@ package hudson.plugins.selenium.configuration.browser.selenium;
 import hudson.DescriptorExtensionList;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 import hudson.plugins.selenium.configuration.browser.AbstractSeleniumBrowser;
+import hudson.plugins.selenium.configuration.browser.BrowserDescriptor;
 import jenkins.model.Jenkins;
-
 import org.openqa.grid.common.SeleniumProtocol;
 
 public abstract class SeleniumBrowser extends AbstractSeleniumBrowser<SeleniumBrowser> implements Describable<SeleniumBrowser> {
@@ -27,7 +25,7 @@ public abstract class SeleniumBrowser extends AbstractSeleniumBrowser<SeleniumBr
     }
 
     public static DescriptorExtensionList<SeleniumBrowser, SeleniumBrowserDescriptor> all() {
-        return Hudson.getInstance().<SeleniumBrowser, SeleniumBrowserDescriptor> getDescriptorList(SeleniumBrowser.class);
+        return Jenkins.getInstance().getDescriptorList(SeleniumBrowser.class);
     }
 
     public static abstract class SeleniumBrowserDescriptor extends BrowserDescriptor<SeleniumBrowser> {

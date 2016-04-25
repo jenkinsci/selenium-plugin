@@ -1,11 +1,10 @@
 package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.kohsuke.stapler.DataBoundConstructor;
 
 public class OperaBrowser extends WebDriverBrowser {
 
@@ -20,7 +19,7 @@ public class OperaBrowser extends WebDriverBrowser {
 
     @DataBoundConstructor
     public OperaBrowser(int maxInstances, String version, String browser_binary) {
-        super(maxInstances, version, "opera");
+        super(maxInstances, version, "operablink");
         this.browser_binary = browser_binary;
     }
 

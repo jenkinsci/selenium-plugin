@@ -2,13 +2,11 @@ package hudson.plugins.selenium.callables.running;
 
 import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.SeleniumConstants;
-import hudson.remoting.Callable;
+import jenkins.security.MasterToSlaveCallable;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
-import jenkins.security.MasterToSlaveCallable;
 
 public class RemoteGetConfigurations extends MasterToSlaveCallable<Set<String>, Exception> {
 

@@ -1,7 +1,12 @@
 package hudson.plugins.selenium.configuration.global;
 
 import hudson.DescriptorExtensionList;
-import hudson.model.*;
+import hudson.model.Computer;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.model.Failure;
+import hudson.model.Hudson;
+import hudson.model.TaskListener;
 import hudson.plugins.selenium.PluginImpl;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
@@ -16,7 +21,6 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.ExecutionException;
@@ -88,7 +92,7 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
     }
 
     public void doDoDelete(StaplerRequest req, StaplerResponse rsp) throws Exception {
-        Hudson.getInstance().checkPermission(Hudson.ADMINISTER);
+        Jenkins.getInstance().checkPermission(Hudson.ADMINISTER);
         PluginImpl.getPlugin().removeGlobalConfigurations(name);
         rsp.sendRedirect("../../configurations");
     }
@@ -104,7 +108,7 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
             return null;
         }
 
-        public FormValidation doCheckName(@QueryParameter String name) throws IOException, ServletException {
+        public FormValidation doCheckName(@QueryParameter String name) {
             return FormValidation.validateRequired(name);
         }
 

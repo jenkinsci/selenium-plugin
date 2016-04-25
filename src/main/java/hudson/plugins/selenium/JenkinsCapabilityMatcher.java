@@ -1,22 +1,19 @@
 package hudson.plugins.selenium;
 
-import hudson.model.Hudson;
+import antlr.ANTLRException;
 import hudson.model.Label;
 import hudson.model.Node;
 import hudson.remoting.Channel;
+import jenkins.model.Jenkins;
+import jenkins.security.MasterToSlaveCallable;
+import org.apache.commons.lang.StringUtils;
+import org.openqa.grid.internal.utils.CapabilityMatcher;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jenkins.security.MasterToSlaveCallable;
-
-import org.apache.commons.lang.StringUtils;
-import org.openqa.grid.internal.utils.CapabilityMatcher;
-import org.openqa.selenium.remote.DesiredCapabilities;
-
-import antlr.ANTLRException;
 
 /**
  * {@link CapabilityMatcher} that adds "jenkins.label" support.
@@ -56,11 +53,7 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         if (reqNode != null && nodeName != null) {
             LOGGER.log(Level.INFO, "BOTH NOT NULL");
             nodeMatch = nodeName.equals(reqNode);
-        } else if (reqNode == null) {
-            nodeMatch = true;
-        } else {
-            nodeMatch = false;
-        }
+        } else nodeMatch = reqNode == null;
 
         if (label == null) {
             return nodeMatch;
@@ -113,7 +106,7 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         }
 
         public Boolean call() throws ANTLRException {
-            Node n = Hudson.getInstance().getNode(nodeName);
+            Node n = Jenkins.getInstance().getNode(nodeName);
             if (n == null)
                 return false;
             return Label.parseExpression(labelExpr).matches(n);

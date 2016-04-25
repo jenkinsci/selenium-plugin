@@ -3,17 +3,15 @@ package hudson.plugins.selenium.configuration.global.matcher;
 import antlr.ANTLRException;
 import hudson.Extension;
 import hudson.model.AutoCompletionCandidates;
-import hudson.model.Hudson;
 import hudson.model.Label;
 import hudson.model.Node;
 import hudson.model.labels.LabelAtom;
 import hudson.util.FormValidation;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.util.List;
 
 @Extension
@@ -58,7 +56,7 @@ public class NodeLabelMatcher extends SeleniumConfigurationMatcher {
             return "Match nodes from a label expression";
         }
 
-        public FormValidation doCheckLabel(@QueryParameter String value) throws IOException, ServletException {
+        public FormValidation doCheckLabel(@QueryParameter String value) {
             return FormValidation.validateRequired(value);
         }
 
@@ -69,7 +67,7 @@ public class NodeLabelMatcher extends SeleniumConfigurationMatcher {
          */
         public AutoCompletionCandidates doAutoCompleteLabel() {
             AutoCompletionCandidates candidates = new AutoCompletionCandidates();
-            List<Node> masterNodeList = Hudson.getInstance().getNodes();
+            List<Node> masterNodeList = Jenkins.getInstance().getNodes();
             for (Node node : masterNodeList) {
                 try {
                     for (LabelAtom atom : Label.parseExpression(node.getLabelString()).listAtoms()) {

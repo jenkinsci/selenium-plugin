@@ -9,7 +9,6 @@ import hudson.model.Computer;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.remoting.VirtualChannel;
 import hudson.util.FormValidation;
-import hudson.util.IOException2;
 import jenkins.MasterToSlaveFileCallable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -143,7 +142,7 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
                     try {
                         urlConf.copyFrom(new ByteArrayInputStream(config.getBytes()));
                     } catch (InterruptedException e) {
-                        throw new IOException2("Failed to write configuration to " + filename, e);
+                        throw new IOException("Failed to write configuration to " + filename, e);
                     }
 
                     return conf.getAbsolutePath();

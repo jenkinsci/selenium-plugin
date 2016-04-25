@@ -7,18 +7,16 @@ import hudson.plugins.selenium.callables.GetConfigurations;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import hudson.util.StreamTaskListener;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.HttpResponses;
+import org.kohsuke.stapler.QueryParameter;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.HttpResponses;
-import org.kohsuke.stapler.QueryParameter;
 
 public class ServiceManagementAction implements Action {
 
@@ -46,12 +44,12 @@ public class ServiceManagementAction implements Action {
         return HttpResponses.forwardToPreviousPage();
     }
 
-    public HttpResponse doStop(@QueryParameter String conf) throws IOException, ServletException {
+    public HttpResponse doStop(@QueryParameter String conf) {
         PluginImpl.getPlugin().getConfiguration(conf).stop(computer);
         return HttpResponses.forwardToPreviousPage();
     }
 
-    public HttpResponse doStart(@QueryParameter String conf) throws IOException, ServletException {
+    public HttpResponse doStart(@QueryParameter String conf) {
         try {
             PluginImpl.startSeleniumNode(computer, new StreamTaskListener(new OutputStreamWriter(System.out)), conf);
         } catch (Exception e) {
