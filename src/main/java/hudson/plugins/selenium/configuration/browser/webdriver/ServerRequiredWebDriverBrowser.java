@@ -32,12 +32,12 @@ public abstract class ServerRequiredWebDriverBrowser extends WebDriverBrowser {
      *            Version of the browser to use.
      * @param name
      *            Name of the browser
-     * @param server_binary
+     * @param serverBinary
      *            Path to the server binary that communicate with the real browser
      */
-    protected ServerRequiredWebDriverBrowser(int instances, String version, String name, String server_binary) {
+    protected ServerRequiredWebDriverBrowser(int instances, String version, String name, String serverBinary) {
         super(instances, version, name);
-        this.server_binary = server_binary;
+        this.server_binary = serverBinary;
     }
 
     @Exported

@@ -22,6 +22,9 @@ import org.openqa.grid.internal.TestSlot;
 @ExportedBean
 public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
+    private static final Map<String, String> ENV_MAPPING = new HashMap<String, String>();
     /**
      * is anything running?
      */
@@ -71,8 +74,6 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
             return "Idle";
     }
 
-    private static final Map<String, String> ENV_MAPPING = new HashMap<String, String>();
-
     static {
         ENV_MAPPING.put("*iexplore", "internet explorer");
         ENV_MAPPING.put("*firefox", "firefox");
@@ -96,6 +97,4 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
             return r;
         return this.getPort() - that.getPort();
     }
-
-    private static final long serialVersionUID = 1L;
 }

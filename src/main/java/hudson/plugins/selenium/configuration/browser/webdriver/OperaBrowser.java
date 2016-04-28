@@ -18,9 +18,9 @@ public class OperaBrowser extends WebDriverBrowser {
     private String browser_binary;
 
     @DataBoundConstructor
-    public OperaBrowser(int maxInstances, String version, String browser_binary) {
+    public OperaBrowser(int maxInstances, String version, String browserBinary) {
         super(maxInstances, version, "operablink");
-        this.browser_binary = browser_binary;
+        this.browser_binary = browserBinary;
     }
 
     @Override

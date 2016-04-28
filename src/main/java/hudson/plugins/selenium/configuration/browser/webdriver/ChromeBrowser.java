@@ -23,8 +23,8 @@ public class ChromeBrowser extends ServerRequiredWebDriverBrowser {
     transient final protected String PARAM_BINARY_PATH = "webdriver.chrome.driver";
 
     @DataBoundConstructor
-    public ChromeBrowser(int maxInstances, String version, String server_binary) {
-        super(maxInstances, version, "chrome", server_binary);
+    public ChromeBrowser(int maxInstances, String version, String serverBinary) {
+        super(maxInstances, version, "chrome", serverBinary);
     }
 
     @Override

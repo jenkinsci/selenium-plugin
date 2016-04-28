@@ -22,7 +22,25 @@ import java.util.logging.Logger;
  */
 public class JenkinsCapabilityMatcher implements CapabilityMatcher {
 
+    private static final Logger LOGGER = Logger.getLogger(JenkinsCapabilityMatcher.class.getName());
+    /**
+     * Can be used as a capability when WebDriver requests a node from Grid. The value is a boolean expression over labels to select the desired node
+     * to run the test.
+     */
+    public static final String LABEL = "jenkins.label";
+
+    /**
+     * RC uses this to register, to designate its origin.
+     */
+    public static final String NODE_NAME = "jenkins.nodeName";
+
+    /**
+     * Node name of the master computer
+     */
+    public static final String MASTER_NAME = "(master)";
+
     private final CapabilityMatcher base;
+
     private final Channel master;
 
     public JenkinsCapabilityMatcher(Channel master, CapabilityMatcher base) {
@@ -77,34 +95,21 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
         return false;
     }
 
-    /**
-     * Can be used as a capability when WebDriver requests a node from Grid. The value is a boolean expression over labels to select the desired node
-     * to run the test.
-     */
-    public static final String LABEL = "jenkins.label";
-    /**
-     * RC uses this to register, to designate its origin.
-     */
-    public static final String NODE_NAME = "jenkins.nodeName";
-
-    /**
-     * Node name of the master computer
-     */
-    public static final String MASTER_NAME = "(master)";
-
-    /**
-     * Checks if the given node satisfies the label expression.
-     */
     private static class LabelMatcherCallable extends MasterToSlaveCallable<Boolean, ANTLRException> {
 
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Checks if the given node satisfies the label expression.
+         */
         private final String nodeName;
+
         private final String labelExpr;
 
         public LabelMatcherCallable(String nodeName, String labelExpr) {
             this.nodeName = nodeName.equals(MASTER_NAME) ? "" : nodeName;
             this.labelExpr = labelExpr;
         }
-
         public Boolean call() throws ANTLRException {
             Node n = Jenkins.getInstance().getNode(nodeName);
             if (n == null)
@@ -112,13 +117,10 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
             return Label.parseExpression(labelExpr).matches(n);
         }
 
-        private static final long serialVersionUID = 1L;
     }
 
     public static void enhanceCapabilities(DesiredCapabilities capabilities, String node) {
         String nodeName = StringUtils.isEmpty(node) ? JenkinsCapabilityMatcher.MASTER_NAME : node;
         capabilities.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
     }
-
-    private static final Logger LOGGER = Logger.getLogger(JenkinsCapabilityMatcher.class.getName());
 }

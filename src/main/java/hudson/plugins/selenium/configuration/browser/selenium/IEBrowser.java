@@ -21,9 +21,9 @@ public class IEBrowser extends SeleniumBrowser {
     transient private static final String PARAM_BINARY_PATH = "webdriver.ie.driver";
 
     @DataBoundConstructor
-    public IEBrowser(int maxInstances, String version, String server_binary) {
+    public IEBrowser(int maxInstances, String version, String serverBinary) {
         super(maxInstances, version, "*iexplore");
-        this.server_binary = server_binary;
+        this.server_binary = serverBinary;
     }
 
     @Exported
@@ -33,9 +33,9 @@ public class IEBrowser extends SeleniumBrowser {
 
     @Override
     public void initOptions(Computer c, SeleniumRunOptions opt) {
-        String server_path = SeleniumBrowserServerUtils.uploadIEDriverIfNecessary(c, getBinary());
-        if (server_path != null) {
-            opt.getJVMArguments().put(PARAM_BINARY_PATH, server_path);
+        String serverPath = SeleniumBrowserServerUtils.uploadIEDriverIfNecessary(c, getBinary());
+        if (serverPath != null) {
+            opt.getJVMArguments().put(PARAM_BINARY_PATH, serverPath);
         }
         opt.addOptionIfSet("-browser", StringUtils.join(initBrowserOptions(c, opt), ","));
     }

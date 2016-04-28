@@ -25,14 +25,14 @@ public class StopHubCallable extends MasterToSlaveCallable<Void, Exception> {
      * @see hudson.remoting.Callable#call()
      */
     public Void call() throws Exception {
-	    if (HubHolder.hub == null){
+	    if (HubHolder.getHub() == null){
 		    LOGGER.warning("Hub is not running. Nothing to stop.");
 		    return null;
 	    }
 
-        HubHolder.hub.getRegistry().stop();
-        HubHolder.hub.stop();
-        HubHolder.hub = null;
+        HubHolder.getHub().getRegistry().stop();
+        HubHolder.getHub().stop();
+        HubHolder.setHub(null);
         return null;
     }
 

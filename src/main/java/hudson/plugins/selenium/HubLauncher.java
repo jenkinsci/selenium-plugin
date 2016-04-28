@@ -37,21 +37,21 @@ public class HubLauncher extends MasterToSlaveCallable<Void, Exception> {
 
     public Void call() {
         try {
-            Logger LOG = Logger.getLogger(HubLauncher.class.getName());
+            Logger log = Logger.getLogger(HubLauncher.class.getName());
             configureLoggers();
-            LOG.info("Grid Hub preparing to start on port " + port);
+            log.info("Grid Hub preparing to start on port " + port);
             GridHubConfiguration c = GridHubConfiguration.build(args);
             c.setPort(port);
             c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
             Hub hub = new Hub(c);
             hub.start();
-            HubHolder.hub = hub;
+            HubHolder.setHub(hub);
 
             StringBuilder arguments = new StringBuilder();
             for (String arg : args) {
                 arguments.append(" ").append(arg);
             }
-            LOG.info("Grid Hub started on port " + port + " with args:" + arguments.toString());
+            log.info("Grid Hub started on port " + port + " with args:" + arguments.toString());
         } catch (Exception e) {
             Log.error("An error occurred while starting the hub", e);
         }

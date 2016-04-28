@@ -22,6 +22,11 @@ import java.util.logging.Logger;
 
 public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 2047557797415325512L;
+
     private static final String ROLE_PARAM = "-role";
 
     private static final String ROLE_NODE_VALUE = "node";
@@ -37,6 +42,7 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
     private String nodeName;
     private SeleniumRunOptions options;
     private String config;
+
     private TaskListener listener;
 
     private String[] defaultArgs;
@@ -55,11 +61,6 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
                 ROLE_PARAM, ROLE_NODE_VALUE,
                 HUB_PARAM, "http://" + masterName + ":" + masterPort + "/wd/hub" };
     }
-
-    /**
-	 *
-	 */
-    private static final long serialVersionUID = 2047557797415325512L;
 
     public String invoke(File f, VirtualChannel channel) throws IOException {
         RemoteRunningStatus status = PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, config);

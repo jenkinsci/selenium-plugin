@@ -17,11 +17,13 @@ import java.util.logging.Logger;
 public class FileConfiguration extends SeleniumNodeConfiguration {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 5068212020001695128L;
-	
-	private String configURL;
+     *
+     */
+    private static final long serialVersionUID = 5068212020001695128L;
+
+    private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
+
+    private String configURL;
 
     @DataBoundConstructor
     public FileConfiguration(String configURL, String display) {
@@ -52,8 +54,8 @@ public class FileConfiguration extends SeleniumNodeConfiguration {
             String fullPath = c.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
 
                 /**
-				 * 
-				 */
+                 *
+                 */
                 private static final long serialVersionUID = -288688398601004624L;
 
                 public String invoke(File f, VirtualChannel channel) throws IOException {
@@ -78,8 +80,6 @@ public class FileConfiguration extends SeleniumNodeConfiguration {
             return null;
         }
     }
-
-    private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
 
     public String getIcon() {
         return "/images/24x24/document.png";
