@@ -11,6 +11,8 @@ public class HubHolder {
 
     private static Hub hub;
 
+    private HubHolder() {}
+
     public static Hub getHub() {
         return hub;
     }

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.openqa.grid.internal.RemoteProxy;
@@ -96,5 +98,29 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
         if (r != 0)
             return r;
         return this.getPort() - that.getPort();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SeleniumTestSlot that = (SeleniumTestSlot) o;
+
+        return new EqualsBuilder()
+                .append(isReserved, that.isReserved)
+                .append(host, that.host)
+                .append(capabilities, that.capabilities)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(isReserved)
+                .append(host)
+                .append(capabilities)
+                .toHashCode();
     }
 }

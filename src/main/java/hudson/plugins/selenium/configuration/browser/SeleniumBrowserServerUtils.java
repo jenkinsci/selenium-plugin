@@ -22,6 +22,8 @@ import java.net.URL;
  */
 public final class SeleniumBrowserServerUtils {
 
+    private SeleniumBrowserServerUtils() {}
+
     public static String uploadIEDriverIfNecessary(Computer computer, String serverBinary) {
         String serverPath = null;
         if (StringUtils.isBlank(serverBinary)) {

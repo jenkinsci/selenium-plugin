@@ -10,6 +10,8 @@ public final class PropertyUtils {
 
     private static Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
 
+    private PropertyUtils() {}
+
     public static <T> T getProperty(ChannelProperty<T> property) {
         return property.type.cast(properties.get(property.displayName));
     }
