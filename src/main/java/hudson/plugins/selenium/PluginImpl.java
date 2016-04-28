@@ -490,8 +490,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                 try {
                     config.start(c, listener);
                 } catch (ExecutionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         }

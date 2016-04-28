@@ -65,11 +65,9 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
         RemoteRunningStatus status = PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, config);
 
         if (status != null && status.isRunning()) {
-            // listener.getLogger().println("Skipping Selenium RC execution because this slave has already started its RCs");
             return null;
         }
 
-        // listener.getLogger().println("Copy grid jar");
         File localSeleniumJar = new File(f, seleniumJar.getName());
         File localHtmlUnitDriverJar = new File(f, htmlUnitDriverJar.getName());
         if (localSeleniumJar.lastModified() != seleniumJarTimestamp) {

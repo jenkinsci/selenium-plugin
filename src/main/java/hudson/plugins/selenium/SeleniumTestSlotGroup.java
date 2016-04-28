@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -93,4 +95,25 @@ public class SeleniumTestSlotGroup implements Comparable<SeleniumTestSlotGroup>,
         return this.getPort() - that.getPort();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SeleniumTestSlotGroup that = (SeleniumTestSlotGroup) o;
+
+        return new EqualsBuilder()
+                .append(host, that.host)
+                .append(slots, that.slots)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(host)
+                .append(slots)
+                .toHashCode();
+    }
 }

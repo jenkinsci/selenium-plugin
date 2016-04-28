@@ -17,8 +17,12 @@ import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServiceManagementAction implements Action {
+
+    private static final Logger LOGGER = Logger.getLogger(ServiceManagementAction.class.getName());
 
     private Computer computer;
 
@@ -53,7 +57,7 @@ public class ServiceManagementAction implements Action {
         try {
             PluginImpl.startSeleniumNode(computer, new StreamTaskListener(new OutputStreamWriter(System.out)), conf);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         return HttpResponses.forwardToPreviousPage();
     }

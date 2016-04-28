@@ -10,4 +10,6 @@ import org.openqa.grid.web.Hub;
 public class HubHolder {
 
     public static Hub hub;
+
+    private HubHolder() {}
 }

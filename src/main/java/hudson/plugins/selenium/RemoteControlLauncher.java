@@ -10,6 +10,9 @@ import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.SeleniumServer;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Launches Selenium RC.
  *
@@ -20,6 +23,8 @@ import org.openqa.selenium.server.SeleniumServer;
  * @author Richard Lavoie
  */
 public class RemoteControlLauncher extends MasterToSlaveCallable<Void, Exception> {
+
+    private static final Logger LOGGER = Logger.getLogger(RemoteControlLauncher.class.getName());
 
     /**
 	 *
@@ -51,10 +56,10 @@ public class RemoteControlLauncher extends MasterToSlaveCallable<Void, Exception
             Channel.current().waitForProperty(SeleniumConstants.PROPERTY_LOCK);
             return null;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
             throw e;
         } catch (Error e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
             throw e;
         }
     }

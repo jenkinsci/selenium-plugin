@@ -33,6 +33,8 @@ public final class SeleniumProcessUtils {
 
 	private static final Logger LOGGER = Logger.getLogger(SeleniumProcessUtils.class.getName());
 
+    private SeleniumProcessUtils() {}
+
     /**
      * Locate the stand-alone server jar from the classpath. Only works on the master.
      */

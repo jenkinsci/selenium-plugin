@@ -53,7 +53,7 @@ public abstract class SeleniumNodeConfiguration extends SeleniumJarRunner implem
     public String getDisplayName() {
         if (displayName == null) {
             String name = getClass().getSimpleName();
-            StringBuffer b = new StringBuffer(name.length());
+            StringBuilder b = new StringBuilder(name.length());
             b.append(name.charAt(0));
             for (int i = 1; i < name.length(); i++) {
                 if (Character.isUpperCase(name.charAt(i))) {
