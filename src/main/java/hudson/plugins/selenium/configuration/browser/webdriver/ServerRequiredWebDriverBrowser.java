@@ -22,7 +22,7 @@ public abstract class ServerRequiredWebDriverBrowser extends WebDriverBrowser {
     /**
      * Path to the server binary used to communicate with the browser.
      */
-    private String server_binary;
+    private String serverBinary;
 
     /**
      * 
@@ -37,11 +37,11 @@ public abstract class ServerRequiredWebDriverBrowser extends WebDriverBrowser {
      */
     protected ServerRequiredWebDriverBrowser(int instances, String version, String name, String server_binary) {
         super(instances, version, name);
-        this.server_binary = server_binary;
+        this.serverBinary = server_binary;
     }
 
     @Exported
-    public String getServer_binary() {
-        return server_binary;
+    public String getServerBinary() {
+        return serverBinary;
     }
 }

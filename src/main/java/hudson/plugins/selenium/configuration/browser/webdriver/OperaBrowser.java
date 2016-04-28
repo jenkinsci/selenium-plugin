@@ -13,20 +13,20 @@ public class OperaBrowser extends WebDriverBrowser {
 	 */
     private static final long serialVersionUID = -5094330146488965759L;
 
-    transient final protected String PARAM_BINARY_PATH = "opera.binary";
+    transient final protected String paramBinaryPath = "opera.binary";
 
-    private String browser_binary;
+    private String browserBinary;
 
     @DataBoundConstructor
     public OperaBrowser(int maxInstances, String version, String browser_binary) {
         super(maxInstances, version, "operablink");
-        this.browser_binary = browser_binary;
+        this.browserBinary = browser_binary;
     }
 
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, PARAM_BINARY_PATH, browser_binary);
+        combine(args, paramBinaryPath, browserBinary);
         return args;
     }
 

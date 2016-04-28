@@ -16,25 +16,25 @@ public class FirefoxBrowser extends SeleniumBrowser {
 	 */
     private static final long serialVersionUID = 1180910636911313608L;
 
-    transient final protected String PARAM_BINARY_PATH = "firefox_binary";
+    transient final protected String paramBinaryPath = "firefox_binary";
 
-    private String binary_path;
+    private String binaryPath;
 
     @DataBoundConstructor
     public FirefoxBrowser(int maxInstances, String version, String binaryPath) {
         super(maxInstances, version, "*firefox");
-        this.binary_path = binaryPath;
+        this.binaryPath = binaryPath;
     }
 
     @Exported
     public String getBinaryPath() {
-        return binary_path;
+        return binaryPath;
     }
 
     @Override
     public List<String> initBrowserOptions(Computer c, SeleniumRunOptions options) {
         List<String> args = super.initBrowserOptions(c, options);
-        combine(args, PARAM_BINARY_PATH, binary_path);
+        combine(args, paramBinaryPath, binaryPath);
         return args;
     }
 

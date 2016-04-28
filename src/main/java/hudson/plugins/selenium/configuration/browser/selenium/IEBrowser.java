@@ -16,19 +16,19 @@ public class IEBrowser extends SeleniumBrowser {
 	 */
     private static final long serialVersionUID = 1128527306600780412L;
 
-    private String server_binary;
+    private String serverBinary;
 
     transient private static final String PARAM_BINARY_PATH = "webdriver.ie.driver";
 
     @DataBoundConstructor
     public IEBrowser(int maxInstances, String version, String server_binary) {
         super(maxInstances, version, "*iexplore");
-        this.server_binary = server_binary;
+        this.serverBinary = server_binary;
     }
 
     @Exported
     public String getBinary() {
-        return server_binary;
+        return serverBinary;
     }
 
     @Override

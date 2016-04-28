@@ -121,7 +121,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private transient Boolean rcTrustAllSSLCerts;
     private transient Boolean rcBrowserSideLog;
     private transient boolean rcDebug;
-    private transient String rcLog;
 
     private final List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
 
@@ -284,7 +283,9 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     public HubParams getCurrentHubParams() {
         HubParams result = new HubParams();
-        if (channel == null) return result;
+        if (channel == null) {
+            return result;
+        }
 
         try {
             return channel.call(new HubParamsCallable());
@@ -319,14 +320,14 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         if (channel == null)
             return Collections.emptyList();
 
-        Collection<SeleniumTestSlotGroup> rcs = channel.call(new MasterToSlaveCallable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
+        return channel.call(new MasterToSlaveCallable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
 
             /**
              *
              */
             private static final long serialVersionUID = 1791985298575049757L;
 
-            public Collection<SeleniumTestSlotGroup> call() throws RuntimeException {
+            public Collection<SeleniumTestSlotGroup> call() {
                 Map<URL, SeleniumTestSlotGroup> groups = new HashMap<URL, SeleniumTestSlotGroup>();
 
                 if (HubHolder.hub == null) {
@@ -353,7 +354,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                 return values;
             }
         });
-        return rcs;
 
     }
 

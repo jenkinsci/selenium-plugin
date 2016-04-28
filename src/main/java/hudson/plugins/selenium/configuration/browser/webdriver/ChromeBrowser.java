@@ -20,7 +20,7 @@ public class ChromeBrowser extends ServerRequiredWebDriverBrowser {
     /**
      * System property to specify the chrome binary location. Could be done through a tool installer and probably moved into the chromedriver plugin.
      */
-    transient final protected String PARAM_BINARY_PATH = "webdriver.chrome.driver";
+    transient final protected String paramBinaryPath = "webdriver.chrome.driver";
 
     @DataBoundConstructor
     public ChromeBrowser(int maxInstances, String version, String server_binary) {
@@ -30,7 +30,7 @@ public class ChromeBrowser extends ServerRequiredWebDriverBrowser {
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, PARAM_BINARY_PATH, getServer_binary());
+        combine(args, paramBinaryPath, getServerBinary());
         return args;
     }
 
