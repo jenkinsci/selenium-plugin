@@ -28,13 +28,13 @@ public class IEBrowser extends ServerRequiredWebDriverBrowser {
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
 
-        combine(args, PARAM_BINARY_PATH, getServer_binary());
+        combine(args, PARAM_BINARY_PATH, getServerBinary());
         return args;
     }
 
     @Override
     public void initOptions(Computer c, SeleniumRunOptions opt) {
-        String serverPath = SeleniumBrowserServerUtils.uploadIEDriverIfNecessary(c, getServer_binary());
+        String serverPath = SeleniumBrowserServerUtils.uploadIEDriverIfNecessary(c, getServerBinary());
         if (serverPath != null) {
             opt.getJVMArguments().put(PARAM_BINARY_PATH, serverPath);
         }

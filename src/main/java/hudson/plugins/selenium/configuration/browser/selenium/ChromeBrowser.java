@@ -18,7 +18,7 @@ public class ChromeBrowser extends SeleniumBrowser {
 	 */
     private static final long serialVersionUID = -7028484889764200348L;
 
-    transient final protected String PARAM_BINARY_PATH = "webdriver.chrome.driver";
+    transient final protected String paramBinaryPath = "webdriver.chrome.driver";
 
     private String binary;
 
@@ -36,7 +36,7 @@ public class ChromeBrowser extends SeleniumBrowser {
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, PARAM_BINARY_PATH, binary);
+        combine(args, paramBinaryPath, binary);
         return args;
     }
 

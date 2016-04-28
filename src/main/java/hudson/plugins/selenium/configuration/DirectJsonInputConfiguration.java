@@ -93,7 +93,6 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
                 return notEmpty;
             }
             try {
-                new JSONObject(config);
                 // We don't want to validate the fields, even RegistrationRequest doesn't ... It just ignores the unknown fields.
                 return FormValidation.ok();
             } catch (Exception e) {

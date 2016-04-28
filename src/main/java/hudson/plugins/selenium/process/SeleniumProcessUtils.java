@@ -87,8 +87,7 @@ public final class SeleniumProcessUtils {
         vmb.classpath().addJarOf(Channel.class);
         vmb.mainClass(Launcher.class);
 
-        if (classpath != null)
-            vmb.args().add("-cp").add(classpath);
+        vmb.args().add("-cp").add(classpath);
         vmb.args().add("-connectTo", "localhost:" + serverSocket.getLocalPort());
 
         // TODO add XVFB options here

@@ -15,7 +15,7 @@ public class OperaBrowser extends SeleniumBrowser {
 	 */
     private static final long serialVersionUID = -7520649475709638350L;
 
-    transient final protected String PARAM_BINARY_PATH = "opera.binary";
+    transient final protected String paramBinaryPath = "opera.binary";
 
     private String binary;
 
@@ -33,7 +33,7 @@ public class OperaBrowser extends SeleniumBrowser {
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, PARAM_BINARY_PATH, binary);
+        combine(args, paramBinaryPath, binary);
         return args;
     }
 
