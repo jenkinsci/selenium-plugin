@@ -2,13 +2,12 @@ package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
 import hudson.util.FormValidation;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChromeBrowser extends ServerRequiredWebDriverBrowser {
 
@@ -47,12 +46,16 @@ public class ChromeBrowser extends ServerRequiredWebDriverBrowser {
         }
 
         public FormValidation doCheckServer_binary(@QueryParameter String value) {
-            if (StringUtils.isBlank(value)) {
+            if (StringUtils.isBlank(value) && !isChromeDriverPropertySet()) {
                 return FormValidation
                         .warning("Must not be empty unless it is already defined from a previous chrome browser definition or already defined in the path");
             }
             return FormValidation.ok();
         }
 
+        private boolean isChromeDriverPropertySet() {
+
+            return System.getProperty("webdriver.chrome.driver", "null").equals("null");
+        }
     }
 }
