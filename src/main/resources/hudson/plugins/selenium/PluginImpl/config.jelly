@@ -25,6 +25,9 @@
           <f:entry title="${%Set -newSessionWaitTimeout}" field="newSessionWaitTimeout">
               <f:textbox />
           </f:entry>
+          <f:entry title="${%Set -maxSession}" field="maxSession">
+              <f:textbox />
+          </f:entry>
           <f:entry title="${%Set -timeout}" field="timeout">
               <f:textbox />
           </f:entry>
