@@ -188,7 +188,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             args.add("-newSessionWaitTimeout");
             args.add(getNewSessionWaitTimeout().toString());
         }
-        if (getMaxSession() != null && getMaxSession() >= 0) {
+        if (getMaxSession() != null && getMaxSession() > 0) {
             args.add("-maxSession");
             args.add(getMaxSession().toString());
         }
