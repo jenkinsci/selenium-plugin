@@ -645,7 +645,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
-        return new CustomWDConfiguration(4445, null, browsers, null);
+        return new CustomWDConfiguration(4445, null, browsers, null, 5);
     }
 
     /**
