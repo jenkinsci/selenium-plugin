@@ -20,9 +20,9 @@ import java.net.URL;
  * @author Richard Lavoie
  * 
  */
-public final class SeleniumBrowserServerUtils {
+public final class IeDriverServerUtils {
 
-    private SeleniumBrowserServerUtils() {}
+    private IeDriverServerUtils() {}
 
     public static String uploadIEDriverIfNecessary(Computer computer, String serverBinary) {
         String serverPath = null;
@@ -44,7 +44,7 @@ public final class SeleniumBrowserServerUtils {
                 });
 
                 if (isWin64bit != null) {
-                    URL url = SeleniumBrowserServerUtils.class.getClassLoader().getResource("IEDriverServer_" + (isWin64bit ? "64" : "32") + ".exe");
+                    URL url = IeDriverServerUtils.class.getClassLoader().getResource("IEDriverServer_" + (isWin64bit ? "64" : "32") + ".exe");
                     final InputStream is = new RemoteInputStream(url.openStream(), RemoteInputStream.Flag.GREEDY);
                     serverPath = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
 
