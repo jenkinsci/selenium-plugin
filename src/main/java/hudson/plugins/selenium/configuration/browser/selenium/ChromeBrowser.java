@@ -2,14 +2,13 @@ package hudson.plugins.selenium.configuration.browser.selenium;
 
 import hudson.Extension;
 import hudson.util.FormValidation;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChromeBrowser extends SeleniumBrowser {
 
@@ -18,25 +17,25 @@ public class ChromeBrowser extends SeleniumBrowser {
 	 */
     private static final long serialVersionUID = -7028484889764200348L;
 
-    transient final protected String paramBinaryPath = "webdriver.chrome.driver";
+    private String chromeDriverProperty = "webdriver.chrome.driver";
 
-    private String binary;
+    private String driverBinaryPath;
 
     @DataBoundConstructor
-    public ChromeBrowser(int maxInstances, String version, String binary) {
+    public ChromeBrowser(int maxInstances, String version, String driverBinaryPath) {
         super(maxInstances, version, "*googlechrome");
-        this.binary = binary;
+        this.driverBinaryPath = driverBinaryPath;
     }
 
     @Exported
-    public String getBinary() {
-        return binary;
+    public String getDriverBinaryPath() {
+        return driverBinaryPath;
     }
 
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, paramBinaryPath, binary);
+        combine(args, chromeDriverProperty, getDriverBinaryPath());
         return args;
     }
 
@@ -52,14 +51,13 @@ public class ChromeBrowser extends SeleniumBrowser {
             return "Chrome";
         }
 
-        public FormValidation doCheckBinary(@QueryParameter String value) {
+        public FormValidation doCheckDriverBinaryPath(@QueryParameter String value) {
             if (StringUtils.isBlank(value)) {
                 return FormValidation
                         .warning("Must not be empty unless it is already defined from a previous chrome browser definition or already defined in the path");
             }
             return FormValidation.ok();
         }
-
     }
 
 }

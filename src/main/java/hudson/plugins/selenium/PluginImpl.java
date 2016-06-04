@@ -182,7 +182,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         Level logLevel = Level.parse(getHubLogLevel());
         this.listener.getLogger().println("Starting Selenium Grid");
 
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
             args.add("-newSessionWaitTimeout");
             args.add(getNewSessionWaitTimeout().toString());
@@ -204,7 +204,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         args.add(getMasterHostName());
 
         hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[args.size()]), logLevel));
-
     }
 
     public File getLogFile() {
@@ -314,7 +313,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
         this.listener.closeQuietly();
         channel.close();
-
     }
 
     @Exported( inline = true )

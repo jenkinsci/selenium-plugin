@@ -2,7 +2,7 @@ package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
 import hudson.model.Computer;
-import hudson.plugins.selenium.configuration.browser.SeleniumBrowserServerUtils;
+import hudson.plugins.selenium.configuration.browser.IeDriverServerUtils;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -10,33 +10,33 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IEBrowser extends ServerRequiredWebDriverBrowser {
+public class IEBrowser extends DriverRequiredWebDriverBrowser {
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = -241845413478474187L;
 
-    transient private static final String PARAM_BINARY_PATH = "webdriver.ie.driver";
+    private String ieDriverProperty = "webdriver.ie.driver";
 
     @DataBoundConstructor
-    public IEBrowser(int maxInstances, String version, String serverBinary) {
-        super(maxInstances, version, "internet explorer", serverBinary);
+    public IEBrowser(int maxInstances, String version, String driverBinaryPath) {
+        super(maxInstances, version, "internet explorer", driverBinaryPath);
     }
 
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
 
-        combine(args, PARAM_BINARY_PATH, getServerBinary());
+        combine(args, ieDriverProperty, getDriverBinaryPath());
         return args;
     }
 
     @Override
     public void initOptions(Computer c, SeleniumRunOptions opt) {
-        String serverPath = SeleniumBrowserServerUtils.uploadIEDriverIfNecessary(c, getServerBinary());
-        if (serverPath != null) {
-            opt.getJVMArguments().put(PARAM_BINARY_PATH, serverPath);
+        String driverPath = IeDriverServerUtils.uploadIEDriverIfNecessary(c, getDriverBinaryPath());
+        if (driverPath != null) {
+            opt.getJVMArguments().put(ieDriverProperty, driverPath);
         }
         opt.addOptionIfSet("-browser", StringUtils.join(initBrowserOptions(c, opt), ","));
     }
@@ -52,6 +52,5 @@ public class IEBrowser extends ServerRequiredWebDriverBrowser {
         public String getDisplayName() {
             return "Internet Explorer";
         }
-
     }
 }
