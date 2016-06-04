@@ -2,6 +2,7 @@ package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.export.Exported;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,14 +20,19 @@ public class OperaBrowser extends WebDriverBrowser {
 
     @DataBoundConstructor
     public OperaBrowser(int maxInstances, String version, String binaryPath) {
-        super(maxInstances, version, "operablink");
+        super(maxInstances, version, "opera");
         this.binaryPath = binaryPath;
+    }
+
+    @Exported
+    public String getBinaryPath() {
+        return binaryPath;
     }
 
     @Override
     public Map<String, String> getJVMArgs() {
         Map<String, String> args = new HashMap<String, String>();
-        combine(args, paramBinaryPath, binaryPath);
+        combine(args, paramBinaryPath, getBinaryPath());
         return args;
     }
 
