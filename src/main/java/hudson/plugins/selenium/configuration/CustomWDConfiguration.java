@@ -26,7 +26,7 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 	private static final long serialVersionUID = -1357952133882786829L;
 
 	private int port = 4444;
-
+    private Integer maxSession = 5;
     private Integer timeout = -1;
 
     private List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
@@ -39,11 +39,12 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
     }
 
     @DataBoundConstructor
-    public CustomWDConfiguration(int port, Integer timeout, List<WebDriverBrowser> browsers, String display) {
+    public CustomWDConfiguration(int port, Integer timeout, List<WebDriverBrowser> browsers, String display, Integer maxSession) {
         super(display);
         this.port = port;
         this.timeout = timeout;
         this.browsers = browsers;
+        this.maxSession = maxSession;
     }
 
     @Exported
@@ -55,6 +56,9 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
     public Integer getTimeout() {
         return timeout;
     }
+
+    @Exported
+    public Integer getMaxSession() { return maxSession; }
 
     @Exported
     public List<WebDriverBrowser> getBrowsers() {
@@ -93,6 +97,17 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
             return FormValidation.error("Must be an integer greater than or equal to -1.");
         }
 
+        public FormValidation doCheckMaxSession(@QueryParameter String value) {
+            try {
+                Integer i = Integer.parseInt(value);
+                if (i >= 1) {
+                    return FormValidation.ok();
+                }
+            } catch (NumberFormatException nfe) {
+
+            }
+            return FormValidation.error("Must be an integer greater than or equal to 1.");
+        }
     }
 
     @Override
@@ -108,6 +123,11 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
         if (getTimeout() != null && getTimeout() > -1) {
             opt.addOption("-timeout");
             opt.addOption(getTimeout().toString());
+        }
+
+        if (getMaxSession() != null && getMaxSession() > 0) {
+            opt.addOption("-maxSession");
+            opt.addOption(getMaxSession().toString());
         }
 
         for (WebDriverBrowser b : browsers) {

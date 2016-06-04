@@ -9,7 +9,7 @@
 				<f:entry title="${%Name of the configuration}" field="name">
 				    <f:textbox />
 				</f:entry>
-				
+
 				
 				<f:descriptorRadioList title="Matcher" varName="matcher" instance="${instance.matcher}" descriptors="${it.matcherTypes}" targetType="${hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.class}" />
 				<f:descriptorRadioList title="Type" varName="configuration" instance="${instance.configuration}" descriptors="${it.configTypes}" targetType="${hudson.plugins.selenium.configuration.SeleniumNodeConfiguration.class}" />

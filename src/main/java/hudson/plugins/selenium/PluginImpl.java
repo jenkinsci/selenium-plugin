@@ -108,6 +108,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
      */
     private String exclusionPatterns;
     private Integer newSessionWaitTimeout = -1; //ms or -1
+    private Integer maxSession = 5; //number of allowed session //default value 5
     private Integer timeout = 300;      //sec               // default value as defined in WebDriver
     private Integer browserTimeout = 0; //sec               // default value as defined in WebDriver
     private boolean throwOnCapabilityNotPresent = false;
@@ -156,6 +157,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         exclusionPatterns = formData.getString("exclusionPatterns");
         hubLogLevel = formData.getString("hubLogLevel");
         newSessionWaitTimeout = formData.optInt("newSessionWaitTimeout", -1);
+        maxSession = formData.optInt("maxSession", 5);
         timeout = formData.optInt("timeout", 300000);
         browserTimeout = formData.optInt("browserTimeout", 0);
         throwOnCapabilityNotPresent = formData.getBoolean("throwOnCapabilityNotPresent");
@@ -185,6 +187,10 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
             args.add("-newSessionWaitTimeout");
             args.add(getNewSessionWaitTimeout().toString());
+        }
+        if (getMaxSession() != null && getMaxSession() > 0) {
+            args.add("-maxSession");
+            args.add(getMaxSession().toString());
         }
         if (getTimeout() != null) {
             args.add("-timeout");
@@ -248,6 +254,11 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     @Exported
     public Integer getNewSessionWaitTimeout() {
         return newSessionWaitTimeout;
+    }
+
+    @Exported
+    public Integer getMaxSession() {
+        return maxSession;
     }
 
     @Exported
@@ -634,7 +645,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
-        return new CustomWDConfiguration(4445, null, browsers, null);
+        return new CustomWDConfiguration(4445, null, browsers, null, 5);
     }
 
     /**
