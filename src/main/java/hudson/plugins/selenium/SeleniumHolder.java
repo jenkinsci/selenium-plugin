@@ -6,4 +6,5 @@ public final class SeleniumHolder {
 
     public static SelfRegisteringRemote seleniumInstance;
 
+    private SeleniumHolder() {}
 }

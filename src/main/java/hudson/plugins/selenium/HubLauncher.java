@@ -1,15 +1,13 @@
 package hudson.plugins.selenium;
 
 import hudson.remoting.Channel;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import jenkins.security.MasterToSlaveCallable;
-
 import org.jfree.util.Log;
 import org.openqa.grid.internal.utils.GridHubConfiguration;
 import org.openqa.grid.web.Hub;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Starts the selenium grid server.
@@ -37,21 +35,22 @@ public class HubLauncher extends MasterToSlaveCallable<Void, Exception> {
 
     public Void call() {
         try {
-            Logger LOG = Logger.getLogger(HubLauncher.class.getName());
-            configureLoggers();
-            LOG.info("Grid Hub preparing to start on port " + port);
+            Logger log = Logger.getLogger(HubLauncher.class.getName());
+            log.log(Level.OFF, "Grid hub starting with log level " + logLevel.getName());
+            log.log(Level.OFF, "Grid Hub preparing to start on port " + port);
             GridHubConfiguration c = GridHubConfiguration.build(args);
             c.setPort(port);
             c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
             Hub hub = new Hub(c);
             hub.start();
-            HubHolder.hub = hub;
+            HubHolder.setHub(hub);
 
             StringBuilder arguments = new StringBuilder();
             for (String arg : args) {
                 arguments.append(" ").append(arg);
             }
-            LOG.info("Grid Hub started on port " + port + " with args:" + arguments.toString());
+            log.log(Level.OFF, "Grid Hub started on port " + port + " with args:" + arguments.toString());
+            configureLoggers();
         } catch (Exception e) {
             Log.error("An error occurred while starting the hub", e);
         }
@@ -64,5 +63,6 @@ public class HubLauncher extends MasterToSlaveCallable<Void, Exception> {
         Logger.getLogger("org.seleniumhq").setLevel(logLevel);
         Logger.getLogger("com.thoughtworks.selenium").setLevel(logLevel);
         Logger.getLogger("org.apache.commons.httpclient").setLevel(logLevel);
+        Logger.getLogger("hudson.plugins.selenium").setLevel(logLevel);
     }
 }

@@ -20,11 +20,13 @@ import java.net.URL;
  * @author Richard Lavoie
  * 
  */
-public final class SeleniumBrowserServerUtils {
+public final class IeDriverServerUtils {
 
-    public static String uploadIEDriverIfNecessary(Computer computer, String server_binary) {
-        String server_path = null;
-        if (StringUtils.isBlank(server_binary)) {
+    private IeDriverServerUtils() {}
+
+    public static String uploadIEDriverIfNecessary(Computer computer, String serverBinary) {
+        String serverPath = null;
+        if (StringUtils.isBlank(serverBinary)) {
             try {
                 Boolean isWin64bit = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<Boolean>() {
 
@@ -42,9 +44,9 @@ public final class SeleniumBrowserServerUtils {
                 });
 
                 if (isWin64bit != null) {
-                    URL url = SeleniumBrowserServerUtils.class.getClassLoader().getResource("IEDriverServer_" + (isWin64bit ? "64" : "32") + ".exe");
+                    URL url = IeDriverServerUtils.class.getClassLoader().getResource("IEDriverServer_" + (isWin64bit ? "64" : "32") + ".exe");
                     final InputStream is = new RemoteInputStream(url.openStream(), RemoteInputStream.Flag.GREEDY);
-                    server_path = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
+                    serverPath = computer.getNode().getRootPath().act(new MasterToSlaveFileCallable<String>() {
 
                         private static final long serialVersionUID = 4508849758404950847L;
 
@@ -60,12 +62,12 @@ public final class SeleniumBrowserServerUtils {
                 }
 
             } catch (Exception e) {
-                server_path = server_binary;
+                serverPath = serverBinary;
             }
         } else {
-            server_path = server_binary;
+            serverPath = serverBinary;
         }
-        return server_path;
+        return serverPath;
     }
 
 }

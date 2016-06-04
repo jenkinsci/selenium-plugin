@@ -41,7 +41,7 @@ public class StopSeleniumServer extends MasterToSlaveCallable<String, Exception>
     }
 
     private RemoteRunningStatus getRunningStatus() {
-        return ((RemoteRunningStatus) PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, name));
+        return (RemoteRunningStatus) PropertyUtils.getMapProperty(SeleniumConstants.PROPERTY_STATUS, name);
     }
 
     private <T, V extends Exception> T callOnSubProcess(Callable<T, V> call, T defaultValue) throws Exception {

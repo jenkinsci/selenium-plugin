@@ -20,6 +20,8 @@ import java.io.Serializable;
 @Extension
 public class ComputerListenerImpl extends ComputerListener implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Starts a selenium Grid node remotely.
      */
@@ -35,7 +37,5 @@ public class ComputerListenerImpl extends ComputerListener implements Serializab
         } catch (Throwable e) {
         }
     }
-
-    private static final long serialVersionUID = 1L;
 
 }

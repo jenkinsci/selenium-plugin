@@ -17,8 +17,12 @@ import org.kohsuke.stapler.export.Exported;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CustomWDConfiguration extends SeleniumNodeConfiguration {
+
+    private static final Logger LOGGER = Logger.getLogger(CustomWDConfiguration.class.getName());
 
     /**
 	 * 
@@ -116,8 +120,7 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
         try {
             opt.addOptionIfSet("-port", c.getChannel().call(new RetrieveAvailablePort(getPort())));
         } catch (Exception e) {
-            // an error occured, not adding the port option
-            // e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "an error occured, not adding the port option", e);
         }
 
         if (getTimeout() != null && getTimeout() > -1) {

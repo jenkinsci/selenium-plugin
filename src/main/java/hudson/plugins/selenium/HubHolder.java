@@ -9,5 +9,15 @@ import org.openqa.grid.web.Hub;
  */
 public class HubHolder {
 
-    public static Hub hub;
+    private static Hub hub;
+
+    private HubHolder() {}
+
+    public static Hub getHub() {
+        return hub;
+    }
+
+    public static void setHub(Hub hub) {
+        HubHolder.hub = hub;
+    }
 }

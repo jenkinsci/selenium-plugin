@@ -89,6 +89,8 @@ import java.util.logging.Logger;
 @ExportedBean
 public class PluginImpl extends Plugin implements Action, Serializable, Describable<PluginImpl> {
 
+    private static final long serialVersionUID = 1L;
+
     private static final String SEPARATOR = ",";
 
     private static final Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
@@ -122,7 +124,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     private transient Boolean rcTrustAllSSLCerts;
     private transient Boolean rcBrowserSideLog;
     private transient boolean rcDebug;
-    private transient String rcLog;
 
     private final List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
 
@@ -183,7 +184,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         Level logLevel = Level.parse(getHubLogLevel());
         this.listener.getLogger().println("Starting Selenium Grid");
 
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         if (getNewSessionWaitTimeout() != null && getNewSessionWaitTimeout() >= 0) {
             args.add("-newSessionWaitTimeout");
             args.add(getNewSessionWaitTimeout().toString());
@@ -209,7 +210,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         args.add(getMasterHostName());
 
         hubLauncher = channel.callAsync(new HubLauncher(port, args.toArray(new String[args.size()]), logLevel));
-
     }
 
     public File getLogFile() {
@@ -281,6 +281,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         HubParams activeHubParams = getCurrentHubParams();
         return activeHubParams.isNotActiveOn(getMasterHostName(), port);
     }
+
     @Exported
     public Integer getActivePort() {
         return getCurrentHubParams().getPort();
@@ -295,7 +296,9 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     public HubParams getCurrentHubParams() {
         HubParams result = new HubParams();
-        if (channel == null) return result;
+        if (channel == null) {
+            return result;
+        }
 
         try {
             return channel.call(new HubParamsCallable());
@@ -305,7 +308,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
         return result;
     }
-
 
     @Exported
     public boolean getThrowOnCapabilityNotPresent() {
@@ -322,7 +324,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
         this.listener.closeQuietly();
         channel.close();
-
     }
 
     @Exported( inline = true )
@@ -330,21 +331,21 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         if (channel == null)
             return Collections.emptyList();
 
-        Collection<SeleniumTestSlotGroup> rcs = channel.call(new MasterToSlaveCallable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
+        return channel.call(new MasterToSlaveCallable<Collection<SeleniumTestSlotGroup>, RuntimeException>() {
 
             /**
              *
              */
             private static final long serialVersionUID = 1791985298575049757L;
 
-            public Collection<SeleniumTestSlotGroup> call() throws RuntimeException {
+            public Collection<SeleniumTestSlotGroup> call() {
                 Map<URL, SeleniumTestSlotGroup> groups = new HashMap<URL, SeleniumTestSlotGroup>();
 
-                if (HubHolder.hub == null) {
+                if (HubHolder.getHub() == null) {
                     return Collections.emptyList();
                 }
 
-                Registry registry = HubHolder.hub.getRegistry();
+                Registry registry = HubHolder.getHub().getRegistry();
                 if (registry != null) {
                     for (RemoteProxy proxy : registry.getAllProxies()) {
                         for (TestSlot slot : proxy.getTestSlots()) {
@@ -364,7 +365,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                 return values;
             }
         });
-        return rcs;
 
     }
 
@@ -389,38 +389,35 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     @Extension
     public static class DescriptorImpl extends Descriptor<PluginImpl> {
-
         @Override
         public String getDisplayName() {
             return "";
         }
     }
 
-    private static final long serialVersionUID = 1L;
-
     // this part take cares of the migration from 2.0 to 2.1
     public Object readResolve() {
         if (rcFirefoxProfileTemplate != null || rcBrowserSessionReuse != null || rcTrustAllSSLCerts != null || rcBrowserSideLog != null) {
-            String rcFirefoxProfileTemplate_ = getDefaultForNull(rcFirefoxProfileTemplate, "");
-            Boolean rcBrowserSessionReuse_ = getDefaultForNull(rcBrowserSessionReuse, Boolean.FALSE);
-            Boolean rcTrustAllSSLCerts_ = getDefaultForNull(rcTrustAllSSLCerts, Boolean.FALSE);
-            Boolean rcBrowserSideLog_ = getDefaultForNull(rcBrowserSideLog, Boolean.FALSE);
+            String rcFirefoxProfileTemplate = getDefaultForNull(this.rcFirefoxProfileTemplate, "");
+            Boolean rcBrowserSessionReuse = getDefaultForNull(this.rcBrowserSessionReuse, Boolean.FALSE);
+            Boolean rcTrustAllSSLCerts = getDefaultForNull(this.rcTrustAllSSLCerts, Boolean.FALSE);
+            Boolean rcBrowserSideLog = getDefaultForNull(this.rcBrowserSideLog, Boolean.FALSE);
 
             List<SeleniumBrowser> browsers = new ArrayList<SeleniumBrowser>();
             browsers.add(new IEBrowser(5, "", ""));
             browsers.add(new FirefoxBrowser(5, "", ""));
             browsers.add(new ChromeBrowser(5, "", ""));
 
-            int port_ = 4445;
+            int port = 4445;
             try {
                 ServerSocket ss = new ServerSocket(0);
-                port_ = ss.getLocalPort();
+                port = ss.getLocalPort();
                 ss.close();
             } catch (IOException e) {
             }
 
-            SeleniumNodeConfiguration c = new CustomRCConfiguration(port_, rcBrowserSideLog_, rcDebug, rcTrustAllSSLCerts_, rcBrowserSessionReuse_,
-                    -1, rcFirefoxProfileTemplate_, browsers, null);
+            SeleniumNodeConfiguration c = new CustomRCConfiguration(port, rcBrowserSideLog, rcDebug, rcTrustAllSSLCerts, rcBrowserSessionReuse,
+                    -1, rcFirefoxProfileTemplate, browsers, null);
 
             synchronized (configurations) {
                 configurations.add(new SeleniumGlobalConfiguration("Selenium v2.0 configuration", new MatchAllMatcher(), c));
@@ -501,8 +498,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                 try {
                     config.start(c, listener);
                 } catch (ExecutionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         }

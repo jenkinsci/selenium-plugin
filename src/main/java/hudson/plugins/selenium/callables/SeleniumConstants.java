@@ -23,4 +23,6 @@ public class SeleniumConstants {
     public static final String STOPPED = "Stopped";
 
     public static final String ERROR = "Error";
+
+    private SeleniumConstants() {}
 }

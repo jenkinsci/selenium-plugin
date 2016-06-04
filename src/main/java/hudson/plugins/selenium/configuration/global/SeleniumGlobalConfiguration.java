@@ -123,7 +123,7 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
 
         PluginImpl.getPlugin().replaceGlobalConfigurations(name, conf);
 
-        rsp.sendRedirect2("../../configurations");
+        rsp.sendRedirect2("../../configuration/"+conf.getName());
     }
 
     public DescriptorExtensionList<SeleniumNodeConfiguration, ConfigurationDescriptor> getConfigTypes() {

@@ -24,13 +24,13 @@ public abstract class AbstractSeleniumBrowser<T extends AbstractSeleniumBrowser<
 	 */
     private static final long serialVersionUID = -1895158524568642537L;
 
-    transient protected final String PARAM_BROWSER_NAME = "browserName";
+    transient protected final String paramBrowserName = "browserName";
 
-    transient protected final String PARAM_MAX_INSTANCES = "maxInstances";
+    transient protected final String paramMaxInstances = "maxInstances";
 
-    transient protected final String PARAM_VERSION = "version";
+    transient protected final String paramVersion = "version";
 
-    transient protected final String PARAM_SELENIUM_PROTOCOL = "seleniumProtocol";
+    transient protected final String paramSeleniumProtocol = "seleniumProtocol";
 
     private int maxInstances = 0;
     private String version;
@@ -97,10 +97,10 @@ public abstract class AbstractSeleniumBrowser<T extends AbstractSeleniumBrowser<
 
     protected List<String> initBrowserOptions(Computer c, SeleniumRunOptions options) {
         List<String> args = new ArrayList<String>();
-        combine(args, PARAM_SELENIUM_PROTOCOL, protocol);
-        combine(args, PARAM_BROWSER_NAME, getName());
-        combine(args, PARAM_MAX_INSTANCES, maxInstances);
-        combine(args, PARAM_VERSION, version);
+        combine(args, paramSeleniumProtocol, protocol);
+        combine(args, paramBrowserName, getName());
+        combine(args, paramMaxInstances, maxInstances);
+        combine(args, paramVersion, version);
         return args;
     }
 

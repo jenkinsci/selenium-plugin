@@ -73,7 +73,7 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
                     private String remoteUrl = url;
 
                     public Void call() throws Exception {
-                        Registry registry = HubHolder.hub.getRegistry();
+                        Registry registry = HubHolder.getHub().getRegistry();
                         if (registry != null) {
                             Iterator<RemoteProxy> it = registry.getAllProxies().iterator();
                             while (it.hasNext()) {

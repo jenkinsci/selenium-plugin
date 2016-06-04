@@ -31,6 +31,8 @@ import java.util.logging.Logger;
  */
 public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
 
+    private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
+
     /**
      *
      */
@@ -91,7 +93,6 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
                 return notEmpty;
             }
             try {
-                new JSONObject(config);
                 // We don't want to validate the fields, even RegistrationRequest doesn't ... It just ignores the unknown fields.
                 return FormValidation.ok();
             } catch (Exception e) {
@@ -157,8 +158,6 @@ public class DirectJsonInputConfiguration extends SeleniumNodeConfiguration {
             return null;
         }
     }
-
-    private static final Logger LOGGER = Logger.getLogger(FileConfiguration.class.getName());
 
     public String getIcon() {
         return "/images/24x24/document.png";

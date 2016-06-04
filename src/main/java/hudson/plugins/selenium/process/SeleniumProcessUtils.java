@@ -33,6 +33,8 @@ public final class SeleniumProcessUtils {
 
 	private static final Logger LOGGER = Logger.getLogger(SeleniumProcessUtils.class.getName());
 
+    private SeleniumProcessUtils() {}
+
     /**
      * Locate the stand-alone server jar from the classpath. Only works on the master.
      */
@@ -85,8 +87,7 @@ public final class SeleniumProcessUtils {
         vmb.classpath().addJarOf(Channel.class);
         vmb.mainClass(Launcher.class);
 
-        if (classpath != null)
-            vmb.args().add("-cp").add(classpath);
+        vmb.args().add("-cp").add(classpath);
         vmb.args().add("-connectTo", "localhost:" + serverSocket.getLocalPort());
 
         // TODO add XVFB options here

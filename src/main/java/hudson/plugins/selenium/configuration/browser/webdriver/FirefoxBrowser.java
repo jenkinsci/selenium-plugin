@@ -3,11 +3,10 @@ package hudson.plugins.selenium.configuration.browser.webdriver;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
-
-import java.util.List;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
+
+import java.util.List;
 
 public class FirefoxBrowser extends WebDriverBrowser {
 
@@ -16,25 +15,25 @@ public class FirefoxBrowser extends WebDriverBrowser {
 	 */
     private static final long serialVersionUID = 1451746845341944745L;
 
-    transient final protected String PARAM_BINARY_PATH = "firefox_binary";
+    protected String paramBinaryPath = "firefox_binary";
 
-    private String binary_path;
+    private String binaryPath;
 
     @DataBoundConstructor
     public FirefoxBrowser(int maxInstances, String version, String binaryPath) {
         super(maxInstances, version, "firefox");
-        binary_path = binaryPath;
+        this.binaryPath = binaryPath;
     }
 
     @Exported
     public String getBinaryPath() {
-        return binary_path;
+        return binaryPath;
     }
 
     @Override
     public List<String> initBrowserOptions(Computer c, SeleniumRunOptions options) {
         List<String> args = super.initBrowserOptions(c, options);
-        combine(args, PARAM_BINARY_PATH, binary_path);
+        combine(args, paramBinaryPath, getBinaryPath());
         return args;
     }
 

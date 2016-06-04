@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.openqa.grid.internal.RemoteProxy;
@@ -22,6 +24,9 @@ import org.openqa.grid.internal.TestSlot;
 @ExportedBean
 public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
+    private static final Map<String, String> ENV_MAPPING = new HashMap<String, String>();
     /**
      * is anything running?
      */
@@ -71,8 +76,6 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
             return "Idle";
     }
 
-    private static final Map<String, String> ENV_MAPPING = new HashMap<String, String>();
-
     static {
         ENV_MAPPING.put("*iexplore", "internet explorer");
         ENV_MAPPING.put("*firefox", "firefox");
@@ -97,5 +100,27 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
         return this.getPort() - that.getPort();
     }
 
-    private static final long serialVersionUID = 1L;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SeleniumTestSlot that = (SeleniumTestSlot) o;
+
+        return new EqualsBuilder()
+                .append(isReserved, that.isReserved)
+                .append(host, that.host)
+                .append(capabilities, that.capabilities)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(isReserved)
+                .append(host)
+                .append(capabilities)
+                .toHashCode();
+    }
 }
