@@ -11,6 +11,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jenkins.version>1.580.1</jenkins.version>
+
+        <!-- Findbugs finds a million possible nullpointer exceptions due to the virtue of async calls,
+                this result is useless to us -->
         <findbugs.failOnError>false</findbugs.failOnError>
 
 		<selenium.short.version>2.53</selenium.short.version>
@@ -24,6 +27,7 @@
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
 	<build>
 		<plugins>
+			<!-- The tests in this plugin cannot run in parallel so we set forkCount to 0 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -65,35 +69,6 @@
 		</developer>
 	</developers>
 	<dependencies>
-        <dependency>
-            <!-- selenium contains its own Jetty, and unless we declare this dependency
-                first, its Jetty will show up in front of the jetty in the test harness -->
-            <groupId>org.jenkins-ci.main</groupId>
-            <artifactId>jenkins-test-harness</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
-        </dependency>
-		<dependency>
-			<!-- Ditto with httpcore -->
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.4.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<!-- Ditto with httpclient -->
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<!-- Ditto with commons-codec -->
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-remote-driver</artifactId>
