@@ -3,11 +3,10 @@ package hudson.plugins.selenium.configuration.browser.selenium;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
-
-import java.util.List;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
+
+import java.util.List;
 
 public class FirefoxBrowser extends SeleniumBrowser {
 
@@ -16,7 +15,7 @@ public class FirefoxBrowser extends SeleniumBrowser {
 	 */
     private static final long serialVersionUID = 1180910636911313608L;
 
-    transient final protected String paramBinaryPath = "firefox_binary";
+    private transient final String paramBinaryPath = "firefox_binary";
 
     private String binaryPath;
 
@@ -34,7 +33,7 @@ public class FirefoxBrowser extends SeleniumBrowser {
     @Override
     public List<String> initBrowserOptions(Computer c, SeleniumRunOptions options) {
         List<String> args = super.initBrowserOptions(c, options);
-        combine(args, paramBinaryPath, binaryPath);
+        combine(args, paramBinaryPath, getBinaryPath());
         return args;
     }
 
@@ -49,6 +48,22 @@ public class FirefoxBrowser extends SeleniumBrowser {
         public String getDisplayName() {
             return "Firefox";
         }
+    }
 
+    // Backwards compatibility since 2.4.1
+    @Deprecated
+    transient private String binary_path;
+    @Deprecated
+    public String getBinary_path() {
+        return binary_path;
+    }
+
+    public Object readResolve() {
+
+        if (binary_path != null) {
+
+            this.binaryPath = binary_path;
+        }
+        return this;
     }
 }

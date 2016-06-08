@@ -15,9 +15,9 @@ public class ChromeBrowser extends SeleniumBrowser {
     /**
 	 * 
 	 */
-    private static final long serialVersionUID = -7028484889764200348L;
+    private static final long serialVersionUID = 2L;
 
-    private String chromeDriverProperty = "webdriver.chrome.driver";
+    private transient final String chromeDriverProperty = "webdriver.chrome.driver";
 
     private String driverBinaryPath;
 
@@ -60,4 +60,20 @@ public class ChromeBrowser extends SeleniumBrowser {
         }
     }
 
+    // Backwards compatibility since 2.4.1
+    @Deprecated
+    transient private String server_binary;
+    @Deprecated
+    public String getServer_binary() {
+        return server_binary;
+    }
+
+    public Object readResolve() {
+
+        if (server_binary != null) {
+
+            this.driverBinaryPath = server_binary;
+        }
+        return this;
+    }
 }

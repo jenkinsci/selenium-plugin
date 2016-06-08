@@ -15,7 +15,7 @@ public class FirefoxBrowser extends WebDriverBrowser {
 	 */
     private static final long serialVersionUID = 1451746845341944745L;
 
-    protected String paramBinaryPath = "firefox_binary";
+    private transient final String paramBinaryPath = "firefox_binary";
 
     private String binaryPath;
 
@@ -49,5 +49,21 @@ public class FirefoxBrowser extends WebDriverBrowser {
             return "Firefox";
         }
 
+    }
+
+    // Backwards compatibility since 2.4.1
+    @Deprecated
+    transient private String binary_path;
+    @Deprecated
+    public String getBinary_path() { return binary_path; }
+
+    public Object readResolve() {
+
+        if (binary_path != null) {
+
+            this.binaryPath = binary_path;
+        }
+
+        return this;
     }
 }

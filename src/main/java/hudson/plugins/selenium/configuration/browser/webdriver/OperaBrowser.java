@@ -12,9 +12,9 @@ public class OperaBrowser extends WebDriverBrowser {
     /**
 	 * 
 	 */
-    private static final long serialVersionUID = -5094330146488965759L;
+    private static final long serialVersionUID = 2L;
 
-    protected String paramBinaryPath = "opera.binary";
+    private transient final String paramBinaryPath = "opera.binary";
 
     private String binaryPath;
 
@@ -47,6 +47,22 @@ public class OperaBrowser extends WebDriverBrowser {
         public String getDisplayName() {
             return "Opera";
         }
+    }
 
+    // Backwards compatibility since 2.4.1
+    @Deprecated
+    transient private String browser_binary;
+    @Deprecated
+    public String getBrowser_binary() {
+        return browser_binary;
+    }
+
+    public Object readResolve() {
+
+        if (browser_binary != null) {
+
+            this.binaryPath = browser_binary;
+        }
+        return this;
     }
 }

@@ -17,7 +17,7 @@ public class IEBrowser extends DriverRequiredWebDriverBrowser {
 	 */
     private static final long serialVersionUID = -241845413478474187L;
 
-    private String ieDriverProperty = "webdriver.ie.driver";
+    private transient final String ieDriverProperty = "webdriver.ie.driver";
 
     @DataBoundConstructor
     public IEBrowser(int maxInstances, String version, String driverBinaryPath) {
@@ -52,5 +52,24 @@ public class IEBrowser extends DriverRequiredWebDriverBrowser {
         public String getDisplayName() {
             return "Internet Explorer";
         }
+    }
+
+    // Backwards compatibility since 2.4.1
+    @Deprecated
+    transient private String server_binary;
+
+    @Deprecated
+    public String getServer_binary() {
+
+        return server_binary;
+    }
+
+    public Object readResolve() {
+
+        if (server_binary != null) {
+
+            setDriverBinaryPath(server_binary);
+        }
+        return this;
     }
 }

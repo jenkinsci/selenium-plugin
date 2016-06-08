@@ -19,7 +19,7 @@ public abstract class DriverRequiredWebDriverBrowser extends WebDriverBrowser {
     /**
      * 
      */
-    private static final long serialVersionUID = -4250465507404287777L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Path to the server binary used to communicate with the browser.
@@ -39,6 +39,11 @@ public abstract class DriverRequiredWebDriverBrowser extends WebDriverBrowser {
      */
     public DriverRequiredWebDriverBrowser(int instances, String version, String name, String driverBinaryPath) {
         super(instances, version, name);
+        this.driverBinaryPath = driverBinaryPath;
+    }
+
+    public void setDriverBinaryPath(String driverBinaryPath) {
+
         this.driverBinaryPath = driverBinaryPath;
     }
 
