@@ -55,6 +55,7 @@ import hudson.util.StreamTaskListener;
 import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
 import net.sf.json.JSONObject;
+import org.acegisecurity.AccessDeniedException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
@@ -536,6 +537,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     public SeleniumGlobalConfiguration getConfiguration(String name) {
+        validateAdmin();
         for (SeleniumGlobalConfiguration c : configurations) {
             if (name.equals(c.getName())) {
                 return c;
@@ -559,14 +561,21 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     /**
-     * Validate if the current user is a selenium admin
+     * Check if the current user has selenium admin privileges.
+     * Throws exception if false.
+     *
+     * Useful in stapler request methods to fail hard on insufficient privileges.
+     *
+     * @throws AccessDeniedException
      */
     public void validateAdmin() {
         Jenkins.getInstance().checkPermission(getRequiredPermission());
     }
 
     /**
-     * Return true if the user has selenium admin access.
+     * Return true if the current user has selenium admin privileges.
+     *
+     * Useful in jelly files to check admin privileges to hide configurations without throwing an exception.
      *
      * @return True if the user is a selenium admin, false otherwise
      */
@@ -640,6 +649,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     }
 
     public SeleniumNodeConfiguration getDefaultConfiguration() {
+        validateAdmin();
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));

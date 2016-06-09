@@ -1,17 +1,17 @@
 <div>
-	Controls how long (value in <b>seconds</b>) the client is allowed to be gone before the session is reclaimed.
-	Typically takes care of the client crashes.	Working together with cleanup cycle (default is 5sec).
-	Worst case scenario, a session can be idle for timeout + cleanup cycle before the timeout is detected.
-	<br/>
-	When elapsed the browser will be released for another test to use.
-	To remove the timeout completely, specify -timeout 0 and the hub will never release the node.
-	(Can be used when doing step-by-step debugging of client code)
-	<br/>
-	Default value is 30sec.
-	<br/>
-	Replaces the -nodeTimeout parameter starting from selenium v2.21.0
-	<br/><br/>
-	See also:
-	<br/> <a href="https://code.google.com/p/selenium/wiki/Grid2">https://code.google.com/p/selenium/wiki/Grid2</a>
-	<br/> <a href="https://code.google.com/p/selenium/wiki/RemoteWebDriverServer">https://code.google.com/p/selenium/wiki/RemoteWebDriverServer</a>
+    Controls how long (value in <b>seconds</b>) the client is allowed to be gone before the session is reclaimed.
+    Typically takes care of the client crashes. Working together with cleanup cycle (default is 5sec).
+    Worst case scenario, a session can be idle for timeout + cleanup cycle before the timeout is detected.
+    <br/>
+    When elapsed the browser will be released for another test to use.
+    To remove the timeout completely, specify -timeout 0 and the hub will never release the node.
+    (Can be used when doing step-by-step debugging of client code)
+    <br/>
+    Default value is 30sec.
+    <br/>
+    Replaces the -nodeTimeout parameter starting from selenium v2.21.0
+    <br/><br/>
+    See also:
+    <br/> <a href="https://code.google.com/p/selenium/wiki/Grid2">https://code.google.com/p/selenium/wiki/Grid2</a>
+    <br/> <a href="https://code.google.com/p/selenium/wiki/RemoteWebDriverServer">https://code.google.com/p/selenium/wiki/RemoteWebDriverServer</a>
 </div>

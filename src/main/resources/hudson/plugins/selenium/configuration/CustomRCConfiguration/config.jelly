@@ -1,42 +1,42 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <j:set var="instance" value="${instance?:descriptor.default}"/>
-	<f:entry title="${%Preferred port}" field="port">
-      	<f:textbox />
-	</f:entry>
-	<f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
-      	<f:checkbox />
-	</f:entry>
-			  <f:entry title="${%Enable -debug}" field="rcDebug">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -trustAllSSLCertificates}" field="rcTrustAllSSLCerts">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Enable -browserSessionReuse}" field="rcBrowserSessionReuse">
-			      <f:checkbox />
-			  </f:entry>
-			  <f:entry title="${%Set -log}" field="rcLog">
-			      <f:textbox  value="${configuration.class}"/>
-			  </f:entry>
-			  <f:entry title="${%X11 display}" field="display">
-			      <f:textbox  value="${display}"/>
-			  </f:entry>
-			  <!-- This config should now be in the particular firefox browser configuration ...
-			  	   Problem is that it is valid with RC1, but not RC2 ... I guess I'll have to add
-			  	   another special configuration type to handle RC1 configs, as well as WebDriver
-			  	   (selenium 2) configs to offer the old and the new stuff ...
+    <f:entry title="${%Preferred port}" field="port">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%Enable -browserSideLog}" field="rcBrowserSideLog">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry title="${%Enable -debug}" field="rcDebug">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry title="${%Enable -trustAllSSLCertificates}" field="rcTrustAllSSLCerts">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry title="${%Enable -browserSessionReuse}" field="rcBrowserSessionReuse">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry title="${%Set -log}" field="rcLog">
+        <f:textbox value="${configuration.class}"/>
+    </f:entry>
+    <f:entry title="${%X11 display}" field="display">
+        <f:textbox value="${display}"/>
+    </f:entry>
+    <!-- This config should now be in the particular firefox browser configuration ...
+           Problem is that it is valid with RC1, but not RC2 ... I guess I'll have to add
+           another special configuration type to handle RC1 configs, as well as WebDriver
+           (selenium 2) configs to offer the old and the new stuff ...
 
-			  <f:entry title="${%Set -firefoxProfileTemplate}" field="rcFirefoxProfileTemplate">
-			      <f:textbox />
-			  </f:entry>
-			  -->
-	<f:entry>
-	<f:hetero-list name="browsers" hasHeader="true"
-                     descriptors="${descriptor.browserTypes}"
-                     items="${instance.browsers}"
-                     addCaption="${%Add browser}"
-                     deleteCaption="${%Remove browser}"
-                     />
-                     </f:entry>
+    <f:entry title="${%Set -firefoxProfileTemplate}" field="rcFirefoxProfileTemplate">
+        <f:textbox />
+    </f:entry>
+    -->
+    <f:entry>
+        <f:hetero-list name="browsers" hasHeader="true"
+                       descriptors="${descriptor.browserTypes}"
+                       items="${instance.browsers}"
+                       addCaption="${%Add browser}"
+                       deleteCaption="${%Remove browser}"
+        />
+    </f:entry>
 </j:jelly>

@@ -5,7 +5,6 @@ import hudson.model.Computer;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Failure;
-import hudson.model.Hudson;
 import hudson.model.TaskListener;
 import hudson.plugins.selenium.PluginImpl;
 import hudson.plugins.selenium.configuration.ConfigurationDescriptor;
@@ -61,6 +60,7 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
     /**
      */
     public void remove(Computer computer) {
+        PluginImpl.getPlugin().validateAdmin();
         configuration.remove(computer, name);
     }
 
@@ -92,7 +92,7 @@ public class SeleniumGlobalConfiguration implements Serializable, Describable<Se
     }
 
     public void doDoDelete(StaplerRequest req, StaplerResponse rsp) throws Exception {
-        Jenkins.getInstance().checkPermission(Hudson.ADMINISTER);
+        PluginImpl.getPlugin().validateAdmin();
         PluginImpl.getPlugin().removeGlobalConfigurations(name);
         rsp.sendRedirect("../../configurations");
     }

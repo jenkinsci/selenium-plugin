@@ -1,15 +1,15 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-	<f:entry title="${%X11 display}" field="display">
-	    <f:textbox  value="${display}"/>
-	</f:entry>
+    <f:entry title="${%X11 display}" field="display">
+        <f:textbox value="${display}"/>
+    </f:entry>
     <f:entry title="${%JVM system properties}" field="jvmArgs">
-        <f:textarea />
+        <f:textarea/>
     </f:entry>
     <f:entry title="${%Additionnal selenium arguments}" field="seleniumArgs">
-        <f:textarea />
+        <f:textarea/>
     </f:entry>
-	<f:entry title="${%JSON config}" field="config">
-		<f:textarea />
-	</f:entry>
+    <f:entry title="${%JSON config}" field="config">
+        <f:textarea/>
+    </f:entry>
 </j:jelly>

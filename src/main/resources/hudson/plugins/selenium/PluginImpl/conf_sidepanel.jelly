@@ -3,9 +3,13 @@
     <l:side-panel>
         <l:tasks>
             <l:task icon="images/24x24/up.png" href="${rootURL}/selenium" title="${%Plugin home}"/>
-            <l:task icon="images/24x24/setting.png" href="${rootURL}/selenium/configurations" title="${%Configurations}"/>
-            <l:task icon="images/24x24/computer.png" href="${rootURL}/selenium/computers" title="${%Nodes matching configurations}"/>
-            <l:task icon="images/24x24/new-document.png" href="add" title="${%New configuration}"/>
+            <j:if test="${app.isAdmin()}">
+                <l:task icon="images/24x24/setting.png" href="${rootURL}/selenium/configurations"
+                        title="${%Configurations}"/>
+                <l:task icon="images/24x24/computer.png" href="${rootURL}/selenium/computers"
+                        title="${%Nodes matching configurations}"/>
+                <l:task icon="images/24x24/new-document.png" href="add" title="${%New configuration}"/>
+            </j:if>
         </l:tasks>
     </l:side-panel>
 </j:jelly>

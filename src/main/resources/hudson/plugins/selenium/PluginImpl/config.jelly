@@ -1,48 +1,49 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <j:scope>
-    <j:set var="instance" value="${it}"/>
-    <j:set var="descriptor" value="${it.descriptor}"/>
-    <j:set var="configurationType" value="${ct}"/>
-    <f:section title="Selenium">
-      <f:entry>
-        ${%You need to restart hub and than all configurations/nodes in order to apply settings for Selenium Hub.}
-      </f:entry>
-      <f:entry title="${%Selenium Hub Port}" field="port">
-  	    <f:textbox />
-  	  </f:entry>
-  	  <f:advanced>
-          <f:entry title="${%Exclude from grid}" field="exclusionPatterns">
-              <f:textbox />
-          </f:entry>
-          <f:entry title="${%Set Hub Log Level}" field="hubLogLevel">
-               <select name="hubLogLevel" value="${it.hubLogLevel}">
-                   <j:forEach var="l" items="OFF,SEVERE,WARNING,CONFIG,INFO,FINE,FINER,FINEST,ALL">
-                      <f:option selected="${l==it.hubLogLevel}">${l}</f:option>
-                  </j:forEach>
-              </select>
-          </f:entry>
-          <f:entry title="${%Set -newSessionWaitTimeout}" field="newSessionWaitTimeout">
-              <f:textbox />
-          </f:entry>
-          <f:entry title="${%Set -maxSession}" field="maxSession">
-              <f:textbox />
-          </f:entry>
-          <f:entry title="${%Set -timeout}" field="timeout">
-              <f:textbox />
-          </f:entry>
-          <f:entry title="${%Set -browserTimeout}" field="browserTimeout">
-              <f:textbox />
-          </f:entry>
-          <f:entry title="${%Enable -throwOnCapabilityNotPresent}" field="throwOnCapabilityNotPresent">
-              <f:checkbox />
-          </f:entry>
-          <f:entry title="${%Hostname}">
-               <table style="width:100%">
-                    <f:descriptorRadioList title="${%Hostname resolver}" varName="hostnameResolver" instance="${it.hostnameResolver}" descriptors="${it.resolverTypes}"/>
-               </table>
-          </f:entry>
-  	  </f:advanced>
-    </f:section>
-  </j:scope>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <j:scope>
+        <j:set var="instance" value="${it}"/>
+        <j:set var="descriptor" value="${it.descriptor}"/>
+        <j:set var="configurationType" value="${ct}"/>
+        <f:section title="Selenium">
+            <f:entry>
+                ${%You need to restart hub and than all configurations/nodes in order to apply settings for Selenium Hub.}
+            </f:entry>
+            <f:entry title="${%Selenium Hub Port}" field="port">
+                <f:textbox/>
+            </f:entry>
+            <f:advanced>
+                <f:entry title="${%Exclude from grid}" field="exclusionPatterns">
+                    <f:textbox/>
+                </f:entry>
+                <f:entry title="${%Set Hub Log Level}" field="hubLogLevel">
+                    <select name="hubLogLevel" value="${it.hubLogLevel}">
+                        <j:forEach var="l" items="OFF,SEVERE,WARNING,CONFIG,INFO,FINE,FINER,FINEST,ALL">
+                            <f:option selected="${l==it.hubLogLevel}">${l}</f:option>
+                        </j:forEach>
+                    </select>
+                </f:entry>
+                <f:entry title="${%Set -newSessionWaitTimeout}" field="newSessionWaitTimeout">
+                    <f:textbox/>
+                </f:entry>
+                <f:entry title="${%Set -maxSession}" field="maxSession">
+                    <f:textbox/>
+                </f:entry>
+                <f:entry title="${%Set -timeout}" field="timeout">
+                    <f:textbox/>
+                </f:entry>
+                <f:entry title="${%Set -browserTimeout}" field="browserTimeout">
+                    <f:textbox/>
+                </f:entry>
+                <f:entry title="${%Enable -throwOnCapabilityNotPresent}" field="throwOnCapabilityNotPresent">
+                    <f:checkbox/>
+                </f:entry>
+                <f:entry title="${%Hostname}">
+                    <table style="width:100%">
+                        <f:descriptorRadioList title="${%Hostname resolver}" varName="hostnameResolver"
+                                               instance="${it.hostnameResolver}" descriptors="${it.resolverTypes}"/>
+                    </table>
+                </f:entry>
+            </f:advanced>
+        </f:section>
+    </j:scope>
 </j:jelly>

@@ -1,21 +1,21 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <j:set var="instance" value="${instance?:descriptor.default}"/>
-	<f:entry title="${%Preferred port}" field="port">
-      	<f:textbox />
-	</f:entry>
-	<f:entry title="${%Max node sessions}" field="maxSession">
-		<f:textbox />
-	</f:entry>
-	<f:entry title="${%X11 display}" field="display">
-	    <f:textbox  value="${display}"/>
-	</f:entry>
-	<f:entry>
-	    <f:hetero-list name="browsers" hasHeader="true"
-	         descriptors="${descriptor.browserTypes}"
-	         items="${instance.browsers}"
-	         addCaption="${%Add browser}"
-	         deleteCaption="${%Remove browser}"
-	         />
-	</f:entry>
+    <f:entry title="${%Preferred port}" field="port">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%Max node sessions}" field="maxSession">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%X11 display}" field="display">
+        <f:textbox value="${display}"/>
+    </f:entry>
+    <f:entry>
+        <f:hetero-list name="browsers" hasHeader="true"
+                       descriptors="${descriptor.browserTypes}"
+                       items="${instance.browsers}"
+                       addCaption="${%Add browser}"
+                       deleteCaption="${%Remove browser}"
+        />
+    </f:entry>
 </j:jelly>
