@@ -118,13 +118,6 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
     private HostnameResolver hostnameResolver = new JenkinsRootHostnameResolver();
 
-    // Kept only for backward compatibility...
-    private transient String rcFirefoxProfileTemplate;
-    private transient Boolean rcBrowserSessionReuse;
-    private transient Boolean rcTrustAllSSLCerts;
-    private transient Boolean rcBrowserSideLog;
-    private transient boolean rcDebug;
-
     private final List<SeleniumGlobalConfiguration> configurations = new ArrayList<SeleniumGlobalConfiguration>();
 
     /**
@@ -395,8 +388,18 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
         }
     }
 
-    // this part take cares of the migration from 2.0 to 2.1
+    /**
+     *  Backwards compatibility in configuration
+     */
+    private transient String rcFirefoxProfileTemplate;
+    private transient Boolean rcBrowserSessionReuse;
+    private transient Boolean rcTrustAllSSLCerts;
+    private transient Boolean rcBrowserSideLog;
+    private transient boolean rcDebug;
+
+    // Migrate old configurations to new configuration
     public Object readResolve() {
+        // Update from plugin 2.0 to 2.1 where browsers were introduced
         if (rcFirefoxProfileTemplate != null || rcBrowserSessionReuse != null || rcTrustAllSSLCerts != null || rcBrowserSideLog != null) {
             String rcFirefoxProfileTemplate = getDefaultForNull(this.rcFirefoxProfileTemplate, "");
             Boolean rcBrowserSessionReuse = getDefaultForNull(this.rcBrowserSessionReuse, Boolean.FALSE);
@@ -425,7 +428,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
 
         }
 
-        // update to 2.3
+        // update to 2.3 where hostname options were introduced
         if (hostnameResolver == null) {
             hostnameResolver = new JenkinsRootHostnameResolver();
         }

@@ -14,12 +14,12 @@ public class ChromeBrowser extends DriverRequiredWebDriverBrowser {
     /**
 	 * 
 	 */
-    private static final long serialVersionUID = 8505665387429684157L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * System property to specify the chrome binary location. Could be done through a tool installer and probably moved into the chromedriver plugin.
      */
-    private String chromeDriverProperty = "webdriver.chrome.driver";
+    private transient final String chromeDriverProperty = "webdriver.chrome.driver";
 
     @DataBoundConstructor
     public ChromeBrowser(int maxInstances, String version, String driverBinaryPath) {
@@ -52,5 +52,25 @@ public class ChromeBrowser extends DriverRequiredWebDriverBrowser {
             }
             return FormValidation.ok();
         }
+    }
+
+    // Backwards compatibility
+    @Deprecated
+    transient private String server_binary;
+
+    @Deprecated
+    public String getServer_binary() {
+
+        return server_binary;
+    }
+
+    // Deal with converting old persisted data to new fields
+    public Object readResolve() {
+
+        if (server_binary != null) {
+
+            setDriverBinaryPath(server_binary);
+        }
+        return this;
     }
 }
