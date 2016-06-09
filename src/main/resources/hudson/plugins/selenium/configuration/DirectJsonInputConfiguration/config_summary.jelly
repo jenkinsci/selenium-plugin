@@ -1,6 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-	Config : <pre>
-${it.config}
-</pre>
+    Config :
+    <pre>
+        ${it.config}
+    </pre>
 </j:jelly>

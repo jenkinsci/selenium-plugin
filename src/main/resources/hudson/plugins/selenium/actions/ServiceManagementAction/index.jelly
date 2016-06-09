@@ -1,61 +1,67 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
-     
-     <l:layout title="${it.displayName}">
-		<j:set var="from" value="${it.computer}" />
-	    <st:include page="sidepanel.jelly" />
-	    <l:main-panel>
-            <h2><img src="${rootURL}/plugin/selenium/24x24/selenium.png" width="24" height="24" alt=""/>Selenium Configuration</h2>
-		    ${context.setVariable("computer", context.parent.getVariable("from").name.equals("") ? "(master)" : context.parent.getVariable("from").name)}
-		    <h3>Running configurations</h3>
-		    <j:set var="configurations" value="${it.configurations}"/>
-		     <table id="configurations" class="sortable pane bigtable">
-		      <tr>
-		        <th initialSortDir="down">${%Name}</th>
-		        <th>${%Status}</th>
-		        <th>${%Environment variables}</th>
-		        <th>${%JVM options}</th>
-		        <th>${%Selenium options}</th>
-		        <th>${%Service actions}</th>
-		      </tr>
-		      <j:forEach var="c" items="${configurations}">
-		      <j:set var="opts" value="${c.value.options}" />
-		      <tr id="node_${c.key}">
-		          <td>${c.key}</td>
-		          <td>${c.value.status}</td>
-		          <td>
-		          <j:forEach var="a" items="${opts.environmentVariables}">
-		          		${a.key}=${a.value}<br />
-		          </j:forEach>
-		          </td>
-                  <td>
-                  <j:forEach var="a" items="${opts.JVMArguments}">
-                        ${a.key}=${a.value}<br />
-                  </j:forEach>
-                  </td>
-                  <td>
-                      <j:forEach var="a" items="${opts.seleniumArguments}">
-                          ${a}<br />
-                      </j:forEach>
-                  </td>
-                  <td>
-                      <form method="post" action="${prefix}restart">
-                          <input type="hidden" name="conf" value="${c.key}" />
-                          <f:submit value="${%Restart}" />
-                      </form><br />
-                      <form method="post" action="${prefix}start">
-                          <input type="hidden" name="conf" value="${c.key}" />
-                          <f:submit value="${%Start}" />
-                      </form><br />
-                      <form method="post" action="${prefix}stop">
-                          <input type="hidden" name="conf" value="${c.key}" />
-                          <f:submit value="${%Stop}" />
-                      </form>
-                  </td>
-		      </tr>
-		      </j:forEach>
-		
-		  </table>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:f="/lib/form">
+    <l:layout permission="${it.getRequiredPermission()}" title="${it.displayName}">
+        <j:set var="from" value="${it.computer}"/>
+        <st:include page="sidepanel.jelly"/>
+        <l:main-panel>
+            <h2><img src="${rootURL}/plugin/selenium/24x24/selenium.png" width="24" height="24" alt=""/>Selenium
+                Configuration
+            </h2>
+            ${context.setVariable("computer", context.parent.getVariable("from").name.equals("") ? "(master)" : context.parent.getVariable("from").name)}
+            <h3>Running configurations</h3>
+            <j:set var="configurations" value="${it.configurations}"/>
+            <table id="configurations" class="sortable pane bigtable">
+                <tr>
+                    <th initialSortDir="down">${%Name}</th>
+                    <th>${%Status}</th>
+                    <th>${%Environment variables}</th>
+                    <th>${%JVM options}</th>
+                    <th>${%Selenium options}</th>
+                    <th>${%Service actions}</th>
+                </tr>
+                <j:forEach var="c" items="${configurations}">
+                    <j:set var="opts" value="${c.value.options}"/>
+                    <tr id="node_${c.key}">
+                        <td>${c.key}</td>
+                        <td>${c.value.status}</td>
+                        <td>
+                            <j:forEach var="a" items="${opts.environmentVariables}">
+                                ${a.key}=${a.value}
+                                <br/>
+                            </j:forEach>
+                        </td>
+                        <td>
+                            <j:forEach var="a" items="${opts.JVMArguments}">
+                                ${a.key}=${a.value}
+                                <br/>
+                            </j:forEach>
+                        </td>
+                        <td>
+                            <j:forEach var="a" items="${opts.seleniumArguments}">
+                                ${a}
+                                <br/>
+                            </j:forEach>
+                        </td>
+                        <td>
+                            <form method="post" action="${prefix}restart">
+                                <input type="hidden" name="conf" value="${c.key}"/>
+                                <f:submit value="${%Restart}"/>
+                            </form>
+                            <br/>
+                            <form method="post" action="${prefix}start">
+                                <input type="hidden" name="conf" value="${c.key}"/>
+                                <f:submit value="${%Start}"/>
+                            </form>
+                            <br/>
+                            <form method="post" action="${prefix}stop">
+                                <input type="hidden" name="conf" value="${c.key}"/>
+                                <f:submit value="${%Stop}"/>
+                            </form>
+                        </td>
+                    </tr>
+                </j:forEach>
+
+            </table>
 
             <h3>Matching configurations</h3>
             <j:set var="mconfigurations" value="${it.matchingConfigurations}"/>
@@ -63,36 +69,39 @@
                 <tr>
                     <th width="55">Type</th>
                     <th initialSortDir="down">${%Name}</th>
-                    <th >Matching type</th>
-                    <th >Description summary</th>
-                    <th >Actions</th>
+                    <th>Matching type</th>
+                    <th>Description summary</th>
+                    <th>Actions</th>
                 </tr>
                 <j:forEach var="c" items="${mconfigurations}">
                     <tr id="node_${c.name}">
                         <td width="55" data="${c.name}">
                             <img src="${rootURL}${c.configuration.icon}" width="24" height="24" alt="${c.iconAltText}"/>
                         </td>
-                        <td><a href="${rootURL}/selenium/configuration/${c.name}" >${c.name}</a></td>
+                        <td>
+                            <a href="${rootURL}/selenium/configuration/${c.name}">${c.name}</a>
+                        </td>
                         <td>${c.matcherSummary}</td>
-                        <td><st:include it="${c.configuration}" page="config_summary.jelly" optional="true"/></td>
+                        <td>
+                            <st:include it="${c.configuration}" page="config_summary.jelly" optional="true"/>
+                        </td>
                         <td>
                             <j:if test="${configurations.keySet().contains(c.name)}">
-                            <form method="post" action="${prefix}restart">
-                                <input type="hidden" name="conf" value="${c.name}" />
-                                <f:submit value="${%Restart}" />
-                            </form>
+                                <form method="post" action="${prefix}restart">
+                                    <input type="hidden" name="conf" value="${c.name}"/>
+                                    <f:submit value="${%Restart}"/>
+                                </form>
                             </j:if>
                             <j:if test="${!configurations.keySet().contains(c.name)}">
                                 <form method="post" action="${prefix}start">
-                                    <input type="hidden" name="conf" value="${c.name}" />
-                                    <f:submit value="${%Start}" />
+                                    <input type="hidden" name="conf" value="${c.name}"/>
+                                    <f:submit value="${%Start}"/>
                                 </form>
                             </j:if>
                         </td>
                     </tr>
                 </j:forEach>
-
             </table>
-	    </l:main-panel>
+        </l:main-panel>
     </l:layout>
 </j:jelly>

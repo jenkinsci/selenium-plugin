@@ -1,12 +1,10 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
-	<l:layout permission="${it.getRequiredPermission()}" title="${it.displayName}">
-	    <st:include page="conf_sidepanel.jelly" />
-    	<l:main-panel>
-	  	<j:set var="configurations" value="${it.globalConfigurations}"/>
-		<st:include page="_infotable.jelly" />
-
-		</l:main-panel>
-
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
+    <l:layout permission="${it.getRequiredPermission()}" title="${it.displayName}">
+        <st:include page="conf_sidepanel.jelly"/>
+        <l:main-panel>
+            <j:set var="configurations" value="${it.globalConfigurations}"/>
+            <st:include page="_infotable.jelly"/>
+        </l:main-panel>
     </l:layout>
 </j:jelly>

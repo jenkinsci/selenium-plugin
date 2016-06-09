@@ -1,10 +1,11 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-  <l:header />
-  <l:side-panel>
-    <l:tasks>
-      <l:task icon="images/24x24/up.png" href=".." title="${%Back to Computer}" contextMenu="false"/>
-      <l:task icon="plugin/selenium/24x24/selenium.png" href="${rootURL}/selenium" title="${%Plugin home}" contextMenu="false"/>
-    </l:tasks>
-  </l:side-panel>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+    <l:header/>
+    <l:side-panel>
+        <l:tasks>
+            <l:task icon="images/24x24/up.png" href=".." title="${%Back to Computer}" contextMenu="false"/>
+            <l:task icon="plugin/selenium/24x24/selenium.png" href="${rootURL}/selenium" title="${%Plugin home}"
+                    contextMenu="false"/>
+        </l:tasks>
+    </l:side-panel>
 </j:jelly>

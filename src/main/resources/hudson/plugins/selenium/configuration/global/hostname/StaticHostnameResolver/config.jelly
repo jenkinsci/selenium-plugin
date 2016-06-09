@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-	<f:entry title="${%Hostname}" field="hostname">
-      	<f:textbox />
-	</f:entry>
+    <f:entry title="${%Hostname}" field="hostname">
+        <f:textbox/>
+    </f:entry>
 </j:jelly>

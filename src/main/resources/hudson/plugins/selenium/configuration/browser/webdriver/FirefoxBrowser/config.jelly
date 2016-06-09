@@ -1,9 +1,10 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly" it="${it ?: d}"/>
-	<f:advanced>
-		<f:entry title="${%Firefox browser path}" field="binaryPath">
-			<f:textbox />
-		</f:entry>
-	</f:advanced>
+    <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly"
+                it="${it ?: d}"/>
+    <f:advanced>
+        <f:entry title="${%Firefox browser path}" field="binaryPath">
+            <f:textbox/>
+        </f:entry>
+    </f:advanced>
 </j:jelly>

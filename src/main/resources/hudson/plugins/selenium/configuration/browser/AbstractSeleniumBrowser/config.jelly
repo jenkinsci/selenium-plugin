@@ -1,10 +1,10 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <j:set var="instance" value="${instance ?: it}" />
-	<f:entry title="${%Maximum instances}" field="maxInstances">
-     	<f:textbox />
-	</f:entry>
-	<f:entry title="${%Version}" field="version">
-      	<f:textbox />
-	</f:entry>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <j:set var="instance" value="${instance ?: it}"/>
+    <f:entry title="${%Maximum instances}" field="maxInstances">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%Version}" field="version">
+        <f:textbox/>
+    </f:entry>
 </j:jelly>

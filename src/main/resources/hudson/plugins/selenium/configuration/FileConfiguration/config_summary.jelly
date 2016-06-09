@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-	Config file : ${it.configURL}
+    Config file : ${it.configURL}
 </j:jelly>

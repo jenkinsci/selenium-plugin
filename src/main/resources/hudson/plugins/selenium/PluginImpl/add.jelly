@@ -1,31 +1,27 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
-	<l:layout title="Selenium global configuration">
-        <l:side-panel>
-	        <l:tasks>
-	            <l:task icon="images/24x24/up.png" href="../configurations" title="${%Back to list of configurations}"/>
-	            <l:task icon="plugin/selenium/24x24/selenium.png" href="." title="${%Plugin home}"/>
-	            <l:task icon="images/24x24/new-document.png" href="add" title="${%New configuration}"/>
-	        </l:tasks>
-	    </l:side-panel>
-    	<l:main-panel>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+    <l:layout permission="${it.getRequiredPermission()}" title="Selenium global configuration">
+        <st:include page="conf_sidepanel.jelly"/>
+        <l:main-panel>
             <h2>New configuration</h2>
             <f:form method="post" action="create" name="settingsForm">
-				<f:entry title="${%Name of the configuration}" field="name">
-				    <f:textbox />
-				</f:entry>
-				
-				<f:descriptorRadioList title="Matcher" varName="matcher" instance="${it.defaultMatcher}" descriptors="${it.matcherTypes}" targetType="${hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.class}" />
-				<f:descriptorRadioList title="Type" varName="configuration" instance="${it.defaultConfiguration}" descriptors="${it.configTypes}" targetType="${hudson.plugins.selenium.configuration.SeleniumNodeConfiguration.class}" />
-				
-				<f:block>
-				  <div id="bottom-sticker" >
-				    <div class="bottom-sticker-inner">
-				      <f:submit value="${%Save}" />
-				    </div>
-				  </div>
-				</f:block>
-	        </f:form>
-		</l:main-panel>
+                <f:entry title="${%Name of the configuration}" field="name">
+                    <f:textbox/>
+                </f:entry>
+                <f:descriptorRadioList title="Matcher" varName="matcher" instance="${it.defaultMatcher}"
+                                       descriptors="${it.matcherTypes}"
+                                       targetType="${hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher.class}"/>
+                <f:descriptorRadioList title="Type" varName="configuration" instance="${it.defaultConfiguration}"
+                                       descriptors="${it.configTypes}"
+                                       targetType="${hudson.plugins.selenium.configuration.SeleniumNodeConfiguration.class}"/>
+                <f:block>
+                    <div id="bottom-sticker">
+                        <div class="bottom-sticker-inner">
+                            <f:submit value="${%Save}"/>
+                        </div>
+                    </div>
+                </f:block>
+            </f:form>
+        </l:main-panel>
     </l:layout>
 </j:jelly>

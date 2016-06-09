@@ -43,17 +43,20 @@ public class ServiceManagementAction implements Action {
     }
 
     public HttpResponse doRestart(@QueryParameter String conf) throws IOException, ServletException {
+        PluginImpl.getPlugin().validateAdmin();
         doStop(conf);
         doStart(conf);
         return HttpResponses.forwardToPreviousPage();
     }
 
     public HttpResponse doStop(@QueryParameter String conf) {
+        PluginImpl.getPlugin().validateAdmin();
         PluginImpl.getPlugin().getConfiguration(conf).stop(computer);
         return HttpResponses.forwardToPreviousPage();
     }
 
     public HttpResponse doStart(@QueryParameter String conf) {
+        PluginImpl.getPlugin().validateAdmin();
         try {
             PluginImpl.startSeleniumNode(computer, new StreamTaskListener(new OutputStreamWriter(System.out)), conf);
         } catch (Exception e) {
@@ -67,6 +70,7 @@ public class ServiceManagementAction implements Action {
     }
 
     public Map<String, SeleniumRunOptions> getConfigurations() {
+        PluginImpl.getPlugin().validateAdmin();
         try {
             return computer.getNode().getRootPath().getChannel().call(new GetConfigurations());
         } catch (Exception e) {
@@ -75,6 +79,7 @@ public class ServiceManagementAction implements Action {
     }
 
     public List<SeleniumGlobalConfiguration> getMatchingConfigurations() {
+        PluginImpl.getPlugin().validateAdmin();
         return PluginImpl.getPlugin().getGlobalConfigurationForComputer(computer);
     }
 

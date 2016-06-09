@@ -1,7 +1,8 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly" it="${instance ?: descriptor}"/>
-	<f:entry title="${%Chromedriver path}" field="driverBinaryPath">
-		<f:textbox />
-	</f:entry>
+    <st:include page="/hudson/plugins/selenium/configuration/browser/AbstractSeleniumBrowser/config.jelly"
+                it="${instance ?: descriptor}"/>
+    <f:entry title="${%Chromedriver path}" field="driverBinaryPath">
+        <f:textbox/>
+    </f:entry>
 </j:jelly>
