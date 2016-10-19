@@ -1,9 +1,8 @@
 package hudson.plugins.selenium;
 
-import hudson.remoting.Channel;
 import jenkins.security.MasterToSlaveCallable;
 import org.jfree.util.Log;
-import org.openqa.grid.internal.utils.GridHubConfiguration;
+import org.openqa.grid.internal.utils.configuration.GridHubConfiguration;
 import org.openqa.grid.web.Hub;
 
 import java.util.logging.Level;
@@ -38,9 +37,8 @@ public class HubLauncher extends MasterToSlaveCallable<Void, Exception> {
             Logger log = Logger.getLogger(HubLauncher.class.getName());
             log.log(Level.OFF, "Grid hub starting with log level " + logLevel.getName());
             log.log(Level.OFF, "Grid Hub preparing to start on port " + port);
-            GridHubConfiguration c = GridHubConfiguration.build(args);
-            c.setPort(port);
-            c.setCapabilityMatcher(new JenkinsCapabilityMatcher(Channel.current(), c.getCapabilityMatcher()));
+
+            GridHubConfiguration c = ConfigurationBuilder.buildHubConfig(args, port);
             Hub hub = new Hub(c);
             hub.start();
             HubHolder.setHub(hub);
