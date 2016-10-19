@@ -1,6 +1,7 @@
 package hudson.plugins.selenium;
 
 import java.io.Serializable;
+import java.net.URL;
 
 public class HubParams implements Serializable {
 	private static final long serialVersionUID = 3813168118997469056L;
@@ -11,6 +12,12 @@ public class HubParams implements Serializable {
 
 	public HubParams() {
 		this("", -1, false);
+	}
+
+	public HubParams(URL host, boolean isActive) {
+		this.host = host.getHost();
+		this.port = host.getPort();
+		this.isActive = isActive;
 	}
 
 	public HubParams(String host, Integer port, boolean isActive) {

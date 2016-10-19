@@ -1,14 +1,11 @@
 package hudson.plugins.selenium.callables;
 
 import hudson.remoting.Channel;
+import jenkins.security.MasterToSlaveCallable;
+import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jenkins.security.MasterToSlaveCallable;
-
-import org.openqa.grid.common.RegistrationRequest;
-import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 
 public class RemoteStopSelenium extends MasterToSlaveCallable<String, Exception> {
 
@@ -32,8 +29,8 @@ public class RemoteStopSelenium extends MasterToSlaveCallable<String, Exception>
     }
 
     private String getRemoteURL(SelfRegisteringRemote srr) {
-        String host = (String) srr.getConfiguration().get(RegistrationRequest.HOST);
-        Integer port = (Integer) srr.getConfiguration().get(RegistrationRequest.PORT);
+        String host = (String) srr.getConfiguration().host;
+        Integer port = (Integer) srr.getConfiguration().port;
         return "http://" + host + ":" + port;
     }
 

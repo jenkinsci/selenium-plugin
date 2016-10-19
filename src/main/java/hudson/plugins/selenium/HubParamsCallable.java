@@ -13,6 +13,6 @@ class HubParamsCallable extends MasterToSlaveCallable<HubParams, Throwable> {
 		if (HubHolder.getHub() == null) {
 			return new HubParams();
 		}
-		return new HubParams(HubHolder.getHub().getHost(), HubHolder.getHub().getPort(), true);
+		return new HubParams(HubHolder.getHub().getUrl(), true);
 	}
 }
