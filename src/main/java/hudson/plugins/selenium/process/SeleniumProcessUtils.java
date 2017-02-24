@@ -13,7 +13,7 @@ import hudson.slaves.Channels;
 import hudson.util.ClasspathBuilder;
 import hudson.util.JVMBuilder;
 import jenkins.model.Jenkins;
-import org.openqa.grid.selenium.GridLauncher;
+import org.openqa.grid.selenium.GridLauncherV3;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import java.io.*;
@@ -39,7 +39,7 @@ public final class SeleniumProcessUtils {
      * Locate the stand-alone server jar from the classpath. Only works on the master.
      */
     public static File findStandAloneServerJar() throws IOException {
-        return Which.jarFile(GridLauncher.class);
+        return Which.jarFile(GridLauncherV3.class);
     }
 
     /**
