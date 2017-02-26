@@ -4,14 +4,14 @@ import hudson.plugins.selenium.callables.PropertyUtils;
 import hudson.plugins.selenium.callables.SeleniumConstants;
 import hudson.remoting.Channel;
 import jenkins.security.MasterToSlaveCallable;
+
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.server.SeleniumServer;
+import org.openqa.selenium.server.SeleniumServer;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * Launches Selenium RC.
@@ -56,7 +56,10 @@ public class RemoteControlLauncher extends MasterToSlaveCallable<Void, Exception
 
             Channel.current().waitForProperty(SeleniumConstants.PROPERTY_LOCK);
             return null;
-        } catch (Exception | Error e) {
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
+        } catch (Error e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             throw e;
         }
