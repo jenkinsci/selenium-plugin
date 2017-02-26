@@ -21,7 +21,7 @@
 		<java.level>8</java.level>
 	</properties>
 	<artifactId>selenium</artifactId>
-	<version>2.53.2-SNAPSHOT</version>
+	<version>3.1.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Selenium Plugin</name>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
