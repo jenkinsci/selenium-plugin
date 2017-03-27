@@ -1,13 +1,11 @@
 package hudson.plugins.selenium;
 
 import hudson.plugins.selenium.configuration.CustomWDConfiguration;
-import hudson.plugins.selenium.configuration.DirectJsonInputConfiguration;
 import hudson.plugins.selenium.configuration.SeleniumNodeConfiguration;
 import hudson.plugins.selenium.configuration.browser.webdriver.*;
 import hudson.plugins.selenium.configuration.global.SeleniumGlobalConfiguration;
 import hudson.plugins.selenium.configuration.global.matcher.NodeLabelMatcher;
 import hudson.plugins.selenium.configuration.global.matcher.SeleniumConfigurationMatcher;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -22,8 +20,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -77,69 +73,6 @@ public class SeleniumTest {
     	}
     	assertEquals(validationValue, contains);
     }
-	
-	@Test
-	public void testJSONConfig() throws Exception {
-		final String jsonNodeConfig = "{\n" +
-				"  \"capabilities\":\n" +
-				"  [\n" +
-				"    {\n" +
-				"      \"browserName\": \"firefox\",\n" +
-				"      \"maxInstances\": 20,\n" +
-				"      \"seleniumProtocol\": \"WebDriver\"\n" +
-				"    },\n" +
-				"    {\n" +
-				"      \"browserName\": \"chrome\",\n" +
-				"      \"maxInstances\": 10,\n" +
-				"      \"seleniumProtocol\": \"WebDriver\"\n" +
-				"    }\n" +
-				"  ],\n" +
-				"  \"proxy\": \"org.openqa.grid.selenium.proxy.DefaultRemoteProxy\",\n" +
-				"  \"maxSession\": 15,\n" +
-				"  \"port\": 5555,\n" +
-				"  \"register\": true,\n" +
-				"  \"registerCycle\": 15000,\n" +
-				"  \"hub\": \"http://0.0.0.0:4444\",\n" +
-				"  \"nodeStatusCheckTimeout\": 5000,\n" +
-				"  \"nodePolling\": 5000,\n" +
-				"  \"role\": \"node\",\n" +
-				"  \"unregisterIfStillDownAfter\": 60000,\n" +
-				"  \"downPollingLimit\": 2,\n" +
-				"  \"debug\": false,\n" +
-				"  \"servlets\" : [],\n" +
-				"  \"withoutServlets\": [],\n" +
-				"  \"custom\": {}\n" +
-				"}\n";
-		DirectJsonInputConfiguration jsonConfig = new DirectJsonInputConfiguration("JSON", jsonNodeConfig, "", "");
-		addConfiguration("jsonWD", new NodeLabelMatcher("json-slave"), jsonConfig);
-		
-		j.createSlave("json-slave", "json-slave", null);
-		waitForRC();
-		
-		//Get all the capability maps as a list
-		List<Map<String, String>> capabilitySets = getPlugin().getRemoteControls()
-				.stream()
-				.findFirst()
-				.orElseThrow(() -> new AssertionError("No SeleniumTestSlotGroups returned!"))
-				.getSlots()
-				.stream()
-				.map(SeleniumTestSlot::getCapabilities)
-				.collect(Collectors.toList());
-		
-		Assert.assertTrue("Looking for 10 Chrome browsers",
-				capabilitySets.stream().anyMatch(c -> hasCapability("browserName", "chrome", c) && hasCapability("maxInstances", "10", c)));
-		Assert.assertTrue("Looking for 20 Firefox browsers",
-				capabilitySets.stream().anyMatch(c -> hasCapability("browserName", "firefox", c) && hasCapability("maxInstances", "20", c)));
-		Assert.assertFalse("Should not contain Internet Explorer",
-				capabilitySets.stream().anyMatch(c -> hasCapability("browserName", "internet explorer", c)));
-		Assert.assertTrue("MaxSession should be set to 15",
-				capabilitySets.stream().anyMatch(c -> hasCapability("maxSession", "15", c)));
-		Assert.assertTrue("MaxSession should be set to 15",
-				capabilitySets.stream().anyMatch(c -> hasCapability("registerSession", "15000", c)));
-	}
-	private static boolean hasCapability(String key, String value, Map<String, String> capabilities) {
-		return capabilities.containsKey(key) && capabilities.get(key).equalsIgnoreCase(value);
-	}
 
     @Test
     public void testHtmlUnitDriver() throws Exception {
