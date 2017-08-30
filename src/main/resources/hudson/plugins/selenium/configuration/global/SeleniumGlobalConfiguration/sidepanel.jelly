@@ -3,7 +3,7 @@
     <l:side-panel>
         <l:tasks>
             <l:task icon="plugin/selenium/24x24/selenium.png" href="${rootURL}/selenium" title="${%Plugin home}"/>
-            <j:if test="${app.isAdmin()}">
+            <j:if test="${it.isAdmin()}">
                 <l:task icon="images/24x24/up.png" href="${rootURL}/selenium/configurations"
                         title="${%Back to list of configurations}"/>
                 <l:task icon="images/24x24/setting.png" href="." title="${%Configure}"/>

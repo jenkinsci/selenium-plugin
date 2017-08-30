@@ -5,7 +5,7 @@
         <l:tasks>
             <l:task icon="images/24x24/up.gif" href=".." title="${%Back to Dashboard}"/>
             <l:task icon="images/24x24/search.gif" href="." title="${%Status}"/>
-            <j:if test="${app.isAdmin()}">
+            <j:if test="${it.isAdmin()}">
                 <l:task icon="images/24x24/setting.png" href="configurations" title="${%Configurations}"/>
             </j:if>
             <l:task icon="images/24x24/terminal.gif" href="console" title="${%Console Output}"/>

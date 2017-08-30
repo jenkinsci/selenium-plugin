@@ -23,7 +23,7 @@
         </script>
         <st:include page="sidepanel.jelly"/>
         <l:main-panel>
-            <j:if test="${app.isAdmin()}">
+            <j:if test="${it.isAdmin()}">
                 <h2>${%Hub management}</h2>
                 <form method="post" action="${prefix}restart">
                     <f:submit value="${%Restart}"/>
