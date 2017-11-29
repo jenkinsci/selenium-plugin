@@ -10,6 +10,7 @@ import hudson.plugins.selenium.HubHolder;
 import hudson.plugins.selenium.PluginImpl;
 import hudson.plugins.selenium.callables.*;
 import jenkins.security.MasterToSlaveCallable;
+import org.openqa.grid.internal.GridRegistry;
 import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 
@@ -73,7 +74,7 @@ public abstract class SeleniumJarRunner implements SeleniumProcess {
                     private String remoteUrl = url;
 
                     public Void call() throws Exception {
-                        Registry registry = HubHolder.getHub().getRegistry();
+                        GridRegistry registry = HubHolder.getHub().getRegistry();
                         if (registry != null) {
                             Iterator<RemoteProxy> it = registry.getAllProxies().iterator();
                             while (it.hasNext()) {

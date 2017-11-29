@@ -11,12 +11,11 @@
     <name>fake</name>
 
     <properties>
-        <selenium.short.version>3.1</selenium.short.version>
-        <selenium.version>3.1.0</selenium.version>
-        <htmlunit.driver.version>2.20</htmlunit.driver.version>
+        <selenium.short.version>3.7</selenium.short.version>
+        <selenium.version>3.7.1</selenium.version>
+        <htmlunit.driver.version>2.28.2</htmlunit.driver.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -36,8 +35,8 @@
                                      verbose="on"
                                      usetimestamp="true"
                                 />
-                                <get src="https://github.com/SeleniumHQ/htmlunit-driver/releases/download/${htmlunit.driver.version}/htmlunit-driver-standalone-${htmlunit.driver.version}.jar"
-                                     dest="${project.build.directory}/htmlunit-driver-standalone-${htmlunit.driver.version}.jar"
+                                <get src="https://github.com/SeleniumHQ/htmlunit-driver/releases/download/${htmlunit.driver.version}/htmlunit-driver-${htmlunit.driver.version}-jar-with-dependencies.jar"
+                                     dest="${project.build.directory}/htmlunit-driver-${htmlunit.driver.version}-jar-with-dependencies.jar"
                                      verbose="on"
                                      usetimestamp="true"
                                 />
@@ -68,15 +67,15 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>htmlunit-driver-standalone</id>
+                        <id>htmlunit-driver-jar-with-dependencies</id>
                         <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>${project.build.directory}/htmlunit-driver-standalone-${htmlunit.driver.version}.jar</file>
+                            <file>${project.build.directory}/htmlunit-driver-${htmlunit.driver.version}-jar-with-dependencies.jar</file>
                             <groupId>org.seleniumhq.selenium</groupId>
-                            <artifactId>htmlunit-driver-standalone</artifactId>
+                            <artifactId>htmlunit-driver-jar-with-dependencies</artifactId>
                             <version>${htmlunit.driver.version}</version>
                             <packaging>jar</packaging>
 
