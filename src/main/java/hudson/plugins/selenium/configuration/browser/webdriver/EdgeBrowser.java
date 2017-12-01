@@ -2,7 +2,7 @@ package hudson.plugins.selenium.configuration.browser.webdriver;
 
 import hudson.Extension;
 import hudson.model.Computer;
-import hudson.plugins.selenium.configuration.browser.IeDriverServerUtils;
+import hudson.plugins.selenium.configuration.browser.EdgeDriverServerUtils;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -34,7 +34,7 @@ public class EdgeBrowser extends DriverRequiredWebDriverBrowser {
 
     @Override
     public void initOptions(Computer c, SeleniumRunOptions opt) {
-        String driverPath = IeDriverServerUtils.uploadIEDriverIfNecessary(c, getDriverBinaryPath());
+        String driverPath = EdgeDriverServerUtils.uploadEdgeDriverIfNecessary(c, getDriverBinaryPath());
         if (driverPath != null) {
             opt.getJVMArguments().put(edgeDriverProperty, driverPath);
         }

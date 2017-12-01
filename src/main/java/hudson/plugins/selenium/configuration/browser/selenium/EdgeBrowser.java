@@ -2,12 +2,12 @@ package hudson.plugins.selenium.configuration.browser.selenium;
 
 import hudson.Extension;
 import hudson.model.Computer;
-import hudson.plugins.selenium.configuration.browser.IeDriverServerUtils;
+import hudson.plugins.selenium.configuration.browser.EdgeDriverServerUtils;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
-
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
+
 public class EdgeBrowser extends SeleniumBrowser {
 
 	  /**
@@ -32,7 +32,7 @@ public class EdgeBrowser extends SeleniumBrowser {
 
     @Override
     public void initOptions(Computer c, SeleniumRunOptions opt) {
-        String serverPath = IeDriverServerUtils.uploadIEDriverIfNecessary(c, getDriverBinaryPath());
+        String serverPath = EdgeDriverServerUtils.uploadEdgeDriverIfNecessary(c, getDriverBinaryPath());
         if (serverPath != null) {
             opt.getJVMArguments().put(edgeDriverProperty, serverPath);
         }
