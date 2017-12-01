@@ -63,7 +63,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.framework.io.LargeText;
-import org.openqa.grid.internal.Registry;
+import org.openqa.grid.internal.GridRegistry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
 import org.springframework.util.StringUtils;
@@ -339,7 +339,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                     return Collections.emptyList();
                 }
 
-                Registry registry = HubHolder.getHub().getRegistry();
+                GridRegistry registry = HubHolder.getHub().getRegistry();
                 if (registry != null) {
                     for (RemoteProxy proxy : registry.getAllProxies()) {
                         for (TestSlot slot : proxy.getTestSlots()) {

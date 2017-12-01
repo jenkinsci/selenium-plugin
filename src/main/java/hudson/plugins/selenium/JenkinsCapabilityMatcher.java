@@ -8,7 +8,7 @@ import jenkins.model.Jenkins;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.grid.internal.utils.CapabilityMatcher;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.MutableCapabilities;
 
 import java.io.IOException;
 import java.util.Map;
@@ -119,7 +119,7 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
 
     }
 
-    public static void enhanceCapabilities(DesiredCapabilities capabilities, String node) {
+    public static void enhanceCapabilities(MutableCapabilities capabilities, String node) {
         String nodeName = StringUtils.isEmpty(node) ? JenkinsCapabilityMatcher.MASTER_NAME : node;
         capabilities.setCapability(JenkinsCapabilityMatcher.NODE_NAME, nodeName);
     }
