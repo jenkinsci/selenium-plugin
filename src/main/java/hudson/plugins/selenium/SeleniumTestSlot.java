@@ -1,17 +1,17 @@
 package hudson.plugins.selenium;
 
+import java.io.Serializable;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
-
-import java.io.Serializable;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Selenium Remote Control instance.
@@ -81,7 +81,6 @@ public class SeleniumTestSlot implements Comparable<SeleniumTestSlot>, Serializa
         ENV_MAPPING.put("*firefox", "firefox");
         ENV_MAPPING.put("*googlechrome", "chrome");
         ENV_MAPPING.put("*opera", "opera");
-        ENV_MAPPING.put("*MicrosoftEdge", "Microsoft Edge");
     }
 
     public String getBrowserName() {
