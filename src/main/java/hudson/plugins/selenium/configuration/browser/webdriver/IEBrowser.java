@@ -6,6 +6,7 @@ import hudson.plugins.selenium.configuration.browser.IeDriverServerUtils;
 import hudson.plugins.selenium.process.SeleniumRunOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.export.Exported;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +20,12 @@ public class IEBrowser extends DriverRequiredWebDriverBrowser {
 
     private transient final String ieDriverProperty = "webdriver.ie.driver";
 
+    private transient boolean forbid64bitDriver;
+
     @DataBoundConstructor
-    public IEBrowser(int maxInstances, String version, String driverBinaryPath) {
+    public IEBrowser(int maxInstances, String version, String driverBinaryPath, boolean forbid64bitDriver) {
         super(maxInstances, version, "internet explorer", driverBinaryPath);
+        this.forbid64bitDriver = forbid64bitDriver;
     }
 
     @Override
@@ -34,7 +38,7 @@ public class IEBrowser extends DriverRequiredWebDriverBrowser {
 
     @Override
     public void initOptions(Computer c, SeleniumRunOptions opt) {
-        String driverPath = IeDriverServerUtils.uploadIEDriverIfNecessary(c, getDriverBinaryPath());
+        String driverPath = IeDriverServerUtils.uploadIEDriverIfNecessary(c, getDriverBinaryPath(), getForbid64bitDriver());
         if (driverPath != null) {
             opt.getJVMArguments().put(ieDriverProperty, driverPath);
         }
@@ -71,5 +75,10 @@ public class IEBrowser extends DriverRequiredWebDriverBrowser {
             setDriverBinaryPath(server_binary);
         }
         return this;
+    }
+
+    @Exported
+    public boolean getForbid64bitDriver() {
+        return forbid64bitDriver;
     }
 }

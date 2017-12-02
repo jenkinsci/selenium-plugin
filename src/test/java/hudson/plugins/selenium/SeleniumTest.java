@@ -41,7 +41,7 @@ public class SeleniumTest {
     public void testWDConfiguration() throws Exception {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(1));
-        browsers.add(new IEBrowser(1, "", ""));
+        browsers.add(new IEBrowser(1, "", "", false));
         browsers.add(new FirefoxBrowser(1, "", ""));
         browsers.add(new OperaBrowser(1, "", ""));
 
