@@ -5,4 +5,9 @@
     <f:entry title="${%IE driver path}" field="driverBinaryPath">
         <f:textbox/>
     </f:entry>
+        <f:advanced>
+            <f:entry title="${%Forbid using 64 bit driver}" field="forbid64bitDriver">
+                <f:checkbox/>
+            </f:entry>
+        </f:advanced>
 </j:jelly>

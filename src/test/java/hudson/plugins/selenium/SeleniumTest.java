@@ -41,7 +41,7 @@ public class SeleniumTest {
     public void testWDConfiguration() throws Exception {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(1));
-        browsers.add(new IEBrowser(1, "", ""));
+        browsers.add(new IEBrowser(1, "", "", false));
         browsers.add(new FirefoxBrowser(1, "", ""));
         browsers.add(new OperaBrowser(1, "", ""));
 
@@ -95,7 +95,7 @@ public class SeleniumTest {
         WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         try {
             wd.get(WEB_SITE_URL);
-            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("ji-home-carousel")));
+            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("ji-toolbar")));
         } finally {
             wd.quit();
         }
