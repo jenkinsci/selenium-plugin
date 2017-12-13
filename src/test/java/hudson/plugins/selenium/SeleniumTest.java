@@ -95,7 +95,7 @@ public class SeleniumTest {
         WebDriver wd = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         try {
             wd.get(WEB_SITE_URL);
-            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("ji-home-carousel")));
+            new WebDriverWait(wd, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("ji-toolbar")));
         } finally {
             wd.quit();
         }
