@@ -7,6 +7,9 @@
     <f:entry title="${%Max node sessions}" field="maxSession">
         <f:textbox/>
     </f:entry>
+    <f:entry title="${%Session timeout}" field="sessionTimeout">
+        <f:textbox value="${sessionTimeout}"/>
+    </f:entry>
     <f:entry title="${%X11 display}" field="display">
         <f:textbox value="${display}"/>
     </f:entry>

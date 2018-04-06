@@ -46,7 +46,7 @@ public class SeleniumTest {
         browsers.add(new OperaBrowser(1, "", ""));
         browsers.add(new EdgeBrowser(1, "", ""));
 
-        CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null, 5);
+        CustomWDConfiguration cc = new CustomWDConfiguration(5000, -1, browsers, null, 5, 60);
         addConfiguration("customWD", new NodeLabelMatcher("label-node"), cc);
         j.createSlave("label-node", "label-node", null);
 
@@ -85,7 +85,7 @@ public class SeleniumTest {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(10));
 
-        CustomWDConfiguration cc = new CustomWDConfiguration(5001, -1, browsers, null, 5);
+        CustomWDConfiguration cc = new CustomWDConfiguration(5001, -1, browsers, null, 5, 60);
         addConfiguration("test", new NodeLabelMatcher("foolabel"), cc);
         j.createSlave("foo", "foolabel", null);
 
@@ -171,7 +171,7 @@ public class SeleniumTest {
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
         browsers.add(new HTMLUnitBrowser(1));
 
-        CustomWDConfiguration cc = new CustomWDConfiguration(5002, -1, browsers, null, 5);
+        CustomWDConfiguration cc = new CustomWDConfiguration(5002, -1, browsers, null, 5, 60);
 
         getPlugin().getGlobalConfigurations().add(new SeleniumGlobalConfiguration("test", new NodeLabelMatcher("foolabel"), cc));
         j.createSlave("foo", "foolabel", null);

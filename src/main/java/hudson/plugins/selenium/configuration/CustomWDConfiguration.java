@@ -31,6 +31,7 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 
 	private int port = 4444;
     private Integer maxSession = 5;
+    private Integer sessionTimeout = 60;
     private Integer timeout = -1;
 
     private List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
@@ -43,12 +44,13 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
     }
 
     @DataBoundConstructor
-    public CustomWDConfiguration(int port, Integer timeout, List<WebDriverBrowser> browsers, String display, Integer maxSession) {
+    public CustomWDConfiguration(int port, Integer timeout, List<WebDriverBrowser> browsers, String display, Integer maxSession, Integer sessionTimeout) {
         super(display);
         this.port = port;
         this.timeout = timeout;
         this.browsers = browsers;
         this.maxSession = maxSession;
+        this.sessionTimeout = sessionTimeout;
     }
 
     @Exported
@@ -63,6 +65,9 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
 
     @Exported
     public Integer getMaxSession() { return maxSession; }
+
+    @Exported
+    public Integer getSessionTimeout() { return sessionTimeout; }
 
     @Exported
     public List<WebDriverBrowser> getBrowsers() {
@@ -131,6 +136,11 @@ public class CustomWDConfiguration extends SeleniumNodeConfiguration {
         if (getMaxSession() != null && getMaxSession() > 0) {
             opt.addOption("-maxSession");
             opt.addOption(getMaxSession().toString());
+        }
+
+        if (getSessionTimeout() != null && getSessionTimeout() >= 60) {
+            opt.addOption("-sessionTimeout");
+            opt.addOption(getSessionTimeout().toString());
         }
 
         for (WebDriverBrowser b : browsers) {
