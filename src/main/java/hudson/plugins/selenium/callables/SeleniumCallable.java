@@ -107,6 +107,9 @@ public class SeleniumCallable extends MasterToSlaveFileCallable<String> {
             status.setStatus(SeleniumConstants.STARTED);
             status.setRunning(true);
         } catch (Exception t) {
+            if(status == null){
+                status = new RemoteRunningStatus(null, options);
+            }
             status.setRunning(false);
             status.setStatus(SeleniumConstants.ERROR);
             LOGGER.log(Level.WARNING, "Selenium node launch failed", t);
