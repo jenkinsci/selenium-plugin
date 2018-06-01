@@ -15,12 +15,12 @@
                 this result is useless to us -->
         <findbugs.failOnError>false</findbugs.failOnError>
 
-		<selenium.version>3.11.0</selenium.version>
+		<selenium.version>3.12.0</selenium.version>
 		<htmlunit.version>2.29.2</htmlunit.version>
 		<java.level>8</java.level>
 	</properties>
 	<artifactId>selenium</artifactId>
-	<version>3.11.0-SNAPSHOT</version>
+	<version>3.12.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Selenium Plugin</name>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Selenium+Plugin</url>
