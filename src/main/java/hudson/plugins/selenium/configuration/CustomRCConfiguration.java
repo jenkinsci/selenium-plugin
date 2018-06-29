@@ -36,7 +36,7 @@ public class CustomRCConfiguration extends SeleniumNodeConfiguration {
 
     private CustomRCConfiguration() {
         super(null);
-        browsers.add(new IEBrowser(1, "", ""));
+        browsers.add(new IEBrowser(1, "", "", false));
         browsers.add(new FirefoxBrowser(5, "", ""));
         browsers.add(new ChromeBrowser(5, "", ""));
     }

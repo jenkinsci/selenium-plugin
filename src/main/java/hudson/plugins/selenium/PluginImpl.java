@@ -63,7 +63,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.framework.io.LargeText;
-import org.openqa.grid.internal.Registry;
+import org.openqa.grid.internal.GridRegistry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.TestSlot;
 import org.springframework.util.StringUtils;
@@ -339,7 +339,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
                     return Collections.emptyList();
                 }
 
-                Registry registry = HubHolder.getHub().getRegistry();
+                GridRegistry registry = HubHolder.getHub().getRegistry();
                 if (registry != null) {
                     for (RemoteProxy proxy : registry.getAllProxies()) {
                         for (TestSlot slot : proxy.getTestSlots()) {
@@ -408,7 +408,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
             Boolean rcBrowserSideLog = getDefaultForNull(this.rcBrowserSideLog, Boolean.FALSE);
 
             List<SeleniumBrowser> browsers = new ArrayList<SeleniumBrowser>();
-            browsers.add(new IEBrowser(5, "", ""));
+            browsers.add(new IEBrowser(5, "", "", false));
             browsers.add(new FirefoxBrowser(5, "", ""));
             browsers.add(new ChromeBrowser(5, "", ""));
 
@@ -651,7 +651,7 @@ public class PluginImpl extends Plugin implements Action, Serializable, Describa
     public SeleniumNodeConfiguration getDefaultConfiguration() {
         validateAdmin();
         List<WebDriverBrowser> browsers = new ArrayList<WebDriverBrowser>();
-        browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null));
+        browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.IEBrowser(1, null, null, false));
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.FirefoxBrowser(5, null, null));
         browsers.add(new hudson.plugins.selenium.configuration.browser.webdriver.ChromeBrowser(5, null, null));
         return new CustomWDConfiguration(4445, null, browsers, null, 5);

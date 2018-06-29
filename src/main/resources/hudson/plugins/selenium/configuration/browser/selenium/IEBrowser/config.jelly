@@ -9,5 +9,8 @@
         <f:entry title="${%Ignore protected mode}" field="ignoreProtectedMode">
             <f:checkbox/>
         </f:entry>
+        <f:entry title="${%Forbid using 64 bit driver}" field="forbid64bitDriver">
+            <f:checkbox/>
+        </f:entry>
     </f:advanced>
 </j:jelly>

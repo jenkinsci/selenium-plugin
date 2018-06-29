@@ -6,7 +6,7 @@ import hudson.remoting.Channel;
 import jenkins.security.MasterToSlaveCallable;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.server.SeleniumServer;
 
 import java.util.logging.Level;
@@ -44,7 +44,7 @@ public class RemoteControlLauncher extends MasterToSlaveCallable<Void, Exception
         try {
             RegistrationRequest c = new RegistrationRequest(ConfigurationBuilder.buildNodeConfig(args), nodeName);
 
-            for (DesiredCapabilities dc : c.getConfiguration().capabilities) {
+            for (MutableCapabilities dc : c.getConfiguration().capabilities) {
                 JenkinsCapabilityMatcher.enhanceCapabilities(dc, nodeName);
             }
             SelfRegisteringRemote remote = new SelfRegisteringRemote(c);

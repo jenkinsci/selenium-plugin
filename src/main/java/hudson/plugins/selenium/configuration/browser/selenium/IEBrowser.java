@@ -18,12 +18,15 @@ public class IEBrowser extends SeleniumBrowser {
 
     private String driverBinaryPath;
 
+    private transient boolean forbid64bitDriver;
+
     private transient final String ieDriverProperty = "webdriver.ie.driver";
 
     @DataBoundConstructor
-    public IEBrowser(int maxInstances, String version, String driverBinaryPath) {
+    public IEBrowser(int maxInstances, String version, String driverBinaryPath, boolean forbid64bitDriver) {
         super(maxInstances, version, "*iexplore");
         this.driverBinaryPath = driverBinaryPath;
+        this.forbid64bitDriver = forbid64bitDriver;
     }
 
     @Exported
@@ -31,9 +34,14 @@ public class IEBrowser extends SeleniumBrowser {
         return driverBinaryPath;
     }
 
+    @Exported
+    public boolean getForbid64bitDriver() {
+        return forbid64bitDriver;
+    }
+
     @Override
     public void initOptions(Computer c, SeleniumRunOptions opt) {
-        String serverPath = IeDriverServerUtils.uploadIEDriverIfNecessary(c, getDriverBinaryPath());
+        String serverPath = IeDriverServerUtils.uploadIEDriverIfNecessary(c, getDriverBinaryPath(), getForbid64bitDriver());
         if (serverPath != null) {
             opt.getJVMArguments().put(ieDriverProperty, serverPath);
         }
