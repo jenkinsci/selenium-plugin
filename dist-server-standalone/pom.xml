@@ -11,9 +11,9 @@
     <name>fake</name>
 
     <properties>
-        <selenium.short.version>3.13</selenium.short.version>
-        <selenium.version>3.13.0</selenium.version>
-        <htmlunit.driver.version>2.31.0</htmlunit.driver.version>
+        <selenium.short.version>3.141</selenium.short.version>
+        <selenium.version>3.141.59</selenium.version>
+        <htmlunit.driver.version>2.33.3</htmlunit.driver.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
