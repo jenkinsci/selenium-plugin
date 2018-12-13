@@ -15,8 +15,8 @@
                 this result is useless to us -->
         <findbugs.failOnError>false</findbugs.failOnError>
 
-		<selenium.version>3.13.0</selenium.version>
-		<htmlunit.version>2.31.0</htmlunit.version>
+		<selenium.version>3.141.59</selenium.version>
+		<htmlunit.version>2.33.3</htmlunit.version>
 		<java.level>8</java.level>
 	</properties>
 	<artifactId>selenium</artifactId>
@@ -32,8 +32,58 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<forkCount>0</forkCount>
-                    <reuseForks>false</reuseForks>
+					<reuseForks>false</reuseForks>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>enforce-bytecode-version</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<enforceBytecodeVersion>
+									<maxJdkVersion>1.8</maxJdkVersion>
+									<ignoreClasses>
+										<ignoreClass>module-info</ignoreClass>
+									</ignoreClasses>
+								</enforceBytecodeVersion>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>extra-enforcer-rules</artifactId>
+						<version>1.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>animal-sniffer-maven-plugin</artifactId>
+				<version>1.16</version>
+				<configuration>
+					<signature>
+						<groupId>org.codehaus.mojo.signature</groupId>
+						<artifactId>java18</artifactId>
+						<version>1.0</version>
+					</signature>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -41,8 +91,8 @@
 		<connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<developers>
 		<developer>
 			<id>darkrift</id>
