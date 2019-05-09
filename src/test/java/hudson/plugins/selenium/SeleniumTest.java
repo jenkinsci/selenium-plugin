@@ -103,7 +103,7 @@ public class SeleniumTest {
         }
 
         dc = DesiredCapabilities.htmlUnit();
-        dc.setCapability("jenkins.label", "foolabel");
+        dc.setCapability("jenkins:label", "foolabel");
         WebDriver dr = null;
         try {
             dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
@@ -116,7 +116,7 @@ public class SeleniumTest {
         }
 
         dc = DesiredCapabilities.htmlUnit();
-        dc.setCapability("jenkins.nodeName", "foo");
+        dc.setCapability("jenkins:nodeName", "foo");
         try {
             dr = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
         } catch (Exception e) {
@@ -128,10 +128,10 @@ public class SeleniumTest {
         }
 
         dc = DesiredCapabilities.htmlUnit();
-        dc.setCapability("jenkins.label", "bar");
+        dc.setCapability("jenkins:label", "bar");
         try {
             new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
-            fail("jenkins.label=bar should not return a valid session"); // should have failed
+            fail("jenkins:label=bar should not return a valid session"); // should have failed
         } catch (Exception e) {
 
         }

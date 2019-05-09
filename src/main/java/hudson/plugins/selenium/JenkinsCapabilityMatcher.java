@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * {@link CapabilityMatcher} that adds "jenkins.label" support.
+ * {@link CapabilityMatcher} that adds "jenkins:label" support.
  * 
  * @author Kohsuke Kawaguchi
  */
@@ -27,12 +27,12 @@ public class JenkinsCapabilityMatcher implements CapabilityMatcher {
      * Can be used as a capability when WebDriver requests a node from Grid. The value is a boolean expression over labels to select the desired node
      * to run the test.
      */
-    public static final String LABEL = "jenkins.label";
+    public static final String LABEL = "jenkins:label";
 
     /**
      * RC uses this to register, to designate its origin.
      */
-    public static final String NODE_NAME = "jenkins.nodeName";
+    public static final String NODE_NAME = "jenkins:nodeName";
 
     /**
      * Node name of the master computer
